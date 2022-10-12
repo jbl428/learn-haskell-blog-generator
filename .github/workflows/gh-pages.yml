@@ -13,17 +13,23 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setup mdBook
-        shell: bash
-        run: |
-          wget https://gilmi.me/static/misc/mymdbook2
-          chmod +x mymdbook2
-          ./mymdbook2 build
-          cp assets/book-logo.png book/
-          echo "lhbg-book.link" > book/CNAME
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/book'
+        uses: peaceiris/actions-mdbook@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./book
+          mdbook-version: 'latest'
+
+      - name: Build mdBook
+        run: |
+          mdbook build
+          cp assets/book-logo.png book/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: book
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
