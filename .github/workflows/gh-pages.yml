@@ -1,14 +1,27 @@
-name: github pages
+name: Deploy static content to Pages
 
 on:
   push:
-    branches:
-      - book
-  pull_request:
+    branches: [ "book" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   deploy:
-    runs-on: ubuntu-20.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
 
