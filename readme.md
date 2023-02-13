@@ -1,4 +1,4 @@
-# learn-haskell-blog-generator
+# 블로그 생성기를 만들면서 배우는 하스켈
 
 이 저장소는 하스켈 책 [Learn Haskell by building a blog generator](https://github.com/soupi/learn-haskell-blog-generator)의 한국어 번역본입니다.
 
