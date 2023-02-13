@@ -34,6 +34,7 @@ jobs:
         run: |
           mdbook build
           cp assets/book-logo.png book/
+          cp assets/book-logo-transparent.png book/
 
       - name: Setup Pages
         uses: actions/configure-pages@v2
