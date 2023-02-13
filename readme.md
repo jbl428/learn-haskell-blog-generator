@@ -1,15 +1,12 @@
 # learn-haskell-blog-generator
 
-This is the source repository for
-"Learn Haskell by building a blog generator",
-a book about Haskell.
+이 저장소는 하스켈 책 [Learn Haskell by building a blog generator](https://github.com/soupi/learn-haskell-blog-generator)의 한국어 번역본입니다.
 
-To view the book, visit the [website](https://lhbg-book.link).
+이 책을 보려면 [웹사이트](https://jbl428.github.io/learn-haskell-blog-generator)를 방문하세요.
 
-To report issues and ask questions,
-visit the [issue tracker](https://github.com/soupi/learn-haskell-blog-generator/issues).
+이슈나 문의사항이 있다면 [이슈 트래커](https://github.com/jbl428/learn-haskell-blog-generator/issues)에 올려주세요.
 
-## Code reference
+## 코드 참조
 
 <table>
   <thead>
