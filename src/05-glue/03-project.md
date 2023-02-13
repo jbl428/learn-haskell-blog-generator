@@ -1,7 +1,7 @@
 # Defining a project description
 
 Up until now we've only used `base` and the libraries
-[included](https://downloads.haskell.org/ghc/latest/docs/html/users_guide/9.0.1-notes.html#included-libraries)
+[included](https://downloads.haskell.org/ghc/9.2.5/docs/html/users_guide/9.2.5-notes.html#included-libraries)
 with GHC. Because of that we didn't really need to do anything fancier
 than `runghc` to run our program. However, we want to start using
 external libraries which are not included with GHC in our programs.
@@ -98,8 +98,8 @@ Let's break it down to a few parts, the
 The first part should be fairly straightforward from the comments, maybe except for:
 
 - `cabal-version`: Defines which cabal versions can build this project. We've specified 2.4 and above.
-  [More info on different versions](https://cabal.readthedocs.io/en/3.6/file-format-changelog.html).
-- `name`: The name of your library and package. Must match with the .cabal filename. Usually starts with a lowercase. [Check if your package name is already taken on Hackage](https://hackage.haskell.org/packages/search?terms=name).
+  [More info on different versions](https://cabal.readthedocs.io/en/stable/file-format-changelog.html).
+- `name`: The name of your library and package. Must match with the `.cabal` filename. Usually starts with a lowercase. [Check if your package name is already taken on Hackage](https://hackage.haskell.org/packages/search?terms=name).
 - `version`: Some Haskell packages use [semver](https://semver.org/), most use [PvP](https://pvp.haskell.org/).
 - `license`: Most Haskell packages use [BSD-3-Clause](https://choosealicense.com/licenses/bsd-3-clause/). [Neil Mitchell blogged about this](https://neilmitchell.blogspot.com/2018/08/licensing-my-haskell-packages.html). You can find more licenses if you'd like at [choosealicense.com](https://choosealicense.com).
 - `extra-doc-files`: Include extra doc files here, such as `README` or `CHANGELOG`.
@@ -135,7 +135,7 @@ extra-doc-files:
 
 Cabal package descriptions can include multiple "targets": libraries, executables,
 and test suites. Since Cabal 2.2, we can use
-[common stanzas](https://cabal.readthedocs.io/en/3.6/cabal-package.html#common-stanzas)
+[common stanzas](https://cabal.readthedocs.io/en/stable/cabal-package.html#common-stanzas)
 to group settings to be shared between different targets, so we don't have to repeat them for each target.
 
 In our case we've created a new common stanza (or block) called `common-settings` and
@@ -253,7 +253,7 @@ We have separated our code into two sections: a library and an executable, why?
 First, libraries can be used by others. If we publish our code and someone wants to
 use it and build upon it, they can. Executables can't be imported by other projects.
 Second, we can write unit tests for libraries. It is usually
-benefitical to write most, if not all, of our logic as a library, and provide
+beneficial to write most, if not all, of our logic as a library, and provide
 a thin executable over it.
 
 Executables' descriptions are very similar to libraries, here we define:
@@ -416,7 +416,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## `cabal.project` and `stack.yaml`
 
-The [cabal.project](https://cabal.readthedocs.io/en/3.6/cabal-project.html) and
+The [cabal.project](https://cabal.readthedocs.io/en/stable/cabal-project.html) and
 [stack.yaml](https://docs.haskellstack.org/en/stable/yaml_configuration/#project-specific-config)
 files are used by `cabal` and `stack` respectively to add additional information on *how
 to build the package*. While `cabal.project` isn't necessary to use `cabal`, `stack.yaml`
@@ -428,9 +428,9 @@ There are two important fields a `stack.yaml` file must have:
   We will choose the latest (at time of writing) on the `lts` branch: `lts-18.22`.
   Visit [this link](https://www.stackage.org/lts-18.22) to find out which packages this
   snapshot includes, what their versions are, and which GHC version is used
-  with this snapshot.
+  with this snapshot
 - `packages`: Describes the location of packages we plan to build. In our case
-  we have only one and it can be found in the current directory.
+  we have only one and it can be found in the current directory
 
 We'll add `stack.yaml` to our project directory:
 
@@ -477,7 +477,7 @@ A few important commands we should be familiar with:
 cabal update
 ```
 
-[`update`](https://cabal.readthedocs.io/en/3.6/cabal-commands.html#cabal-v2-update)
+[`update`](https://cabal.readthedocs.io/en/stable/cabal-commands.html#cabal-update)
 fetches information from remote package repositories (specifically Hackage unless specified otherwise)
 and updates the local package index which includes various information about available packages such as
 their names, versions and dependencies.
@@ -488,15 +488,18 @@ their names, versions and dependencies.
 cabal build
 ```
 
-[`build`](https://cabal.readthedocs.io/en/3.6/cabal-commands.html#cabal-v2-build)
+[`build`](https://cabal.readthedocs.io/en/stable/cabal-commands.html#cabal-build)
 compiles the various targets (such as `library` and `executable`s).
 It will also fetch and install the package dependencies when they're not already installed.
+
+When building executables, `cabal build` will report where the executable has been created,
+and it is also possible to find the path to the executable using `cabal exec -- which hs-blog-gen`.
 
 ```sh
 cabal run hs-blog-gen -- <program arguments>
 ```
 
-[`run`](https://cabal.readthedocs.io/en/3.6/cabal-commands.html#cabal-v2-run)
+[`run`](https://cabal.readthedocs.io/en/stable/cabal-commands.html#cabal-run)
 Can be used to compile and then run a target (in our case our `executable` which we named `hs-blog-gen`).
 We separate arguments passed to `cabal` and arguments passed to our target program with `--`.
 
@@ -504,7 +507,7 @@ We separate arguments passed to `cabal` and arguments passed to our target progr
 cabal repl hs-blog
 ```
 
-[`repl`](https://cabal.readthedocs.io/en/3.6/cabal-commands.html#cabal-v2-repl)
+[`repl`](https://cabal.readthedocs.io/en/stable/cabal-commands.html#cabal-repl)
 runs `ghci` in the context of the target (in our case our `library` which we named `hs-blog`) -
 it will load the target's package dependencies and modules to be available in `ghci`.
 
@@ -512,14 +515,14 @@ it will load the target's package dependencies and modules to be available in `g
 cabal clean
 ```
 
-[`clean`](https://cabal.readthedocs.io/en/3.6/cabal-commands.html#cabal-v2-clean)
+[`clean`](https://cabal.readthedocs.io/en/stable/cabal-commands.html#cabal-clean)
 Deletes the build artifacts that we built.
 
 There are more interesting commands we could use, such as `cabal freeze` to generate
 a file which records the packages versions and flags we used to build this project,
 and `cabal sdist` to bundle the project source to a package tarball which can be
 uploaded to Hackage. If you'd like to learn more visit the
-[Cabal user guide](https://cabal.readthedocs.io/en/3.6/cabal-commands.html).
+[Cabal user guide](https://cabal.readthedocs.io/en/stable/cabal-commands.html).
 
 ### For stack:
 
@@ -541,6 +544,9 @@ stack build
 [`build`](https://docs.haskellstack.org/en/stable/build_command/#build-command)
 will compile the project as described above - installing GHC and package dependencies if they are not
 installed.
+
+When building executables, `stack build` will report where the executable has been created,
+and it is also possible to find the path to the executable using `stack exec -- which hs-blog-gen`.
 
 ```sh
 stack exec hs-blog-gen -- <program arguments>
@@ -584,7 +590,7 @@ dist-newstyle
 Finding packages isn't a very straightforward process at the moment.
 People have written on
 [how they choose packages](https://www.haskellforall.com/2018/05/how-i-evaluate-haskell-packages.html),
-[recommendation](https://github.com/soupi/haskell-study-plan#useful-packages) [lists](https://haskelliseasy.readthedocs.io/en/latest/), and more.
+[recommendation lists](https://github.com/soupi/haskell-study-plan#useful-packages), [books](https://leanpub.com/haskell-stdlibs), and more.
 
 My suggestion is:
 
@@ -628,7 +634,7 @@ We've made some change to our project directory, and it should now look like thi
 4 directories, 10 files
 ```
 
-Note that this package format could be release on [Hackage](https://hackage.haskell.org/)
+Note that this package format could be released on [Hackage](https://hackage.haskell.org/)
 for other Haskell developers to use!
 
 > You can view the git commit of

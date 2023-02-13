@@ -39,7 +39,7 @@ but we will cover a few important things to pay attention to in this chapter.
 In general, there are four important things we need to do:
 
 1. Define our model - we want to define an ADT that describes the various options
-   and commands for our program.
+   and commands for our program
 
 2. Define a parser that will produce a value of our model type when run
 
@@ -82,7 +82,7 @@ data SingleOutput
 In terms of interface, we could decide that when a user would like to convert
 a single input source, they would use the `convert` command, and supply the optional flags
 `--input FILEPATH` and `--output FILEPATH` to read or write from a file.
-When the user does not supply one or both flag, we will read or write from
+When the user does not supply one or both flags, we will read or write from
 the standard input/output accordingly.
 
 If the user would like to convert a directory, they can use the `convert-dir`
@@ -207,7 +207,7 @@ fmap :: (a -> b) -> IO a -> IO b
 ```
 
 `fmap` is a type class function like `<>` and `show`. It belongs
-to the type class [`Functor`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Functor.html#t:Functor):
+to the type class [`Functor`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Functor.html#t:Functor):
 
 ```hs
 class Functor f where
@@ -339,7 +339,7 @@ class Functor f => Applicative f where
   (<*>) :: f (a -> b) -> f a -> f b
 ```
 
-[`Applicative`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Applicative.html#t:Applicative)
+[`Applicative`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Applicative.html#t:Applicative)
 is another very popular type class with many instances.
 
 Just like any `Monoid` is a `Semigroup`, any `Applicative`
@@ -475,7 +475,7 @@ optional :: Alternative f => f a -> f (Maybe a)
 ```
 
 `optional` works on types which implement instances of the
-[`Alternative`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Applicative.html#t:Alternative) type class:
+[`Alternative`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Applicative.html#t:Alternative) type class:
 
 ```hs
 class Applicative f => Alternative f where
@@ -520,7 +520,7 @@ selecting the right operation would be via commands.
 If the user would like to convert a single source, they can use
 `convert`, for a directory, `convert-dir`.
 
-We can create a a parser with commands with the `subparser` and `command`
+We can create a parser with commands with the `subparser` and `command`
 functions:
 
 ```hs
@@ -593,7 +593,7 @@ pOptions =
 #### ParserInfo
 
 Since we finished building a parser, we should wrap it up in a `ParserInfo`
-and add some information to it to make it ready to run.
+and add some information to it to make it ready to run:
 
 ```hs
 opts :: ParserInfo Options
@@ -772,7 +772,7 @@ convertSingle :: Html.Title -> Handle -> Handle -> IO ()
 convertDirectory :: FilePath -> FilePath -> IO ()
 ```
 
-[`Handle`](https://hackage.haskell.org/package/base-4.15.0.0/docs/System-IO.html#t:Handle)
+[`Handle`](https://hackage.haskell.org/package/base-4.16.4.0/docs/System-IO.html#t:Handle)
 is an I/O abstraction over file system objects, including `stdin` and `stdout`.
 Before, we used `writeFile` and `getContents` - these functions either
 get a `FilePath` to open and work on, or they assume the `Handle` is the standard I/O.
@@ -916,7 +916,8 @@ the `executable`.
 
 We've learned about a new fancy library called `optparse-applicative`
 and used it to create a fancier command-line interface in a declarative way.
-See the result of running `hs-blog-gen --help`:
+See the result of running `hs-blog-gen --help` (or the equivalent
+`cabal`/`stack` commands we discussed in the last chapter):
 
 ```
 hs-blog-gen - a static blog generator

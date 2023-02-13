@@ -27,9 +27,9 @@ safeHead :: [a] -> Maybe a
 
 This way, when the list is empty, we can return `Nothing`, and when it has at least
 one element, we can return `Just <first element>`. This function can be found in
-the [Data.Maybe](https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Maybe.html)
+the [Data.Maybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Maybe.html)
 module under the name
-[listToMaybe](https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Maybe.html#v:listToMaybe).
+[listToMaybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Maybe.html#v:listToMaybe).
 
 In order to *consume* values of type `Maybe <something>`, and other types created with
 `data`, we can use pattern matching.
@@ -163,7 +163,7 @@ exactlyTwoVersion2 list =
 Exercises:
 
 1. Create a function `isBright :: AnsiColor -> Bool` that checks whether a color is bright
-2. Use [this table](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit) to write `ansiToUbuntu`.
+2. Use [this table](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit) to write `ansiToUbuntu`
 3. Create a function `isEmpty :: [a] -> Bool` that uses `listToMaybe` to check whether a list is empty
 4. Create a function `isEmpty :: [a] -> Bool` that *doesn't* use `listToMaybe` to check whether a list is empty
 
@@ -359,7 +359,7 @@ trim = unwords . words
 
    </details>
 
-   The [maybe](https://hackage.haskell.org/package/base-4.15.0.0/docs/Prelude.html#v:maybe)
+   The [maybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#v:maybe)
    function let's us do the same thing in a more compact way. It is a function
    that works similarly to pattern matching on a `Maybe`:
    the third argument to `maybe` is the value on which we pattern match,

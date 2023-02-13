@@ -1,12 +1,12 @@
 # Exceptions
 
-The [Control.Exception](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html)
+The [Control.Exception](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html)
 module provides us with the ability to
-[throw](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html#v:throwIO)
+[throw](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#v:throwIO)
 exceptions from `IO` code,
-[`catch`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html#g:5)
+[`catch`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#g:5)
 Haskell exceptions in `IO` code, and even convert them to `IO (Either ...)`
-with the function [`try`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html#g:7):
+with the function [`try`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#g:7):
 
 ```hs
 throwIO :: Exception e => e -> IO a
@@ -21,7 +21,7 @@ try :: Exception e => IO a -> IO (Either e a)
 ```
 
 The important part of these type signatures is the
-[`Exception`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html#t:Exception)
+[`Exception`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#t:Exception)
 type class. By making a type an instance of the `Exception` type class, we can throw it
 and catch it in `IO` code:
 
@@ -65,11 +65,11 @@ main =
 > 1. Guards as seen in `sayDiv2` are just a nicer syntax around `if-then-else` expressions.
 >    Using guards we can have multiple `if` branches and finally use the `else` branch
 >    by using `otherwise`. After each guard (`|`) there's a condition, after the condition there's
->    a `=` and then the expression (the part after `then` in an `if` expression).
+>    a `=` and then the expression (the part after `then` in an `if` expression)
 >
 > 2. LambdaCase as seen in `catch`, is just a syntactic sugar to save a few characters,
 >    instead of writing `\e -> case e of`, we can write `\case`. It requires enabling the
->    `LambdaCase` extension.
+>    `LambdaCase` extension
 >
 >    #### Language extensions
 >
@@ -82,7 +82,7 @@ main =
 >    (the `language` part is case insensitive)
 >    to the top of a Haskell source file, or they can be set globally for an entire project by
 >    specifying them in the
->    [default-extensions](https://cabal.readthedocs.io/en/3.6/cabal-package.html#pkg-field-default-extensions)
+>    [default-extensions](https://cabal.readthedocs.io/en/stable/cabal-package.html#pkg-field-default-extensions)
 >    section in the `.cabal file`.
 >
 >    The list of language extensions can be found in the
@@ -122,9 +122,9 @@ ghc: <stdout>: hFlush: illegal operation (handle is closed)
 
 First, how do we know which exception we should handle? Some functions' documentation
 include this, but unfortunately `putStrLn`'s does not. We could guess from the
-[list of instances](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html#i:Exception)
+[list of instances](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#i:Exception)
 the `Exception` type class has; I think
-[`IOException`](https://hackage.haskell.org/package/base-4.15.0.0/docs/GHC-IO-Exception.html#t:IOException) fits. Now, how can we handle this case as well? We can chain catches:
+[`IOException`](https://hackage.haskell.org/package/base-4.16.4.0/docs/GHC-IO-Exception.html#t:IOException) fits. Now, how can we handle this case as well? We can chain catches:
 
 ```hs
 -- need to add these at the top
@@ -162,9 +162,9 @@ main = do
 > lambdas, pattern matching and more.
 
 Or we could use the convenient function
-[`catches`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html#v:catches)
+[`catches`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#v:catches)
 to pass a list of exception
-[handlers](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html#t:Handler):
+[handlers](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#t:Handler):
 
 ```hs
 main :: IO ()
@@ -218,8 +218,8 @@ This could also go in `catches` as the last element in the list if we wanted spe
 handling for other scenarios.
 
 A couple more functions worth knowing are
-[`bracket`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html#v:bracket)
-and [`finally`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Exception.html#v:finally).
+[`bracket`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#v:bracket)
+and [`finally`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#v:finally).
 These functions can help us handle resource acquisition more safely when errors are present.
 
 ---
@@ -229,7 +229,7 @@ Are there scenarios where we would clean-up after ourselves (meaning, close hand
 opened)? Which parts of the code could throw an exception? Which handles won't get closed?
 
 - Try to use `bracket` to make sure we always close a handle afterwards, even if an exception
-  is thrown, and avoid closing the handle for the `stdin` and `stdout` cases.
+  is thrown, and avoid closing the handle for the `stdin` and `stdout` cases
   <details><summary>Hint</summary>We might need to use continuation-passing style,
   passing a function that takes a parameter to a function that produces a parameter
   and calls it with that parameter.

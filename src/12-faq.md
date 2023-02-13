@@ -4,6 +4,13 @@
 
 ## General questions
 
+### Why should I learn Haskell
+
+I've written a couple of articles on the topic:
+
+- [Consider Haskell](https://gilmi.me/blog/post/2020/04/28/consider-haskell) (Alternative title, 'What can I do with Haskell?')
+- [7 things I learned from Haskell](https://gilmi.me/blog/post/2022/12/13/learned-from-haskell)
+
 ### How to install editor tools
 
 As far as I know, the most recommended setup today for Haskell development is using
@@ -11,10 +18,12 @@ VSCode or [VSCodium](https://vscodium.com/) together with the
 marketplace [Haskell extension](https://marketplace.visualstudio.com/items?itemName=haskell.haskell).
 
 The Haskell extension uses [haskell-language-server](https://github.com/haskell/haskell-language-server)
-which can be install via [GHCup](https://www.haskell.org/ghcup/) or even via the Haskell extension itself.
+which can be installed via [GHCup](https://www.haskell.org/ghcup/) or even via the Haskell extension itself.
 
-There are [other options](https://github.com/soupi/haskell-study-plan#tools)
-of course if this setup isn't your jam.
+If you already have a preferred editor,
+[see if HLS supports it](https://haskell-language-server.readthedocs.io/en/latest/configuration.html#configuring-your-editor),
+or alternatively use [GHCid](https://github.com/ndmitchell/ghcid#readme)
+which provides rapid feedback independently from an editor.
 
 ### How to learn new things
 
@@ -30,11 +39,11 @@ You might also find the quite a bit of Haskell presence on
 ### How to debug Haskell code
 
 Most imperative languages provide a step debugger. While the
-[GHCi debugger](http://downloads.haskell.org/~ghc/latest/docs/html/users_guide/ghci.html#the-ghci-debugger),
+[GHCi debugger](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghci.html#the-ghci-debugger),
 exists it is not particularly easy to use, especially because of Haskell's lazy evaluation where things
 might not evaluated at the order we might intuitively expect. Because of that,
 Haskellers tend to use
-[trace debugging](https://hackage.haskell.org/package/base-4.15.0.0/docs/Debug-Trace.html#g:1) and
+[trace debugging](https://hackage.haskell.org/package/base-4.16.4.0/docs/Debug-Trace.html#g:1) and
 equational reasoning. With trace debugging, we try to *verify our assumptions* about the code -
 we use the various `trace` functions as a "hack" to print variables, functions inputs, functions output
 or even just say "got here", from anywhere at the code.
@@ -62,7 +71,7 @@ of the offending code, and by reading the code we can find the error without the
 
 Adding type signatures and annotations to test your understanding of the types also helps greatly.
 We can even ask GHC for the expected type in a certain place by using
-[typed holes](http://downloads.haskell.org/~ghc/latest/docs/html/users_guide/exts/typed_holes.html).
+[typed holes](https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/typed_holes.html).
 
 ### My program is slow. Why?
 
@@ -80,8 +89,8 @@ study plan links to various resources on Haskell evaluation, profiling and case 
 ### How to structure programs
 
 Start with the imperative shell functional core approach, define EDSLs with the combinator
-pattern for logic if needed, use monadic capabilities such as State locally if needed,
-maybe add an environment configuration with ReaderT, see how it goes.
+pattern for logic if needed, use capabilities such as `State` locally if needed,
+maybe add an environment configuration with `ReaderT`, see how it goes.
 
 If that approach fails you, look at why it fails and examine other solutions according to your needs.
 

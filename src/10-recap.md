@@ -14,12 +14,12 @@ In this book we've implemented a very simple static blog generator while learnin
 - We've used the *functional core, imperative shell* approach to build a program that handles IO and applies
   our domain logic to user inputs.
 - We've learned about abstractions such as [monoids](./05-glue/01-markup_to_html.html#monoids),
-  [functors](./05-glue/04-optparse.html#functor) and [monads](./06-errors_and_files/01-either.html#monadic-interface), 
+  [functors](./05-glue/04-optparse.html#functor) and [monads](./06-errors_and_files/01-either.html#monadic-interface),
   and how they can help us reuse code and convey information about shared interfaces.
 - We've learned how to create fancy [command-line interfaces](./05-glue/04-optparse.html), [write tests](./08-testing.html),
   and [generate documentation](./09-documentation.html).
 
-While Haskell is a very big and complex language, and there's always more to be learned, 
+While Haskell is a very big and complex language, and there's always more to be learned,
 I think we've reached an important milestone where
 you can start building your own Haskell projects and be productive with Haskell!
 
@@ -35,7 +35,7 @@ Thank you for reading this book. I hope you enjoyed it and found Haskell interes
 I would very much like to hear your feedback. If you'd like, you could leave your
 feedback at this book's
 [GitHub issue board](https://github.com/soupi/learn-haskell-blog-generator/issues),
-or you could reach me directly on [Twitter](https://twitter.com/_gilmi) or via email.
+or you could reach me directly on [mastodon](https://fosstodon.org/@suppi) or via email.
 You can find my contact information [on my website](https://gilmi.me).
 
 If you liked this book, do let me know - your kind words mean a lot.
@@ -44,4 +44,3 @@ If you liked this book, do let me know - your kind words mean a lot.
 > like it, you can [support me directly via Ko-fi](https://ko-fi.com/gilmi).
 
 Thank you and good luck with your next Haskell project!
-

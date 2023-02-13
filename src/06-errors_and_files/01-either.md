@@ -105,7 +105,7 @@ and see if we get an error (with the `Left` constructor) or the expected value
 
 The `Applicative` interface of `Either` is very powerful, and can be combined
 with another abstraction called
-[`Traversable`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Traversable.html#g:1) -
+[`Traversable`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Traversable.html#g:1) -
 for data structures that can be traversed from left to right, like a linked list or a binary tree.
 With these, we can combine an unspecified amount of values such as `Either ParseDigitError Int`,
 as long as they are all in a data structure that implements `Traversable`.
@@ -236,12 +236,12 @@ There are a few approaches, the most prominent ones are:
 1. Make them return the same error type. Write an ADT that holds all possible
    error descriptions. This can work in some cases but isn't always ideal.
    For example a user calling `parseDigit` shouldn't be forced to
-   handle a possible case that the input might be an empty string.
+   handle a possible case that the input might be an empty string
 2. Use a specialized error type for each type, and when they are composed together,
    map the error type of each function to a more general error type. This can
    be done with the function
-   [`first`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Data-Bifunctor.html#v:first)
-   from the `Bifunctor` type class.
+   [`first`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Bifunctor.html#v:first)
+   from the `Bifunctor` type class
 
 ## Monadic interface
 
@@ -366,8 +366,8 @@ And now we can write the code this way:
 
 This function, `flatten` (and `flatMap` as well), have different names in Haskell.
 They are called
-[`join`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Monad.html#v:join)
-and [`=<<`](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Monad.html#v:-61--60--60-)
+[`join`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:join)
+and [`=<<`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:-61--60--60-)
 (pronounced "reverse bind"),
 and they are the essence of another incredibly useful abstraction in Haskell.
 
@@ -456,9 +456,9 @@ pipeline string = do
 
 And it will work! Still, in this particular case `tokenize string >>= parse >>= typecheck`
 is so concise it can only be beaten by using
-[>=>](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Monad.html#v:-62--61--62-)
+[>=>](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:-62--61--62-)
 or
-[<=<](https://hackage.haskell.org/package/base-4.15.0.0/docs/Control-Monad.html#v:-60--61--60-):
+[<=<](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:-60--61--60-):
 
 ```hs
 (>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
@@ -486,8 +486,8 @@ we are now already familiar with the core composition API of many libraries - fo
   and [asynchronous programming](https://hackage.haskell.org/package/async)
 - [Web programming](https://gilmi.me/blog/post/2020/12/05/scotty-bulletin-board)
 - [Testing](http://hspec.github.io/)
-- [Emulating stateful computation](https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-State-Lazy.html#g:2)
-- [sharing environment between computations](https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Reader.html#g:2)
+- [Emulating stateful computation](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-State-Lazy.html#g:2)
+- [sharing environment between computations](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-Reader.html#g:2)
 - and many more.
 
 ## Summary
@@ -495,8 +495,8 @@ we are now already familiar with the core composition API of many libraries - fo
 Using `Either` for error handling is useful for two reasons:
 
 1. We encode possible errors using types, and we **force users to acknowledge and handle** them, thus
-   making our code more resilient to crashes and bad behaviours.
+   making our code more resilient to crashes and bad behaviours
 2. The `Functor`, `Applicative`, and `Monad` interfaces provide us with mechanisms for
    **composing** functions that might fail (almost) effortlessly - reducing boilerplate while
    maintaining strong guarantees about our code, and delaying the need to handle errors until
-   it is appropriate.
+   it is appropriate
