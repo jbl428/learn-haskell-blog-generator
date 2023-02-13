@@ -1,6 +1,6 @@
 # Summary
 
-- [About this book](./01-about.md)
+- [이 책에 대하여](./01-about.md)
 - [Hello world](./02-hello.md)
 - [Building an HTML printer library](./03-html_printer.md)
   - [Flexible HTML content (functions)](./03-html/01-html_content.md)

@@ -1,6 +1,6 @@
-# About this book
+# 이 책에 대하여
 
-> <img src="book-logo-transparent.png" alt="book logo" style="max-height: 1.5em; vertical-align: top"> This book is actively maintained. If you find errors, [please let me know](https://github.com/soupi/learn-haskell-blog-generator/issues).
+> <img src="book-logo-transparent.png" alt="book logo" style="max-height: 1.5em; vertical-align: top"> 이 책은 활발하게 유지되고 있습니다. 오류를 발견하셨다면 [여기](https://github.com/soupi/learn-haskell-blog-generator/issues)로 알려주세요.
 
 <!--
 <div style="text-align: center">
@@ -8,64 +8,61 @@
 </div>
 -->
 
-In this book we will implement a simple static blog generator in Haskell,
-converting documents written in our own custom markup language to HTML.
+이 책에서는 하스켈을 사용하여 간단한 정적 블로그 생성기를 구현합니다.
+블로그 생성기는 우리의 커스텀 마크업 언어로 작성된 문서를 HTML로 변환합니다.
 
-We will:
+다음 작업을 수행할 것입니다:
 
-1. Implement a tiny HTML printer library
-2. Define and parse our own custom markup language
-3. Read files and glue things together
-4. Add command line arguments parsing
-5. Write tests and documentation
+1. HTML을 출력하는 간소한 라이브러리 구현
+2. 우리만의 커스텀 마크업 언어 정의 및 파싱
+3. 파일을 읽고 내용을 결합
+4. 명령 줄 인수 파싱
+5. 테스트 및 문서 작성
 
-In each chapter of the book we will focus on a particular task we wish to achieve,
-and through the chapter we'll learn just enough Haskell to complete the task.
+각 장에서는 우리가 달성하려는 특정 작업에 집중합니다,
+그리고 각 장을 통해 해당 작업을 완료하기 위해 충분한 양의 하스켈을 배울것입니다.
 
-## Why should you read this book?
+## 왜 이 책을 읽어야 하나요?
 
-[[Mentions of lhbg-book in other places](https://github.com/soupi/learn-haskell-blog-generator/discussions/67)]
+[[다른 곳에서 이 책에 대한 언급](https://github.com/soupi/learn-haskell-blog-generator/discussions/67)]
 
-There are many Haskell tutorials, guides and books out there. Why read this one?
+이미 하스켈에 대한 많은 튜토리얼, 가이드 및 책이 있습니다. 왜 이 책을 읽어야 하나요?
 
-### Pros
+### 장점
 
-There are probably more, but here are a few possible pros:
+아마 더 있겠지만, 여기 몇 가지 장점이 있습니다:
 
-- It is **relatively short** - most Haskell books are hundreds of pages long.
-  This book (when exported to PDF) is roughly 200 pages long.
-- It is **project oriented**. Many Haskell books teach Haskell by teaching the underlying
-  concepts and features in a neat progression. In this book we **build a Haskell program**,
-  and learn Haskell on the way. This will be a pro to some, and a con to others.<br>
-  There are other tutorials like this. The most notable ones are
+- **상대적으로 짧습니다** - 대부분의 하스켈 책은 수백 페이지입니다.
+  이 책 (PDF로 내보내면) 약 200 페이지 정도입니다.
+- **프로젝트 지향적입니다**. 많은 하스켈 책은 하스켈을 배우기 위해 기본 개념과 기능을 진행하는 방법을 가르칩니다.
+  하지만 이 책에서는 **하스켈 프로그램을 구축**하고, 그 과정에서 하스켈을 배웁니다.
+  이것은 몇몇 사람에게는 장점이 될 수 있지만, 다른 사람에게는 단점이 될 수 있습니다.<br>
+  이 책과 비슷한 다른 튜토리얼들이 있습니다. 가장 유명한 것들은
   [Beginning Haskell](https://www.apress.com/gp/book/9781430262510#otherversion=9781430262503)
-  and [Haskell via Sokoban](https://haskell-via-sokoban.nomeata.de/).
-- It touches on **important topics** such as design patterns, testing and documentation.
-- It has **many exercises** as well as **solutions** to those exercises.
-- It's **online**, which means corrections are easy to make.
-- It's **free**.
+  과 [Haskell via Sokoban](https://haskell-via-sokoban.nomeata.de/) 입니다.
+-  디자인 패턴, 테스트, 문서화같은 **중요한 주제**에 대해 다룹니다.
+- **많은 연습문제**가 있으며, 그 연습문제들의 **해답**도 있습니다.
+- **온라인**이기 때문에, 수정이 쉽습니다.
+- **무료**입니다.
 
-### Cons
+### 단점
 
-There are probably more, but here are a few possible cons:
+아마 더 있겠지만, 여기 몇 가지 단점이 있습니다:
 
-- It **may lack depth** - many, much longer Haskell tutorials are long because they go
-  deeper into the nuts and bolts of each feature, and I tried to keep this book relatively short.
-- It **may not cover as many features or techniques** as other tutorials -
-  we try to cover features as they pop up in our implementation, but we will
-  probably miss features that aren't as important for our tasks,
-  while other resources may try to cover many different use cases.
-- It is **relatively new** and not "battle-tested". Who knows if this is a good approach to
-  learning Haskell? Maybe you could help with that and let me know!
-- It **does not have a technical editor**, though it has seen quite a bit of editing.
+- **깊이가 부족할 수 있습니다** - 많은 하스켈 튜토리얼은 각 기능에 대해 더 깊이 들어가기 때문에 길어집니다.
+  그래서 이 책은 상대적으로 짧게 유지하려고 했습니다.
+- 다른 튜토리얼에 비해 **더 적은 기능과 기술을**을 다룹니다.
+  우리는 구현에 필요한 기능을 다루려고 하지만, 우리의 작업에 중요하지 않은 기능은 놓칠 수 있습니다.
+  그러나 다른 자료는 다양한 사용 사례를 다루기에 더 많은 기능을 다룹니다.
+- **상대적으로 새로운 자료**이고 "철저히 검증된" 방식이 아닙니다. 이 책이 하스켈을 배우는 좋은 접근 방식인지 알 수 없습니다.
+  만약 도와주고 싶다면 알려주세요!
+- 꽤 많은 코드작성이 필요하지만, **에디터를 제공하지 않습니다**.
 
-### Other learning resources
+### 다른 학습 자료
 
-The [haskell.org/documentation](https://www.haskell.org/documentation/) page lists
-many tutorials, books, guides and courses. You can find a few alternatives that I can
-recommend [in this list](https://github.com/soupi/haskell-study-plan#about-this-guide).
+[하스켈 문서 페이지](https://www.haskell.org/documentation/) 에서는 다양한 튜토리얼, 책, 가이드, 강의를 찾을 수 있습니다.
+아니면 [이곳](https://github.com/soupi/haskell-study-plan#about-this-guide)에서 다른 대안을 찾을 수 있습니다.
 
-## Discussions
+## 토론
 
-Do you want to discuss the book? Maybe ask a question?
-Try the [discussion board](https://github.com/soupi/learn-haskell-blog-generator/discussions)!
+이 책에 대해 논의하고 싶거나 질문이 있다면 [discussion board](https://github.com/soupi/learn-haskell-blog-generator/discussions)에 방문하세요!
