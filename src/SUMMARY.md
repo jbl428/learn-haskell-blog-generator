@@ -4,7 +4,7 @@
 - [Hello world](./02-hello.md)
 - [HTML 출력 라이브러리 만들기](./03-html_printer.md)
   - [유연한 HTML 콘텐츠 (함수)](./03-html/01-html_content.md)
-  - [Adding type signatures](./03-html/02-type_signatures.md)
+  - [타입 시그니처 추가하기](./03-html/02-type_signatures.md)
   - [Embedded Domain Specific Languages](./03-html/03-edsls.md)
   - [Safer HTML construction with types](./03-html/04-safer_construction.md)
   - [Preventing incorrect use with modules](./03-html/05-modules.md)
