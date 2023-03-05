@@ -2,8 +2,8 @@
 
 - [이 책에 대하여](./01-about.md)
 - [Hello world](./02-hello.md)
-- [Building an HTML printer library](./03-html_printer.md)
-  - [Flexible HTML content (functions)](./03-html/01-html_content.md)
+- [HTML 출력 라이브러리 만들기](./03-html_printer.md)
+  - [유연한 HTML 콘텐츠 (함수)](./03-html/01-html_content.md)
   - [Adding type signatures](./03-html/02-type_signatures.md)
   - [Embedded Domain Specific Languages](./03-html/03-edsls.md)
   - [Safer HTML construction with types](./03-html/04-safer_construction.md)
