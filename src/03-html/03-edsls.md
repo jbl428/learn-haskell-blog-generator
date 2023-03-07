@@ -1,65 +1,50 @@
-# Embedded Domain Specific Languages
+# 내장 도메인 특화 언어
 
-Right off the bat we run into a common pattern in Haskell: creating
-Embedded Domain Specific Languages (EDSLs for short).
+이번 장에서는 하스켈에서 자주 볼 수 있는 패턴 중 하나인 "내장 도메인 특화 언어(Embedded Domain Specific Languages, 줄여서 EDSLs)"를 만들어 보겠습니다.
 
-Domain specific languages (DSLs) are specialized programming languages that are
-tailored to specific domains, in contrast to general purpose languages,
-which try to work well in many domains.
+도메인 특화 언어(Domain Specific Languages)는 특정 도메인에 맞춰 특화된 프로그래밍 언어입니다.
+반대로, 일반적인 프로그래밍 언어는 여러 도메인에서 잘 동작하도록 만들어져 있습니다.
 
-A few examples of DSLs are:
+DLS의 예로는 다음과 같은 것들이 있습니다:
 
-- make - for defining build systems
-- DOT - for defining graphs
-- Sed - for defining text transformations
-- CSS - for defining styling
-- HTML - for defining web pages
+- make - 빌드 시스템을 정의하는 데 사용됩니다.
+- DOT - 그래프를 정의하는 데 사용됩니다.
+- Sed - 텍스트 변환을 정의하는 데 사용됩니다.
+- CSS - 스타일링을 정의하는 데 사용됩니다.
+- HTML - 웹 페이지를 정의하는 데 사용됩니다.
 
-An *embedded* domain specific language is a little language which is
-embedded inside another programming language, making a program written in
-the EDSL a valid program in the language it was written in.
+*내장* 도메인 특화 언어(EDSL)는 다른 프로그래밍 언어에 내장된 작은 언어입니다.
+EDSL로 작성된 프로그램은 해당 프로그래밍 언어에서 유효한 프로그램입니다.
 
-The little HTML library we've been writing can be considered an EDSL.
-It is used specifically for building web pages (by returning HTML strings),
-and is valid Haskell code!
+예를 들어, 우리가 지금까지 작성한 HTML 라이브러리도 EDSL이라고 할 수 있습니다.
+이 라이브러리는 (HTML 문자열을 반환하여) 웹 페이지를 만드는 데 사용되며, 유효한 하스켈 코드입니다!
 
-In Haskell we frequently create and use EDSLs to express domain specific
-logic. We have EDSLs for concurrency, command-line options parsing, JSON and HTML,
-creating build systems, writing tests, and many more.
+하스켈에서는 도메인에 특화된 로직을 표현하기 위해 EDSL을 자주 만들고 사용합니다.
+예를들면 동시성, 커맨드 라인 옵션 파싱, JSON, HTML, 빌드 시스템 작성, 테스트 작성 등을 위한 EDSL을 가지고 있습니다.
 
-Specialized languages are useful because they can solve specific problems in
-a concise (and often safe) way, and by embedding we get to use the full power of
-the host language for our domain logic, including syntax highlighting and
-various tools available for the language.
+이런 특화된 언어는 특정 문제를 간결하고 (그리고 종종 안전하게) 해결할 수 있기 때문에 유용합니다.
+또한 문법 강조, 호스트 언어의 다양한 도구 등과 같은 언어의 모든 기능을 사용할 수 있습니다.
 
-The drawback of embedding domain specific languages is that we have to adhere
-the rules of the programming language we embed in, such as syntactic and semantic rules.
+하지만 EDSL을 만들 때 호스트 언어의 문법과 의미론과 같은 규칙을 준수해야 하는 단점이 있습니다.
 
-Some languages alleviate this drawback by providing meta-programming capabilities
-in the form of macros or other features to extend the language.
-And while Haskell does provide such capabilities as well, it is also expressive and concise
-enough that many EDSLs do not need them.
+몇몇 언어는 이러한 단점을 해결하기 위해 매크로나 언어 확장 기능과 같은 메타 프로그래밍 기능을 제공합니다.
+하스켈도 이와 같은 기능을 제공하지만, 많은 EDSLs에서는 이러한 기능이 필요하지 않을 정도로 충분히 표현력이 있고 간결합니다.
 
-Instead, many Haskell EDSLs use a pattern called _the combinator pattern_:
-They define *primitives* and *combinators* -
-primitives are basic building blocks of the language,
-and combinators are functions that combine primitives to more complex structures.
+대신, 많은 하스켈 EDSL은 _조합자 패턴(combinator pattern)_ 이라는 것을 주로 사용합니다.
+이 패턴에서는 *원시(primitive)* 와 *조합자(combinator)* 를 정의합니다.
+원시는 언어의 기본적인 구성 요소이고, 조합자는 원시를 조합하여 더 복잡한 구조를 만드는 함수입니다.
 
-In our HTML EDSL, our primitives are functions such as `html_` and `title_`
-that can be used to create a single HTML node, and we pass other
-constructed nodes as input to these functions, and combine them to a more complex
-structure with the append function `<>`.
+지금까지 작성한 HTML EDSL에서 원시는 `html_`, `title_` 등의 함수입니다.
+이 함수들은 단일 HTML 노드를 생성하는 데 사용되며, 다른 생성된 노드를 입력으로 전달하고
+`<>` 함수를 사용하여 더 복잡한 구조를 만듭니다.
 
-There are still a few tricks we can use to make our HTML EDSL better:
+우리의 HTML EDSL을 개선할 수 있는 몇 가지 방법이 있습니다:
 
-1. We can use Haskell's type system to make sure we only construct *valid*
-   HTML, so for example we don't create a `<title>` node
-   without a `<head>` node or have user content that 
-   can include unescaped special characters,
-   and throw a type error when the user tries to do something invalid.
+1. 하스켈의 타입 시스템을 사용하여 *유효한* HTML만 생성할 수 있도록 할 수 있습니다.
+   예를 들어, `<head>` 노드 없이 `<title>` 노드를 생성하지 못하게 하거나,
+   사용자 콘텐츠에 특수 문자를 포함할 수 있으며,
+   사용자가 유효하지 않은 작업을 시도할 때 타입 오류를 발생시킬 수 있습니다.
 
-2. Our HTML EDSL can move to its own module so it can be reused in multiple modules
+2. HTML EDSL을 모듈로 만들어서 다른 모듈에서 재사용할 수 있도록 할 수 있습니다.
 
-In the next few sections we'll take a look at how to define our own types and
-how to work with modules to make it harder to make errors, and a little bit
-about linked lists in Haskell.
+이후 섹션에서는 커스텀 타입을 정의하고 모듈을 사용하여 오류를 줄이는 방법을 살펴보고, 하스켈의 연결 리스트에 대해 살펴보겠습니다.
