@@ -177,10 +177,10 @@ three = (\num1 num2 -> num1 + num2) 1 2
 
 ---
 
-답안:
+정답:
 
 <details>
-  <summary>연습문제 #1 답안</summary>
+  <summary>연습문제 #1 정답</summary>
   
   ```hs
   myhtml :: String
@@ -205,7 +205,7 @@ three = (\num1 num2 -> num1 + num2) 1 2
 </details>
 
 <details>
-  <summary>연습문제 #2 답안</summary>
+  <summary>연습문제 #2 정답</summary>
   
   ```hs
   html_ :: String -> String
@@ -225,7 +225,7 @@ three = (\num1 num2 -> num1 + num2) 1 2
 
 
 <details>
-  <summary>연습문제 #3 답안</summary>
+  <summary>연습문제 #3 정답</summary>
   
   ```hs
   p_ :: String -> String
@@ -238,7 +238,7 @@ three = (\num1 num2 -> num1 + num2) 1 2
 </details>
 
 <details>
-  <summary>연습문제 #4 답안</summary>
+  <summary>연습문제 #4 정답</summary>
   
   ```hs
   myhtml :: String

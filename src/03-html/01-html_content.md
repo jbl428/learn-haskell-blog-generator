@@ -115,10 +115,10 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 
 ---
 
-답안:
+정답:
 
 <details>
-  <summary>연습문제 #1 답안</summary>
+  <summary>연습문제 #1 정답</summary>
   
   ```hs
   html_ content = "<html>" <> content <> "</html>"
@@ -129,7 +129,7 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 </details>
 
 <details>
-  <summary>연습문제 #2 답안</summary>
+  <summary>연습문제 #2 정답</summary>
   
   ```hs
   myhtml = html_ (body_ "Hello, world!")
@@ -138,7 +138,7 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 </details>
 
 <details>
-  <summary>연습문제 #3 답안</summary>
+  <summary>연습문제 #3 정답</summary>
   
   ```hs
   head_ content = "<head>" <> content <> "</head>"
@@ -149,7 +149,7 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 </details>
 
 <details>
-  <summary>연습문제 #4 답안</summary>
+  <summary>연습문제 #4 정답</summary>
   
   ```hs
   makeHtml title content = html_ (head_ (title_ title) <> body_ content)
@@ -159,7 +159,7 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 
 
 <details>
-  <summary>연습문제 #5 답안</summary>
+  <summary>연습문제 #5 정답</summary>
   
   ```hs
   myhtml = makeHtml "Hello title" "Hello, world!"

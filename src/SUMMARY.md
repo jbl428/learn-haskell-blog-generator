@@ -6,7 +6,7 @@
   - [유연한 HTML 콘텐츠 (함수)](./03-html/01-html_content.md)
   - [타입 시그니처 추가하기](./03-html/02-type_signatures.md)
   - [내장 도메인 특화 언어](./03-html/03-edsls.md)
-  - [Safer HTML construction with types](./03-html/04-safer_construction.md)
+  - [타입으로 안전한 HTML 구성하기](./03-html/04-safer_construction.md)
   - [Preventing incorrect use with modules](./03-html/05-modules.md)
   - [Escaping characters](./03-html/06-escaping_characters.md)
   - [Exposing internal functionality (Internal modules)](./03-html/07-internal_modules.md)
