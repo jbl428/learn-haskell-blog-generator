@@ -345,26 +345,23 @@ Structure . el "p" :: String -> Structure
 > 
 > 타입 에러가 발생합니다. 직접 확인해보세요!
 
-## Appending Structure
+## 구조 확장하기
 
-Before when we wanted to create richer HTML content and appended
-nodes to one another, we used the append (`<>`) operator.
-Since we are now not using `String` anymore, we need another way
-to do it.
+이전에 우리는 풍부한 HTML 컨텐츠를 만들고 위해 노드를 이어붙이기 위해 `<>` 연산자를 사용했습니다.
+하지만 이제 `String`을 사용하지 않으므로, 다른 방법을 사용해야 합니다.
 
-While it is possible to overload `<>` using a feature in
-Haskell called type classes, we will instead create a new function
-and call it `append_`, and cover type classes later.
+물론 하스켈에서 타입클래스로 불리는 기능을 통해 `<>` 연산자를 오버로딩하여 사용할 수 있지만, 
+이번에는 `append_`라는 이름의 새로운 함수를 만들고, 타입클래스에 대해서는 나중에 다루겠습니다.
 
-`append_` should take two `Structure`s, and return a third `Structure`,
-appending the inner `String` in the first `Structure` to the second and wrapping the result back in `Structure`.
+`append_`는 두 개의 `Structure`를 인자로 받고, 첫 번째 `Structure`의 내부 `String`을 두 번째 `Structure`에 붙여서
+새로운 `Structure`를 반환합니다.
 
 ---
 
-Try implementing `append_`.
+`append_` 함수를 구현해보세요.
 
 <details>
-  <summary>Solution</summary>
+  <summary>정답</summary>
 
 ```hs
 append_ :: Structure -> Structure -> Structure
@@ -376,18 +373,17 @@ append_ (Structure a) (Structure b) =
 
 ---
 
-## Converting back `Html` to `String`
+## `Html`을 `String`으로 되돌리기
 
-After constructing a valid `Html` value, we want to be able to
-print it to the output so we can display it in our browser.
-For that, we need a function that takes an `Html` and converts it to a `String`, which we can then pass to `putStrLn`.
+유효한 `Html` 값을 만들었으니, 브라우저에서 출력할 수 있도록 `Html`을 `String`으로 변환할 수 있는 함수가 필요합니다.
+이를 위해 `Html`을 `String`으로 변환한 후 `putStrLn`에 전달하는 함수가 필요합니다.
 
 ---
 
-Implement the `render` function.
+`render` 함수를 구현해보세요.
 
 <details>
-  <summary>Solution</summary>
+  <summary>정답</summary>
 
 ```hs
 render :: Html -> String
@@ -402,25 +398,23 @@ render html =
 
 ## `type`
 
-Let's look at one more way to give new names to types.
+타입에 새로운 이름을 붙이는 방법은 또 다른 방법이 있습니다.
 
-A `type` definition looks really similar to a `newtype` definition - the only
-difference is that we reference the type name directly without a constructor:
+`type` 정의는 `newtype` 정의와 매우 유사합니다. 유일한 차이점은 생성자 없이 타입 이름을 참조한다는 것입니다:
 
 ```
 type <type-name> = <existing-type>
 ```
 
-For example in our case we can write:
+이전 예제에서 `type`을 사용하면 다음과 같이 작성할 수 있습니다:
 
 ```hs
 type Title = String
 ```
 
-`type`, in contrast with `newtype`, is just a type name alias.
-When we declare `Title` as a *type alias* of `String`,
-we mean that `Title` and `String` are interchangeable,
-and we can use one or the other whenever we want:
+`type`은 `newtype`과 다르게 타입 이름에 대한 별칭입니다.
+`Title`을 `String`의 *타입 별칭*으로 선언했다는 것은,
+두 타입은 서로 대체 가능하고, 언제든지 하나를 다른 하나로 사용할 수 있다는 것을 의미합니다:
 
 ```hs
 "hello" :: Title
@@ -428,31 +422,28 @@ and we can use one or the other whenever we want:
 "hello" :: String
 ```
 
-Both are valid in this case.
+위 코드는 모두 유효합니다.
 
-We can sometimes use `type`s to give a bit more clarity to our code,
-but they are much less useful than `newtype`s which allow us to
-*distinguish* two types with the same type representation.
+`type`은 때때로 코드 가독성을 높이기 위해 사용합니다.
+같은 타입을 다르게 *구별*할 수 있는 `newtype`에 비해 `type`은 덜 유용합니다.
 
-## The rest of the owl
+## 또 다른 문제
 
 ---
 
-Try changing the code we wrote in previous chapters to use the new types we created.
+이전 장에서 작성한 코드를 새로운 타입을 사용하도록 변경해보세요.
 
 > **Tips**
 >
-> We can combine `makeHtml` and `html_`, and remove `body_` `head_` and `title_`
-> by calling `el` directly in `html_`, which can now have the type
-> `Title -> Structure -> Html`.
-> This will make our HTML EDSL less flexible but more compact.
+> 이제 `makeHtml`과 `html_`를 합치고 `body_`, `head_`, `title_`을 제거할 수 있습니다.
+> `html_`에서 `el`을 직접 호출할 수 있으며, 타입은 `Title -> Structure -> Html`가 됩니다.
+> 이러면 HTML EDSL이 덜 유연하지만 더 간결해집니다.
 >
-> Alternatively, we could create `newtype`s for `HtmlHead` and `HtmlBody` and
-> pass those to `html_`, and we might do that at later chapters, but I've chosen
-> to keep the API a bit simple for now, we can always refactor later!
+> 대안으로, `HtmlHead`와 `HtmlBody`라는 `newtype`을 만들고 `html_`에 전달할 수 있습니다.
+> 하지만 이번에는 API를 간단하게 유지하기 위해 사용하지 않았고 이후 장에서 다룰 예정입니다.
 
 <details>
-  <summary>Solution</summary>
+  <summary>정답</summary>
 
 ```hs
 -- hello.hs
@@ -519,14 +510,10 @@ render html =
 
 ---
 
-## Are we safe yet?
+## 아직 안전하지 않나요?
 
-We have made some progress - now we can't write `"Hello"`
-where we'd expect either a paragraph or a heading, but we can still
-write `Structure "hello"` and get something that isn't a
-paragraph or a heading. So while we made it harder for the user
-to make mistakes by accident, we haven't really been able to **enforce
-the invariants** we wanted to enforce in our library.
+이제 우리는 문단과 제목이 필요한 곳에 `"Hello"`같은 문자열을 사용할 수 없게 만들었습니다.
+하지만 `Structure "hello"`처럼 제목도 문단도 아닌 값을 사용할 수 있는 문제가 남아있습니다.
+사용자의 실수를 방지할 수 있게 노력했지만 아직 원하는만큼 **불변성을 강제**하지 못했습니다.
 
-Next we'll see how we can make expressions such as `Structure "hello"` illegal
-as well using *modules* and *smart constructors*.
+다음 장에서는 *모듈(modules)*과 *스마트 생성자(smart constructors)*를 사용해 *`Structure "hello"`와 같은 표현식을 사용할 수 없게 만들어보겠습니다.
