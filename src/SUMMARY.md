@@ -7,7 +7,7 @@
   - [타입 시그니처 추가하기](./03-html/02-type_signatures.md)
   - [내장 도메인 특화 언어](./03-html/03-edsls.md)
   - [타입으로 안전한 HTML 구성하기](./03-html/04-safer_construction.md)
-  - [Preventing incorrect use with modules](./03-html/05-modules.md)
+  - [모듈을 사용하여 잘못된 사용 방지하기](./03-html/05-modules.md)
   - [Escaping characters](./03-html/06-escaping_characters.md)
   - [Exposing internal functionality (Internal modules)](./03-html/07-internal_modules.md)
   - [Exercises](./03-html/08-exercises.md)
