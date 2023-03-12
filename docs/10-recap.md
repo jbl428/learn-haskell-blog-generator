@@ -4,20 +4,20 @@ In this book we've implemented a very simple static blog generator while learnin
 
 - We've learned about basic Haskell building blocks, such as definitions, functions,
   types, modules, recursion, pattern matching, type classes, IO and exceptions.
-- We've learned about [EDSLs](./03-html/03-edsls.html) and used the *combinator pattern* to implement
+- We've learned about [EDSLs](./03-html/03-edsls.md) and used the *combinator pattern* to implement
   a composable html generation library.
 - We've learned how to leverage types, modules and smart constructors
-  to [make invalid states unrepresentable](./03-html/04-safer_construction.html).
-- We've learned how to represent complex data using [ADTs](./04-markup/01-data_type.html).
-- We've learned how to use [pattern matching](./04-markup/04-parsing_02.html#pattern-matching) to transform ADTs,
-  and how to use [recursion](./04-markup/02-parsing_01.html#recursion-and-accumulating-information) to solve problems.
+  to [make invalid states unrepresentable](./03-html/04-safer-construction.md).
+- We've learned how to represent complex data using [ADTs](./04-markup/01-data-type.md).
+- We've learned how to use [pattern matching](./04-markup/04-parsing-02.md#pattern-matching) to transform ADTs,
+  and how to use [recursion](./04-markup/02-parsing-01.md#recursion-and-accumulating-information) to solve problems.
 - We've used the *functional core, imperative shell* approach to build a program that handles IO and applies
   our domain logic to user inputs.
-- We've learned about abstractions such as [monoids](./05-glue/01-markup_to_html.html#monoids),
-  [functors](./05-glue/04-optparse.html#functor) and [monads](./06-errors_and_files/01-either.html#monadic-interface),
+- We've learned about abstractions such as [monoids](./05-glue/01-markup-to-html.md#monoids),
+  [functors](./05-glue/04-optparse.md#functor) and [monads](./06-errors_and_files/01-either.md#monadic-interface),
   and how they can help us reuse code and convey information about shared interfaces.
-- We've learned how to create fancy [command-line interfaces](./05-glue/04-optparse.html), [write tests](./08-testing.html),
-  and [generate documentation](./09-documentation.html).
+- We've learned how to create fancy [command-line interfaces](./05-glue/04-optparse.md), [write tests](./08-testing.md),
+  and [generate documentation](./09-documentation.md).
 
 While Haskell is a very big and complex language, and there's always more to be learned,
 I think we've reached an important milestone where

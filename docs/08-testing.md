@@ -285,7 +285,7 @@ In our case, we use the quoter `r`, which is defined in
 [raw-strings-qq](https://hackage.haskell.org/package/raw-strings-qq-1.1/docs/Text-RawString-QQ.html),
 and write any string we want, with multi-lines and unescaped characters!
 We could use this to write the tests
-[we previously wrote](04-markup/01-data_type.html#exercises):
+[we previously wrote](./04-markup/01-data-type.md#exercises):
 
 ```haskell
 {-# language QuasiQuotes #-}
@@ -366,7 +366,7 @@ Finished in 0.0004 seconds
 ---
 
 **Exercise**: Add a test for the fourth example described in the
-[previous exercises](04-markup/01-data_type.html#exercises).
+[previous exercises](./04-markup/01-data-type.md#exercises).
 
 
 <details><summary>Solution</summary>

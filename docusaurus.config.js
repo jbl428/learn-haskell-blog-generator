@@ -22,8 +22,8 @@ const config = {
   projectName: 'learn-haskell-blog-generator', // Usually your repo name.
   trailingSlash: false,
 
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'throw',
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want

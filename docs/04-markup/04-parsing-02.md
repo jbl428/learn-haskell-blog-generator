@@ -43,7 +43,7 @@ It is an incredibly versatile feature of Haskell, we can use it to do two main t
 2. Control flow
 
 As we've seen when discussing
-[newtypes](../03-html/04-safer_construction.html#using-newtypes),
+[newtypes](../03-html/04-safer-construction.md#using-newtypes),
 we can use **case expressions** and **function definitions** to deconstruct a `newtype`.
 Same for `data` types as well:
 
@@ -118,7 +118,7 @@ by passing the flag `-Wall` to `ghc` or `runghc`.
 
 ### Pattern matching on linked lists
 
-Because linked lists have their own [special syntax](/03-html/06-escaping_characters.html#linked-lists-briefly),
+Because linked lists have their own [special syntax](../03-html/06-escaping-characters.md#linked-lists-briefly),
 we also have special syntax for their pattern match.
 We can use the same special syntax for creating lists when we pattern match on lists,
 replacing the *elements* of the list with patterns. For example:
@@ -550,7 +550,7 @@ trim = unwords . words
 
 ### How do we know our parser works correctly?
 
-In an earlier chapter, we parsed a few examples of our markup language [by hand](01-data_type.html#exercises).
+In an earlier chapter, we parsed a few examples of our markup language [by hand](./01-data-type.md#exercises).
 Now, we can try to test our parser by comparing our solutions to our parser.
 By deriving `Eq` for our `Structure` data type
 (marked with (1) in "final module" above),

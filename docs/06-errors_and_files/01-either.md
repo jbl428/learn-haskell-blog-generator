@@ -433,7 +433,7 @@ Again, don't worry about analogies and metaphors, focus on the API and the
 
 ### Do notation?
 
-Remember the [do notation](../05-glue/02-io.html#do-notation)? Turns out it works for any type that is
+Remember the [do notation](../05-glue/02-io.md#do-notation)? Turns out it works for any type that is
 an instance of `Monad`. How cool is that? Instead of writing:
 
 ```haskell
