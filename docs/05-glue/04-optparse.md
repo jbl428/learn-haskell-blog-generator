@@ -99,18 +99,18 @@ The `optparse-applicative` library introduces a new type called `Parser`.
 is supplied with a saturated (or concrete) type such as `Int`, `Bool` or
 `Options`, it can become a saturated type (one that has values).
 
- A `Parser a` represents a specification of a command-line options parser
+A `Parser a` represents a specification of a command-line options parser
 that produces a value of type `a` when the command-line arguments are
 successfully parsed.
 This is similar to how `IO a` represents a description of a program
 that can produce a value of type `a`. The main difference between these
 two types is that while we can't convert an `IO a` to an `a`
 (we just chain IO operations and have the Haskell runtime execute them),
-we *can* convert a `Parser a` to a function that takes a list of strings
+we _can_ convert a `Parser a` to a function that takes a list of strings
 representing the program arguments and produces an `a` if it manages
 to parse the arguments.
 
-As we've seen with the previous EDSLs, this library uses the *combinator pattern*
+As we've seen with the previous EDSLs, this library uses the _combinator pattern_
 as well. We need to consider the basic primitives for building
 a parser, and the methods of composing small parsers into bigger
 parsers.
@@ -138,7 +138,7 @@ out =
 ```
 
 `strOption` is a parser builder. It is a function that takes a combined
-*option modifiers* as an argument, and returns a parser that will parse a string.
+_option modifiers_ as an argument, and returns a parser that will parse a string.
 We can specify the type to be `FilePath` because `FilePath` is an
 alias to `String`. The parser builder describes how to parse the value,
 and the modifiers describe its properties, such as the flag name,
@@ -234,7 +234,7 @@ instance of `Functor`.
 > by looking at the other types in the type signature of `fmap`:
 >
 > 1. `a` and `b` have the kind `*` because they are used as arguments/return
-> types of functions
+>    types of functions
 > 2. `f a` has the kind `*` because it is used as an argument to a function, therefore
 > 3. `f` has the kind `* -> *`
 
@@ -311,7 +311,7 @@ pOutputFile = OutputFile <$> parser -- fmap and <$> are the same
 Now that we have two parsers,
 `pInputFile :: Parser SingleInput`
 and `pOutputFile :: Parser SingleOutput`,
-we want to *combine* them as `Options`. Again, if we only had
+we want to _combine_ them as `Options`. Again, if we only had
 `SingleInput` and `SingleOutput`, we could use the constructor `ConvertSingle`:
 
 ```haskell
@@ -348,7 +348,7 @@ the `Applicative` interface should also implement the `Functor` interface.
 
 Beyond what a regular functor can do, which is to lift a function over
 a certain `f`, applicative functors allow us to apply a function to
-*multiple instances* of a certain `f`, as well as "lift" any value of type `a` into an `f a`.
+_multiple instances_ of a certain `f`, as well as "lift" any value of type `a` into an `f a`.
 
 You should already be familiar with `pure`, we've seen it when we
 talked about `IO`. For `IO`, `pure` lets us create an `IO` action
@@ -529,7 +529,7 @@ subparser :: Mod CommandFields a -> Parser a
 command :: String -> ParserInfo a -> Mod CommandFields a
 ```
 
-`subparser` takes *command modifiers* (which can be constructed
+`subparser` takes _command modifiers_ (which can be constructed
 with the `command` function) as input, and produces a `Parser`.
 `command` takes the command name (in our case "convert" or "convert-dir")
 and a `ParserInfo a`, and produces a command modifier. As we've seen
@@ -555,6 +555,7 @@ pConvertSingleInfo =
     (helper <*> pConvertSingle)
     (progDesc "Convert a single markup source to html")
 ```
+
 Note that `helper` adds a helper output screen in case the parser fails.
 
 Let's also build a command:

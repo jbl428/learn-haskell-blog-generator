@@ -10,7 +10,6 @@ This was a long info dump. Let's practice what we've learned. We want to:
 - Parse each text file, build an index of the result,
   convert the files to HTML, and write everything to the target directory
 
-
 > Note: I did not write this code immediately in the final form it was presented.
 > It was an iterative process of writing code, refactoring, splitting functions, changing
 > type signatures, and more. When solving a coding problem, start small and simple,

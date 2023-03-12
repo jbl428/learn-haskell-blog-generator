@@ -27,14 +27,14 @@ If you'd like to extend this project, here are a few ideas for you:
 3. **Add features**
    1. You could add a metadata block at the top of each article
       which would include the title, publish date and tags of a blog post,
-	  and use them when generating HTML, index page and even tags pages
+      and use them when generating HTML, index page and even tags pages
    2. You could add HTML pages templating using
       [mustache](https://hackage.haskell.org/package/mustache) or similar,
-	  and use that to generate a nice and customizable structure to the page
+      and use that to generate a nice and customizable structure to the page
    3. You could add support for links and images in our markup language parser
    4. You could add support for configuration files which would include things like
       the blog title, description, or other meta information for things like
-	  [twitter cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
+      [twitter cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
 
 Or anything else you can think of, consider this project your playground and
 do whatever you like with it!

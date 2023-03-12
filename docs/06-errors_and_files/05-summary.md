@@ -17,7 +17,7 @@ We've also learned a few new abstractions and techniques:
    Pretty useful when combined with another applicative functor type like `Either` or `IO`
 2. The `Monad` type class extends the `Applicative` type class with the `join :: m (m a) -> m a`
    function. We learned that `Either` implements this type class interface and so does `IO`
-3. The `MonadTrans` type class for *monad transformers* for types that take other monads as inputs
+3. The `MonadTrans` type class for _monad transformers_ for types that take other monads as inputs
    and provide a monadic interface (`>>=`, do notation, etc.) while combining both their capabilities.
    We saw how to stack an `Either`-like monad transformer, `ExceptT`, on top of `IO`
 

@@ -227,7 +227,7 @@ convertStructure structure =
 
 With our extended HTML EDSL, we can now create an index page with links to the other pages.
 
-To create an index page, we need a list of files with their *target destinations*,
+To create an index page, we need a list of files with their _target destinations_,
 as well as their `Markup` (so we can extract information to include in our index page,
 such as the first heading and paragraph). Our output should be an `Html` page.
 
@@ -265,7 +265,6 @@ buildIndex files =
         <> mconcat previews
       )
 ```
-
 
 </details>
 

@@ -58,7 +58,7 @@ test-suite hs-blog-gen-test
     Additional syntax for writing raw string literals
   - `hs-blog` - Our library
 - [`ghc-options`](https://cabal.readthedocs.io/en/stable/cabal-package.html#pkg-field-ghc-options) -
-    Extra options and flags for GHC:
+  Extra options and flags for GHC:
   - [`-O`](https://downloads.haskell.org/ghc/latest/docs/html/users_guide/using-optimisation.html#options-optimise) -
     Compile with optimizations
   - [`-threaded`](https://downloads.haskell.org/ghc/latest/docs/html/users_guide/phases.html#ghc-flag--threaded) -
@@ -78,7 +78,6 @@ test-suite hs-blog-gen-test
   [`hspec-discover`](https://hackage.haskell.org/package/hspec-discover) package, which
   goes over the source directory for the tests, finds all of the `Spec` files,
   and creates an entry point for the program that will run all the tests it discovered
-
 
 ### Hspec discovery
 
@@ -367,7 +366,6 @@ Finished in 0.0004 seconds
 
 **Exercise**: Add a test for the fourth example described in the
 [previous exercises](./04-markup/01-data-type.md#exercises).
-
 
 <details><summary>Solution</summary>
 

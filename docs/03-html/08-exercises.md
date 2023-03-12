@@ -16,7 +16,8 @@ These lists have the form:
 </ul>
 ```
 
- We want in our library a new function:
+We want in our library a new function:
+
 ```haskell
 ul_ :: [Structure] -> Structure
 ```
@@ -29,7 +30,7 @@ ul_
   , p_ "item 2"
   , p_ "item 3"
   ]
- ```
+```
 
 and get this:
 
@@ -49,7 +50,6 @@ Very similar to unordered lists, but instead of `<ul>` we use `<ol>`
 
 Very similar to `<p>`, but use the `<pre>` tag. Call this function `code_`.
 
-
 ## Solutions
 
 <details>
@@ -62,7 +62,6 @@ ul_ =
 ```
 
 </details>
-
 
 <details>
   <summary>Ordered lists</summary>
@@ -77,7 +76,6 @@ Note: the two functions above could be unified.
 
 </details>
 
-
 <details>
   <summary>Code blocks</summary>
 
@@ -87,4 +85,3 @@ code_ = Structure . el "pre" . escape
 ```
 
 </details>
-

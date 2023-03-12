@@ -99,7 +99,6 @@ bindExceptT mx f = do
 And because `newtype ExceptT e m a = ExceptT (m (Either e a))` we can just
 pack and unpack that `ExceptT` constructor and get:
 
-
 ```haskell
 bindExceptT :: Monad m => ExceptT e m a -> (a -> ExceptT e m b) -> ExceptT e m b
 bindExceptT mx f = ExceptT $ do
@@ -143,7 +142,6 @@ lift getLine :: ExceptT e IO String
 > Actually, `lift` is also a type class function from `MonadTrans`, the type class
 > of monad transformers. So technically `lift getLine :: MonadTrans t => t IO String`,
 > but we are specializing for concreteness.
-
 
 Now, if we had:
 

@@ -36,8 +36,8 @@ differences:
 2. We can have alternative structures using `|`, `newtype`s have no
    alternatives.
 
-This is because `newtype` is used to provide a type safe __alias__, and `data`
-is used to build a new **composite** type that can potentially have *alternatives*.
+This is because `newtype` is used to provide a type safe **alias**, and `data`
+is used to build a new **composite** type that can potentially have _alternatives_.
 
 Let's see a few of examples of data types:
 
@@ -50,7 +50,7 @@ Let's see a few of examples of data types:
    ```
 
    We created a new data type named `Bool` with the possible values `True` or `False`.
-   In this case we only have *constructor* alternatives and none of the constructors
+   In this case we only have _constructor_ alternatives and none of the constructors
    carry additional values. This is similar to enums in other languages.
 
 2. Person
@@ -74,13 +74,12 @@ Let's see a few of examples of data types:
    Person "Gil" 32
    ```
 
-   In this case we create a *composite* of multiple types, without alternatives.
+   In this case we create a _composite_ of multiple types, without alternatives.
    This is similar to structs in other language, but structs give each field
    a name, and here we distinguish them by position.
 
-   Alternatively, Haskell has *syntactic sugar* for naming fields called **records**.
+   Alternatively, Haskell has _syntactic sugar_ for naming fields called **records**.
    The above definition can also be written like this:
-
 
    ```haskell
    data Person
@@ -169,32 +168,32 @@ Let's see a few of examples of data types:
    ('a', 'z') :: (Char, Char)
    ```
 
-    This `Tuple` definition is polymorphic, we define the structure but are able to
-    plug different types into the structure to get concrete types. You can think of `Tuple`
-    as a *template* for a data type waiting to be filled, or as a **function** waiting
-    for types as input in order to return a data type. We can even take a look at the "type"
-    signature of `Tuple` in `ghci` using the `:kind` command.
+   This `Tuple` definition is polymorphic, we define the structure but are able to
+   plug different types into the structure to get concrete types. You can think of `Tuple`
+   as a _template_ for a data type waiting to be filled, or as a **function** waiting
+   for types as input in order to return a data type. We can even take a look at the "type"
+   signature of `Tuple` in `ghci` using the `:kind` command.
 
-    ```haskell
-    ghci> data Tuple a b = Tuple a b
-    ghci> :kind Tuple
-    Tuple :: * -> * -> *
-    ```
+   ```haskell
+   ghci> data Tuple a b = Tuple a b
+   ghci> :kind Tuple
+   Tuple :: * -> * -> *
+   ```
 
-    > #### Quick detour: Kinds
-    >
-    > The `:kind` command is called as such because the "type" of a type is called a **kind**.
-    > Kinds can be one of two things, either a `*` which means a saturated (or concrete) type,
-    > such as `Int` or `Person`, or an `->` of two kinds, which is, as you might have guessed,
-    > a type function, taking kind and returning a kind.
-    >
-    > Note that only types that have the kind `*` can have values. So for example while `Tuple Int`
-    > is a valid Haskell concept that has the *kind* `* -> *`, and we can write code that will
-    > work "generically" for all types that have a certain kind (e.g. `* -> *`), we cannot
-    > construct a value that will have the kind `* -> *`. All values have types, and all
-    > types that have values have the kind `*`.
-    >
-    > We will talk more about kinds later, for now let's focus on types!
+   > #### Quick detour: Kinds
+   >
+   > The `:kind` command is called as such because the "type" of a type is called a **kind**.
+   > Kinds can be one of two things, either a `*` which means a saturated (or concrete) type,
+   > such as `Int` or `Person`, or an `->` of two kinds, which is, as you might have guessed,
+   > a type function, taking kind and returning a kind.
+   >
+   > Note that only types that have the kind `*` can have values. So for example while `Tuple Int`
+   > is a valid Haskell concept that has the _kind_ `* -> *`, and we can write code that will
+   > work "generically" for all types that have a certain kind (e.g. `* -> *`), we cannot
+   > construct a value that will have the kind `* -> *`. All values have types, and all
+   > types that have values have the kind `*`.
+   >
+   > We will talk more about kinds later, for now let's focus on types!
 
 4. Either
 
@@ -375,7 +374,7 @@ example4 =
 </details>
 
 Add a new module named `Markup` and add the data type definition to it.
-Note that in this case we *do* want to export the constructors of `Structure`.
+Note that in this case we _do_ want to export the constructors of `Structure`.
 
 <details>
   <summary>Solution</summary>

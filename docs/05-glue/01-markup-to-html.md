@@ -72,7 +72,7 @@ convertStructure structure =
 ```
 
 Notice that running this code with `-Wall` will reveal that the pattern matching
-is *non-exhaustive*. This is because we don't currently have a way to build
+is _non-exhaustive_. This is because we don't currently have a way to build
 headings that are not `h1`. There are a few ways to handle this:
 
 - Ignore the warning - this will likely fail at runtime one day and the user will be sad
@@ -103,12 +103,9 @@ h_ n = Structure . el ("h" <> show n) . escape
 
 Don't forget to export it from `Html.hs`!
 
-
 </details>
 
-
 Exercise: Fix `convertStructure` using `h_`.
-
 
 <details><summary>Solution</summary>
 
@@ -189,11 +186,11 @@ concatStructure list =
 
 Remember the `<>` function we implemented as an instance of the `Semigroup`
 type class? We mentioned that `Semigroup` is an **abstraction** for things
-that implements `(<>) :: a -> a -> a`, where  `<>` is associative
+that implements `(<>) :: a -> a -> a`, where `<>` is associative
 (`a <> (b <> c) = (a <> b) <> c`).
 
 It turns out that having an instance of `Semigroup` and also having a value that represents
-an "empty" value is a fairly common pattern. For example a string can be concatenated, 
+an "empty" value is a fairly common pattern. For example a string can be concatenated,
 and the empty string can serve as an "empty" value.
 And this is actually a well known **abstraction** called **monoid**.
 
@@ -252,7 +249,6 @@ class Semigroup a => Monoid a where
 
 We could add an instance of `Monoid` for our HTML `Structure` data type:
 
-
 ```haskell
 instance Monoid Structure where
   mempty = empty_
@@ -274,7 +270,7 @@ mconcat list =
     x : xs -> x <> mconcat xs
 ```
 
-Notice that because `Semigroup` is a *super class* of `Monoid`,
+Notice that because `Semigroup` is a _super class_ of `Monoid`,
 we can still use the `<>` function from the `Semigroup` class
 without adding the `Semigroup a` constraint to the left side of `=>`.
 By adding the `Monoid a` constraint we implicitly add a `Semigroup a`
@@ -323,7 +319,7 @@ And `fold` can be a used for any pair of a data structure that implements
 `Foldable` and a payload type that implements `Monoid`. This
 could be `[]` with `Structure`, or `Maybe` with `Product Int`, or
 your new shiny binary tree with `String` as the payload type. But note that
-the `Foldable` type must be of *kind* `* -> *`. So for example `Html`
+the `Foldable` type must be of _kind_ `* -> *`. So for example `Html`
 cannot be a `Foldable`.
 
 `foldMap` is a function that allows us to apply a function to the

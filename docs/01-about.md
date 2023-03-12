@@ -44,7 +44,7 @@ slug: /
   이 책과 비슷한 다른 튜토리얼들이 있습니다. 가장 유명한 것들은
   [Beginning Haskell](https://www.apress.com/gp/book/9781430262510#otherversion=9781430262503)
   과 [Haskell via Sokoban](https://haskell-via-sokoban.nomeata.de/) 입니다.
--  디자인 패턴, 테스트, 문서화같은 **중요한 주제**에 대해 다룹니다.
+- 디자인 패턴, 테스트, 문서화같은 **중요한 주제**에 대해 다룹니다.
 - **많은 연습문제**가 있으며, 그 연습문제들의 **해답**도 있습니다.
 - **온라인**이기 때문에, 수정이 쉽습니다.
 - **무료**입니다.

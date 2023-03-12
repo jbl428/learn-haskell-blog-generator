@@ -7,7 +7,7 @@ of our `Document` type. There are a few ways to do that:
 2. Have Haskell write one for us
 
 Haskell provides us with a mechanism that can automatically generate the implementation of a
-*type class* function called `show`, that will convert our type to `String`.
+_type class_ function called `show`, that will convert our type to `String`.
 
 The type of the function `show` looks like this:
 
@@ -16,7 +16,7 @@ show :: Show a => a -> String
 ```
 
 This is something new we haven't seen before. Between `::` and `=>`
-you see what is called a __type class constraint__ on the type `a`. What
+you see what is called a **type class constraint** on the type `a`. What
 we say in this signature, is that the function `show` can work on any
 type that is a member of the type class `Show`.
 
@@ -31,7 +31,7 @@ class Show a where
 ```
 
 A type class declaration describes a common interface for Haskell types.
-`show` is an overloaded function that will work for any type that is an *instance*
+`show` is an overloaded function that will work for any type that is an _instance_
 of the type class `Show`.
 We can define an instance of a type class manually like this:
 
@@ -66,7 +66,7 @@ It is also possible to automatically generate implementations of a few selected
 type classes. Fortunately, `Show` is one of them.
 
 If all the types in the definition of our data type already implement
-an instance of `Show`, we can *automatically derive* it by adding `deriving Show` at the
+an instance of `Show`, we can _automatically derive_ it by adding `deriving Show` at the
 end of the data definition.
 
 ```haskell
@@ -101,7 +101,7 @@ that can be derived automatically.
 ## Laws
 
 Type classes often come with "rules" or "laws" that instances should satisfy,
-the purpose of these laws is to provide *predictable behaviour* across
+the purpose of these laws is to provide _predictable behaviour_ across
 instances, so that when we run into a new instance we can be confident
 that it will behave in an expected way, and we can write code
 that works generically for all instances of a type class while expecting
@@ -144,8 +144,8 @@ Approaching them with this mindset can be very liberating!
 
 To put it differently, **type classes can be used to create abstractions** -
 interfaces with laws/expected behaviours where we don't actually care about the
-concrete details of the underlying type, just that it *implements a certain
-API and behaves in a certain way*.
+concrete details of the underlying type, just that it _implements a certain
+API and behaves in a certain way_.
 
 Regarding `Semigroup`, we have [previously](../03-html/04-safer-construction.md#appending-htmlstructure)
 created a function that looks like `<>` for our `Html` EDSL!

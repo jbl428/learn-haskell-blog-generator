@@ -44,7 +44,7 @@ exists it is not particularly easy to use, especially because of Haskell's lazy 
 might not evaluated at the order we might intuitively expect. Because of that,
 Haskellers tend to use
 [trace debugging](https://hackage.haskell.org/package/base-4.16.4.0/docs/Debug-Trace.html#g:1) and
-equational reasoning. With trace debugging, we try to *verify our assumptions* about the code -
+equational reasoning. With trace debugging, we try to _verify our assumptions_ about the code -
 we use the various `trace` functions as a "hack" to print variables, functions inputs, functions output
 or even just say "got here", from anywhere at the code.
 

@@ -44,7 +44,13 @@ Documentation created:
 Cabal and Haddock will build our project and generate HTML pages for us at:
 
 ```html
-./dist-newstyle/build/<platform>/<compiler>/<package>-<version>/doc/html/<package>/
+./dist-newstyle/build/<platform
+  >/<compiler
+    >/<package
+      >-<version>/doc/html/<package>/</package></version></package
+    ></compiler
+  ></platform
+>
 ```
 
 We can then open the `index.html` file from that directory in a web browser and view our package documentation.
@@ -86,7 +92,9 @@ Preprocessing executable 'hs-blog-gen' for hs-blog-0.1.0.0..
 Stack and Haddock will build our project and generate HTML pages for us at:
 
 ```html
-./.stack-work/dist/<platform>/Cabal-<version>/doc/html/<package>/
+./.stack-work/dist/<platform
+  >/Cabal-<version>/doc/html/<package>/</package></version></platform
+>
 ```
 
 We can then open the `index.html` file from that directory in a web browser and view our package documentation.
@@ -129,7 +137,6 @@ Let's take a quick look at this markup format. We will go over a few important b
 but if you'd like to learn more, a complete guide for Haddock markup can be found in the
 [Haddock documentation](https://haskell-haddock.readthedocs.io/en/latest/markup.html).
 
-
 ### Documenting definitions
 
 All haddock annotations appear as part of regular Haskell comments.
@@ -137,8 +144,8 @@ They can be used with both single line form (`--`) and multi-line form (`{-` and
 The placement of a comment block and the haddock marker determine to which Haskell
 definition the haddock string is attached.
 
-We can annotate a Haskell definition by writing a comment block prefixed with `|` *before*
-the definition, or by writing a comment block prefixed with `^` *after* the definition.
+We can annotate a Haskell definition by writing a comment block prefixed with `|` _before_
+the definition, or by writing a comment block prefixed with `^` _after_ the definition.
 
 For example:
 
@@ -284,13 +291,16 @@ For example, we can:
 - Hyperlink identifiers by surrounding them with `` ` ``
 
   For example: `` `Heading` ``
+
 - Write `monospaced text` by surrounding it with `@`
 
   For example: `@Paragraph "Hello"@`
+
 - Add _emphasis_ to text by surrounding it with `/`
 
   For example: `/this is emphasised/`
-- Add __bold__ to text by surrounding it with `__`
+
+- Add **bold** to text by surrounding it with `__`
 
   For example: `__this is bold__`
 
@@ -309,7 +319,6 @@ comments which are annotated with Haddock markup.
 
 While API references are incredibly valuable, remember that there are other forms of
 documentation that can help your users get started quickly, such as examples and tutorials.
-
 
 ---
 

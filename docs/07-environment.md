@@ -41,10 +41,10 @@ type from the `mtl` (or `transformers`) package.
 newtype ReaderT r m a = ReaderT (r -> m a)
 ```
 
-`ReaderT` is another *monad transformer* like `ExceptT`, which means
+`ReaderT` is another _monad transformer_ like `ExceptT`, which means
 that it also has an instance of `Functor`, `Applicative`, `Monad` and `MonadTrans`.
 
-As we can see in the definition, `ReaderT` is *a newtype* over a function that takes
+As we can see in the definition, `ReaderT` is _a newtype_ over a function that takes
 some value of type `r`, and returns a value of type `m a`. The `r` usually
 represents the environment we want to share between functions that we want to compose,
 and the `m a` represents the underlying result that we return.
@@ -52,14 +52,14 @@ The `m` could be any type that implements `Monad` that we are familiar with.
 Usually it goes well with `IO` or `Identity`, depending on if we want to share
 an environment between effectful or uneffectful computations.
 
-`ReaderT` *carries* a value of type `r` and passes it around to
+`ReaderT` _carries_ a value of type `r` and passes it around to
 other functions when we use the `Applicative` and `Monad` interfaces so that
 we don't have to pass the value around manually. And when we want to grab
 the `r` and use it, all we have to do is `ask`.
 
 For our case, this means that instead of passing around `Env`, we can instead
 convert our functions to use `ReaderT` - those that are uneffectful and don't use
-`IO`, can return `ReaderT Env Identity a`  instead of `a` (or the simplified version, `Reader Env a`),
+`IO`, can return `ReaderT Env Identity a` instead of `a` (or the simplified version, `Reader Env a`),
 and those that are effectful can return `ReaderT Env IO a` instead of `IO a`.
 
 Note, as we've said before, `Functor`, `Applicative`, and `Monad` all expect the type
@@ -79,6 +79,7 @@ The `Control.Monad.Reader` provides an alias: `Reader r a = ReaderT r Identity a
 > If the idea behind `ReaderT` is still a bit fuzzy to you and you want
 > to get a better understanding of how `ReaderT` works,
 > try doing the following exercise:
+>
 > 1. Choose an `Applicative` or `Monad` interface function, I recommend `liftA2`,
 >    and specialize its type signature by replacing `f` (or `m`) with a concrete `ReaderT` type such as
 >    `ReaderT Int IO`
@@ -171,7 +172,7 @@ txtsToRenderedHtml txtFiles = do
   pure $ map (fmap Html.render) (index : htmlPages)
 ```
 
-Note how we use *do notation* now, and *instead of threading* `env` around we *compose*
+Note how we use _do notation_ now, and _instead of threading_ `env` around we _compose_
 the relevant functions, `buildIndex` and `convertFile`, we use the type classes
 interfaces to compose the functions. Note how we needed to `fmap` over `buildIndex`
 to add the output file we needed with the tuple, and how we needed to use `traverse` instead
@@ -179,7 +180,7 @@ of `map` to compose the various `Reader` values `convertFile` will produce.
 
 ### Extracting `Env`
 
-When we want to use our `Env`, we need to *extract* it from the `Reader`.
+When we want to use our `Env`, we need to _extract_ it from the `Reader`.
 We can do it with:
 
 ```haskell
@@ -266,7 +267,7 @@ extractSmallEnv = ...
 ```
 
 But if `inner` uses a `Reader SmallEnv` instead of argument passing,
-we can use `runReader` to *convert `inner` to a normal function*,
+we can use `runReader` to _convert `inner` to a normal function_,
 and use the same idea as above!
 
 ```haskell
@@ -322,7 +323,7 @@ withReaderT
 Note the order of the environments! We use a function from a `BigEnv` to a `SmallEnv`,
 to convert a `Reader` of `SmallEnv` to a `Reader` of `BigEnv`!
 
-This is because we are mapping over the *input* of a function rather than the *output*,
+This is because we are mapping over the _input_ of a function rather than the _output_,
 and is related to topics like variance and covariance, but isn't terribly important
 for us at the moment.
 
@@ -348,75 +349,75 @@ to build the `head`!
 
      <details><summary>src/HsBlog/Html.hs</summary>
 
-     ```haskell
-     -- Html.hs
+   ```haskell
+   -- Html.hs
 
-     module HsBlog.Html
-       ( Html
-       , Head
-       , title_
-       , stylesheet_
-       , meta_
-       , Structure
-       , html_
-       , p_
-       , h_
-       , ul_
-       , ol_
-       , code_
-	   , Content
-       , txt_
-       , img_
-       , link_
-       , b_
-       , i_
-       , render
-       )
-       where
+   module HsBlog.Html
+     ( Html
+     , Head
+     , title_
+     , stylesheet_
+     , meta_
+     , Structure
+     , html_
+     , p_
+     , h_
+     , ul_
+     , ol_
+     , code_
+    , Content
+     , txt_
+     , img_
+     , link_
+     , b_
+     , i_
+     , render
+     )
+     where
 
-     import Prelude hiding (head)
-     import HsBlog.Html.Internal
-     ```
+   import Prelude hiding (head)
+   import HsBlog.Html.Internal
+   ```
 
      </details>
 
      <details><summary>src/HsBlog/Html/Internal.hs</summary>
 
-     ```haskell
-     newtype Head
-       = Head String
+   ```haskell
+   newtype Head
+     = Head String
 
-     -- * EDSL
+   -- * EDSL
 
-     html_ :: Head -> Structure -> Html
-     html_ (Head head) content =
-       Html
-         ( el "html"
-           ( el "head" head
-             <> el "body" (getStructureString content)
-           )
+   html_ :: Head -> Structure -> Html
+   html_ (Head head) content =
+     Html
+       ( el "html"
+         ( el "head" head
+           <> el "body" (getStructureString content)
          )
+       )
 
-     -- * Head
+   -- * Head
 
-     title_ :: String -> Head
-     title_ = Head . el "title" . escape
+   title_ :: String -> Head
+   title_ = Head . el "title" . escape
 
-     stylesheet_ :: FilePath -> Head
-     stylesheet_ path =
-       Head $ "<link rel=\"stylesheet\" type=\"text/css\" href=\"" <> escape path <> "\">"
+   stylesheet_ :: FilePath -> Head
+   stylesheet_ path =
+     Head $ "<link rel=\"stylesheet\" type=\"text/css\" href=\"" <> escape path <> "\">"
 
-     meta_ :: String -> String -> Head
-     meta_ name content =
-       Head $ "<meta name=\"" <> escape name <> "\" content=\"" <> escape content <> "\">"
+   meta_ :: String -> String -> Head
+   meta_ name content =
+     Head $ "<meta name=\"" <> escape name <> "\" content=\"" <> escape content <> "\">"
 
-     instance Semigroup Head where
-       (<>) (Head h1) (Head h2) =
-         Head (h1 <> h2)
+   instance Semigroup Head where
+     (<>) (Head h1) (Head h2) =
+       Head (h1 <> h2)
 
-     instance Monoid Head where
-       mempty = Head ""
-     ```
+   instance Monoid Head where
+     mempty = Head ""
+   ```
 
      </details>
 
@@ -425,61 +426,60 @@ to build the `head`!
 2. Fix `convert` and `buildIndex` to use the new API. Note: `buildIndex` should return
    `Reader`!
 
-
    <details><summary>Solution</summary>
 
      <details><summary>src/HsBlog/Convert.hs</summary>
 
-     ```haskell
-     import Prelude hiding (head)
-     import HsBlog.Env (Env(..))
+   ```haskell
+   import Prelude hiding (head)
+   import HsBlog.Env (Env(..))
 
-     convert :: Env -> String -> Markup.Document -> Html.Html
-     convert env title doc =
-       let
-         head =
-           Html.title_ (eBlogName env <> " - " <> title)
-             <> Html.stylesheet_ (eStylesheetPath env)
-         article =
-           foldMap convertStructure doc
-         websiteTitle =
-           Html.h_ 1 (Html.link_ "index.html" $ Html.txt_ $ eBlogName env)
-         body =
-           websiteTitle <> article
-       in
-         Html.html_ head body
-     ```
+   convert :: Env -> String -> Markup.Document -> Html.Html
+   convert env title doc =
+     let
+       head =
+         Html.title_ (eBlogName env <> " - " <> title)
+           <> Html.stylesheet_ (eStylesheetPath env)
+       article =
+         foldMap convertStructure doc
+       websiteTitle =
+         Html.h_ 1 (Html.link_ "index.html" $ Html.txt_ $ eBlogName env)
+       body =
+         websiteTitle <> article
+     in
+       Html.html_ head body
+   ```
 
      </details>
 
      <details><summary>src/HsBlog/Directory.hs</summary>
 
-     ```haskell
-     buildIndex :: [(FilePath, Markup.Document)] -> Reader Env Html.Html
-     buildIndex files = do
-       env <- ask
-       let
-         previews =
-           map
-             ( \(file, doc) ->
-               case doc of
-                 Markup.Head 1 head : article ->
-                   Html.h_ 3 (Html.link_ file (Html.txt_ head))
-                     <> foldMap convertStructure (take 2 article)
-                     <> Html.p_ (Html.link_ file (Html.txt_ "..."))
-                 _ ->
-                   Html.h_ 3 (Html.link_ file (Html.txt_ file))
-             )
-             files
-       pure $ Html.html_
-           ( Html.title_ (eBlogName env)
-             <> Html.stylesheet_ (eStylesheetPath env)
+   ```haskell
+   buildIndex :: [(FilePath, Markup.Document)] -> Reader Env Html.Html
+   buildIndex files = do
+     env <- ask
+     let
+       previews =
+         map
+           ( \(file, doc) ->
+             case doc of
+               Markup.Head 1 head : article ->
+                 Html.h_ 3 (Html.link_ file (Html.txt_ head))
+                   <> foldMap convertStructure (take 2 article)
+                   <> Html.p_ (Html.link_ file (Html.txt_ "..."))
+               _ ->
+                 Html.h_ 3 (Html.link_ file (Html.txt_ file))
            )
-           ( Html.h_ 1 (Html.link_ "index.html" (Html.txt_ "Blog"))
-             <> Html.h_ 2 (Html.txt_ "Posts")
-             <> mconcat previews
-           )
-     ```
+           files
+     pure $ Html.html_
+         ( Html.title_ (eBlogName env)
+           <> Html.stylesheet_ (eStylesheetPath env)
+         )
+         ( Html.h_ 1 (Html.link_ "index.html" (Html.txt_ "Blog"))
+           <> Html.h_ 2 (Html.txt_ "Posts")
+           <> mconcat previews
+         )
+   ```
 
      </details>
 
@@ -502,7 +502,6 @@ process title = Html.render . convert defaultEnv title . Markup.parse
 ```
 
 </details>
-
 
 <details><summary>app/OptParse.hs</summary>
 
@@ -574,8 +573,6 @@ main = do
 </details>
 
 </details>
-
-
 
 ---
 

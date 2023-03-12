@@ -2,7 +2,7 @@
 
 We have now built a very small but convenient and safe way to write
 HTML code in Haskell. This is something that we could (potentially)
-publish as a *library* and share with the world by uploading it
+publish as a _library_ and share with the world by uploading it
 to a package repository such as [Hackage](https://hackage.haskell.org/).
 Users who are interested in our library could use a package manager
 to include our library in their project and build their own HTML pages
@@ -19,12 +19,12 @@ implementation from the user**, and the only way to interact with the
 library is via the API we provide.
 
 This provides the safety we wanted to provide, but in this case it also
-*blocks* the user from extending our library *in their own project* with
+_blocks_ the user from extending our library _in their own project_ with
 things we haven't implemented yet, such as lists or code blocks.
 
 When a user runs into trouble with a library (such as missing features)
 the best course of action usually is to open an issue in the repository or
-submit a pull request, but sometimes the user needs things to work *now*.
+submit a pull request, but sometimes the user needs things to work _now_.
 
 We admit that we are not perfect and can't think of all use cases for our
 library. Sometimes the restrictions we add are too great and may limit
@@ -184,7 +184,6 @@ escape =
 
 </details>
 
-
 ## Summary
 
 For our particular project, `Internal` modules aren't necessary.
@@ -193,7 +192,7 @@ part of the same project, and we have access to the `Html`
 module directly, we can always go and edit it if we want
 (and we are going to do that throughout the book).
 
-However, if we were planning to release our HTML EDSL as a *library*
+However, if we were planning to release our HTML EDSL as a _library_
 for other developers to use, it would be nice
 to also expose the internal implementation as an `Internal`
 module. Just so we can save some trouble for potential users!

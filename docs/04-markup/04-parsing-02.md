@@ -31,7 +31,7 @@ the [Data.Maybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-May
 module under the name
 [listToMaybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Maybe.html#v:listToMaybe).
 
-In order to *consume* values of type `Maybe <something>`, and other types created with
+In order to _consume_ values of type `Maybe <something>`, and other types created with
 `data`, we can use pattern matching.
 
 ## Pattern Matching
@@ -63,7 +63,7 @@ representing the blue value in a color represented by red, green and blue compon
 
 Note that `blue` is the name we give to the third component so it will be bound
 to the right of the arrow that comes after the pattern. This is similar to
-a function argument. Also note that `_` matches any value *without* binding it to a name.
+a function argument. Also note that `_` matches any value _without_ binding it to a name.
 
 We can also try to match a value with more than one pattern:
 
@@ -121,7 +121,7 @@ by passing the flag `-Wall` to `ghc` or `runghc`.
 Because linked lists have their own [special syntax](../03-html/06-escaping-characters.md#linked-lists-briefly),
 we also have special syntax for their pattern match.
 We can use the same special syntax for creating lists when we pattern match on lists,
-replacing the *elements* of the list with patterns. For example:
+replacing the _elements_ of the list with patterns. For example:
 
 ```haskell
 safeHead :: [a] -> Maybe a
@@ -157,7 +157,6 @@ exactlyTwoVersion2 list =
 	_ -> Nothing
 ```
 
-
 ---
 
 Exercises:
@@ -165,7 +164,7 @@ Exercises:
 1. Create a function `isBright :: AnsiColor -> Bool` that checks whether a color is bright
 2. Use [this table](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit) to write `ansiToUbuntu`
 3. Create a function `isEmpty :: [a] -> Bool` that uses `listToMaybe` to check whether a list is empty
-4. Create a function `isEmpty :: [a] -> Bool` that *doesn't* use `listToMaybe` to check whether a list is empty
+4. Create a function `isEmpty :: [a] -> Bool` that _doesn't_ use `listToMaybe` to check whether a list is empty
 
 Solutions:
 
@@ -263,9 +262,6 @@ isEmpty list =
 
 </details>
 
-
-
-
 ---
 
 ## Parsing with rich context
@@ -335,17 +331,17 @@ trim :: String -> String
 trim = unwords . words
 ```
 
-
 1. We can now pass `Nothing` when we don't have a context
 2. Unsure what `maybeToList` does? [Hoogle](https://hoogle.haskell.org) it!
 3. We can split this line into two important parts:
+
    1. `maybe id (:) context` - prepending the context to the rest of the document
    2. `parseLines Nothing rest` - parsing the rest of the document
 
    Let's focus on the first part.
    We want to prepend `context` to the rest of the document, but we can't write
    `context : parseLines Nothing rest` because `context` has the type `Maybe Structure`
-   and not `Structure`, meaning that we *might* have a `Structure` but maybe not.
+   and not `Structure`, meaning that we _might_ have a `Structure` but maybe not.
    If we do have a `Structure` to prepend, we wish to prepend it. If not, we want to return
    the result of `parseLines Nothing rest` as is. Try writing this using pattern matching!
 
@@ -544,6 +540,7 @@ parseLines context txts =
 trim :: String -> String
 trim = unwords . words
 ```
+
 </details>
 
 ---

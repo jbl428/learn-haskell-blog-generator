@@ -2,8 +2,8 @@
 
 이번 장에서는 간단한 HTML "hello world" 프로그램을 만들고 Haskell 툴체인을 사용하여 컴파일하고 실행해 보겠습니다.
 
-> 아직 Haskell 툴체인을 설치하지 않았다면 
-> [haskell.org/downloads](https://haskell.org/downloads)에 방문하여 
+> 아직 Haskell 툴체인을 설치하지 않았다면
+> [haskell.org/downloads](https://haskell.org/downloads)에 방문하여
 > Haskell 툴체인을 다운로드하고 설치하는 과정을 진행하세요.
 
 ## 하스켈 소스 파일
@@ -46,7 +46,7 @@ main = putStrLn "<html><body>Hello, world!</body></html>"
 ```
 
 주의할 점은 `main =` 부분을 생략하고 단순히 `putStrLn "<html><body>Hello, world!</body></html>"`만 작성할 수는 없습니다.
-왜나하면 이는 정의가 아니기 때문입니다. 
+왜나하면 이는 정의가 아니기 때문입니다.
 파이썬이나 OCaml과 같은 언어에서는 허용되지만 하스켈이나 C와 같은 언어에서는 허용되지 않습니다.
 
 ## 프로그램 컴파일하기
@@ -64,7 +64,6 @@ Linking hello ...
 1. `hello.o` - 오브젝트 파일
 2. `hello.hi` - 하스켈 인터페이스 파일
 3. `hello` - 네이티브 실행 파일
-
 
 컴파일 이후에, `hello`라는 파일을 실행할 수 있습니다:
 
@@ -108,4 +107,4 @@ main = putStrLn myhtml
 myhtml = "<html><body>Hello, world!</body></html>"
 ```
 
-__참고__: 바인딩의 정의 순서는 중요하지 않습니다.
+**참고**: 바인딩의 정의 순서는 중요하지 않습니다.

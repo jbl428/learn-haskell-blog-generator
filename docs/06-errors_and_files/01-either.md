@@ -48,7 +48,6 @@ parseDigit :: Char -> Either ParseDigitError Int
 Now when we implement our parsing function we can return `Left` on an error
 describing the problem, and `Right` with the parsed value on successful parsing:
 
-
 ```haskell
 parseDigit :: Char -> Either ParseDigitError Int
 parseDigit c =
@@ -82,7 +81,6 @@ max3chars x y z =
     <*> parseDigit y
     <*> parseDigit z
 ```
-
 
 The `Functor` and `Applicative` interfaces of `Either a` allow us to
 apply functions to the payload values and **delay** the error handling to a
@@ -181,8 +179,8 @@ ghci> :t readFiles files
 readFiles files :: IO (Map String String)
 ```
 
-Above, we created a function `readFiles` that will take a mapping from *output file path*
-to *input file path* and returns an IO operation that when run will read the input files
+Above, we created a function `readFiles` that will take a mapping from _output file path_
+to _input file path_ and returns an IO operation that when run will read the input files
 and replace their contents right there in the map! Surely this will be useful later.
 
 ## Multiple errors
@@ -198,14 +196,14 @@ fmap :: Functor f => (a -> b) -> f a -> f b
 ```
 
 And we want to implement it for a specific type (in place of the `f`),
-we need to be able to *substitute* the `f` with the target type. If we'd try
+we need to be able to _substitute_ the `f` with the target type. If we'd try
 to do it with `Either` we would get:
 
 ```haskell
 fmap :: (a -> b) -> Either a -> Either b
 ```
 
-And neither `Either a` or `Either b` are *saturated*, so this won't type check.
+And neither `Either a` or `Either b` are _saturated_, so this won't type check.
 For the same reason if we'll try to substitute `f` with, say, `Int`, we'll get:
 
 ```haskell
@@ -228,7 +226,7 @@ liftA2 :: (a -> b -> c) -> Either e a -> Either e b -> Either e c
 ```
 
 What this teaches us is that we can only use the applicative interface to
-combine two *`Either`s with the same type for the `Left` constructor*.
+combine two _`Either`s with the same type for the `Left` constructor_.
 
 So what can we do if we have two functions that can return different errors?
 There are a few approaches, the most prominent ones are:
@@ -362,7 +360,6 @@ And now we can write the code this way:
 -- Or create a custom infix operator: (=<<) = flatMap
 > typeCheck =<< parse =<< tokenize string
 ```
-
 
 This function, `flatten` (and `flatMap` as well), have different names in Haskell.
 They are called

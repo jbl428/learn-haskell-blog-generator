@@ -57,7 +57,7 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 
 `<>`과 같은 연산자는 두 개의 인자를 받는 중위 함수입니다.
 
-괄호 없이 동일한 식에서 여러 연산자가 있는 경우, 연산자의 *결합성* (왼쪽 또는 오른쪽)과 *우선순위* (0에서 10 사이의 숫자)에 따라 더 강하게 바인딩하는 연산자가 결정됩니다.
+괄호 없이 동일한 식에서 여러 연산자가 있는 경우, 연산자의 _결합성_ (왼쪽 또는 오른쪽)과 _우선순위_ (0에서 10 사이의 숫자)에 따라 더 강하게 바인딩하는 연산자가 결정됩니다.
 
 `<>`는 오른쪽 결합성을 갖기 때문에 Haskell은 `<>` 오른쪽에 보이지 않는 괄호를 추가합니다. 예를 들어:
 
@@ -88,29 +88,40 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 연습문제:
 
 1. `wrapHtml` 함수의 기능을 두 개의 함수로 분리합니다:
+
    1. `html` 태그로 감싸는 기능
    2. `body` 태그로 감싸는 기능
 
    이를 `html_`와 `body_`라고 이름을 붙입니다.
+
 2. `myhtml`을 `html_`과 `body_`를 사용하도록 변경합니다.
 3. `<head>` 태그와 `<title>` 태그를 감싸는 두 개의 함수를 추가하고 `head_`와 `title_`라고 이름을 붙입니다.
 4. `makeHtml` 함수를 추가합니다. 이 함수는 두 개의 문자열을 인자로 받습니다:
+
    1. 제목을 의미하는 문자열
    2. 본문을 의미하는 문자열
-   
+
    이 함수는 `html_`, `head_`, `title_`, `body_` 함수를 사용하여 HTML 문자열을 생성합니다.
-   
+
    다음과 같은 입력에 대해:
-   
+
    ```haskell
    makeHtml "My page title" "My page content"
    ```
-   
+
    다음과 같은 결과를 반환해야 합니다:
-   
+
    ```html
-   <html><head><title>My page title</title></head><body>My page content</body></html>
+   <html>
+     <head>
+       <title>My page title</title>
+     </head>
+     <body>
+       My page content
+     </body>
+   </html>
    ```
+
 5. `myhtml`을 `html_`과 `body_` 대신 `makeHtml`을 사용하도록 변경합니다.
 
 ---
@@ -157,7 +168,6 @@ makeHtml title content = html_ (head_ (title_ title) <> body_ content)
 
 </details>
 
-
 <details>
   <summary>연습문제 #5 정답</summary>
 
@@ -166,7 +176,6 @@ myhtml = makeHtml "Hello title" "Hello, world!"
 ```
 
 </details>
-
 
 <details>
   <summary>최종 프로그램</summary>
@@ -179,7 +188,7 @@ myhtml = makeHtml "Hello title" "Hello, world!"
 makeHtml title content = html_ (head_ (title_ title) <> body_ content)
 
 html_ content = "<html>" <> content <> "</html>"
-  
+
 body_ content = "<body>" <> content <> "</body>"
 
 head_ content = "<head>" <> content <> "</head>"
@@ -198,7 +207,6 @@ firefox hello.html
 
 </details>
 
-
 ---
 
 ## 들여쓰기
@@ -210,7 +218,6 @@ firefox hello.html
 표현식의 일부가 되어야 하는 코드는 해당 표현식의 시작보다 더 들여쓰기되어야 합니다.
 
 만약 두 표현식이 동일한 들여쓰기를 가지고 있다면, 이들은 서로 독립적이라고 할 수 있습니다.
-
 
 ### 들여쓰기 팁
 
@@ -234,7 +241,7 @@ main =
         (wrapHtml "Hello, world!")
 ```
 
-__다음 스타일은 피하세요__. 들여쓰기 단계를 두 개 이상 사용하거나 완전히 무시하고 있습니다:
+**다음 스타일은 피하세요**. 들여쓰기 단계를 두 개 이상 사용하거나 완전히 무시하고 있습니다:
 
 ```haskell
 main = putStrLn
@@ -245,4 +252,3 @@ main = putStrLn
 main = putStrLn
                 (wrapHtml "Hello, world!")
 ```
-

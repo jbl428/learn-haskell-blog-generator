@@ -160,14 +160,14 @@ In a `library` target, we define:
 - The directory in which the source files can be found
 - The packages we require to build the library
 - The modules exposed from the library and can be used by others
-- The modules *not* exposed from the library and which *cannot* be used by others;
+- The modules _not_ exposed from the library and which _cannot_ be used by others;
   these could be any module you don't wish to export, such as an internal utility
   functions module.
   In our case we don't have anything like this, so we commented out the `other-modules`
   label.
 
 Note that it is common to specify **version bounds** for packages.
-Version bounds specify *which package versions this library works with*.
+Version bounds specify _which package versions this library works with_.
 These can also be generated using cabal with the `cabal gen-bounds` command.
 
 ```cabal
@@ -186,7 +186,7 @@ library
   -- other-modules:
 ```
 
-Also note that we've added an additional *hierarchy* for our modules and defined
+Also note that we've added an additional _hierarchy_ for our modules and defined
 a different source directory. This means we will need to move the files around
 a bit and change the `module` name in each file and the `import` statements. This is to avoid
 conflict with other packages that a user might import.
@@ -202,8 +202,8 @@ Do this now.
    ```haskell
    module HsBlog
      ( main
-	 , process
-	 )
+    , process
+    )
      where
 
    import qualified HsBlog.Markup as Markup
@@ -234,7 +234,6 @@ Do this now.
    ```haskell
    module HsBlog.Html.Internal where
    ```
-
 
 5. `Markup.hs` -> `src/HsBlog/Markup.hs`
 
@@ -418,8 +417,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The [cabal.project](https://cabal.readthedocs.io/en/stable/cabal-project.html) and
 [stack.yaml](https://docs.haskellstack.org/en/stable/yaml_configuration/#project-specific-config)
-files are used by `cabal` and `stack` respectively to add additional information on *how
-to build the package*. While `cabal.project` isn't necessary to use `cabal`, `stack.yaml`
+files are used by `cabal` and `stack` respectively to add additional information on _how
+to build the package_. While `cabal.project` isn't necessary to use `cabal`, `stack.yaml`
 is necessary in order to use `stack`, so we will cover it briefly.
 
 There are two important fields a `stack.yaml` file must have:
@@ -438,7 +437,7 @@ We'll add `stack.yaml` to our project directory:
 resolver: lts-18.22
 
 packages:
-- .
+  - .
 ```
 
 For additional options and configurations, please consult the relevant user guides.
@@ -566,6 +565,7 @@ and packages.
 ```sh
 stack clean
 ```
+
 [`clean`](https://docs.haskellstack.org/en/stable/GUIDE/#cleaning-your-project)
 cleans up build artifacts.
 

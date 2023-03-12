@@ -31,7 +31,7 @@ the content of that variable into another mutable variable that accumulates the
 results.
 
 Our approach in Haskell isn't so different, except that we do not use loops
-or mutable variables. Instead, we use __recursion__.
+or mutable variables. Instead, we use **recursion**.
 
 ## Recursion and accumulating information
 
@@ -57,7 +57,7 @@ This can be written imperatively using a loop:
 
 ```js
 function add(n, m) {
-  while (m /= 0) {
+  while ((m /= 0)) {
     n = increment(n);
     m = decrement(m);
   }
@@ -94,8 +94,8 @@ strategies exist, such as translating code like our recursive `add` above to the
 
 #### Laziness
 
-Haskell plays by slightly different rules because it uses a *lazy evaluation strategy*
-instead of the much more common strict evaluation strategy. An *evaluation strategy*
+Haskell plays by slightly different rules because it uses a _lazy evaluation strategy_
+instead of the much more common strict evaluation strategy. An _evaluation strategy_
 refers to "when do we evaluate a computation". In a strict language the answer is simple:
 _we evaluate the arguments of a function before entering a function_.
 
@@ -109,7 +109,7 @@ will look like this:
 Or, alternatively (depending on the language) we reverse (1) and (2) and evaluate the arguments
 from right-to-left instead of left-to-right.
 
-On the other hand, with lazy evaluation, we *only evaluate computation when we need it*, which
+On the other hand, with lazy evaluation, we _only evaluate computation when we need it_, which
 is when it is part of a computation that will have some effect on the
 outside world, for example when writing a computation to standard output or sending it over the network.
 
@@ -216,7 +216,6 @@ if (if 2 /= 0 then add (increment 3) (decrement 2) else 3) == 5
 ```
 
 evaluating the control flow `2 /= 0`
-
 
 ```haskell
 if (if True then add (increment 3) (decrement 2) else 3) == 5
@@ -403,7 +402,7 @@ about the problem in three parts:
 2. Figuring out how to **reduce** the problem to something simpler (so it gets closer to the base case)
 3. **Mitigating the difference** between the reduced version and the solution we need to provide
 
-The reduce and mitigate steps together are usually called the *recursive step*.
+The reduce and mitigate steps together are usually called the _recursive step_.
 
 Let's take a look at another example problem: generating a list of a particular size
 with a specific value in place of every element.
@@ -606,7 +605,7 @@ Things to note:
 
 1. We pass a list that contains the currently grouped paragraph (paragraphs are separated by an empty line)
 2. Because of laziness, `paragraph` is not computed until it's needed, so we don't have to worry about
-  the performance implications in the case that we are still grouping lines
+   the performance implications in the case that we are still grouping lines
 3. Why do we reverse `currentParagraph`? (See point (6))
 4. We saw case expressions used to deconstruct `newtype`s and `Char`s,
    but we can also pattern match on lists and other ADTs as well!
@@ -616,6 +615,7 @@ Things to note:
    and the rest of the elements to the name `rest`.
 
    We will talk about how all of this works really soon!
+
 5. When we run into an empty line we add the accumulated paragraph to the resulting list (A `Document` is a list of structures) and start the function again with the rest of the input.
 6. We pass the new lines to be grouped in a paragraph **in reverse order** because of
    performance characteristics - because of the nature of singly-linked lists,
@@ -625,7 +625,6 @@ Things to note:
    the last one will contain the last value of the list and a pointer to the list to append,
    the next will contain the value before the last value of the list and a pointer to the
    list which contains the last element and the appended list, and so on.
-
 
 This code above will group together paragraphs in a structure, but how do we view our result?
 In the next chapter we will take a short detour and talk about type classes, and how
