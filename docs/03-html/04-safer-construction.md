@@ -47,8 +47,10 @@ newtype 선언의 오른쪽은 해당 타입의 모양을 의미합니다.
 Html :: String -> Html
 ```
 
-**주의**: `Html` 타입의 표현식을 `String` 타입의 표현식과 같은 방식으로 사용할 수 없습니다.
+:::caution
+`Html` 타입의 표현식을 `String` 타입의 표현식과 같은 방식으로 사용할 수 없습니다.
 즉, `"hello " <> Html "world"`는 타입 에러가 발생합니다.
+:::
 
 이것은 *캡슐화(encapsulation)*가 필요할 때 유용합니다.
 기본 타입에 대한 표현과 함수를 정의하고 사용할 수 있지만, 관련 없는(우리 도메인과 관련이 없는) 타입들과 혼동되지 않도록 합니다.
@@ -211,7 +213,6 @@ p_ = Structure . el "p"
 표현식 `Structure . el "p"`가 타입 검사를 통과하는 이유와, 타입이 `String -> Structure`인 이유를 살펴보겠습니다.
 
 ### 펜과 종이로 타입 검사하기
-### Type checking with pen and paper
 
 표현식이 어떻게 타입 검사를 통과하는지 이해하고 싶다면, 체계적으로 타입 검사를 해보는 것이 좋습니다.
 다음 예제를 살펴보겠습니다. 이 예제에서 우리는 다음 표현식을 타입 검사하려고 합니다.
@@ -238,7 +239,9 @@ p_ = Structure . el "p"
 1. `b -> c`
 2. `a -> b`
 
-> 주의: 함수가 받을 수 있는 인자의 수보다 더 많은 인자를 적용하면 타입 오류가 발생합니다.
+:::caution
+함수가 받을 수 있는 인자의 수보다 더 많은 인자를 적용하면 타입 오류가 발생합니다.
+:::
 
 `.` 연산자는 우리가 제공한 인자의 수만큼 인자를 받기 때문에, 다음 단계로 넘어갑니다:
 타입 검사의 다음 단계는 입력 타입과 (연산자의 서명을 통해) 예상되는 타입을 비교하는 것입니다.
@@ -315,35 +318,37 @@ Structure . el "p" :: String -> Structure
 타입이 일치하지 않는 부분을 찾을 수 있고, 그 부분을 해결할 수 있습니다.
 
 
-> **주의**: 만약 우리가 *매개변수화된 다형성*을 가진 함수를 두 번 이상 사용하거나,
-> 비슷한 타입 변수 이름을 가진 다른 함수를 사용한다면,
-> 이름이 같다고 해서 모든 인스턴스에서 타입 변수가 일치할 필요는 없습니다.
-> 각 인스턴스는 고유한 타입 변수 집합을 가집니다. 예를 들어:
-> 
-> ```haskell
-> id :: a -> a
-> ord :: Char -> Int
-> chr :: Int -> Char
-> 
-> incrementChar :: Char -> Char
-> incrementChar c = chr (ord (id c) + id 1)
-> ```
-> 
-> 위의 코드에서 `id`를 두 번 사용합니다. (예시로 사용하기 위함일 뿐 좋은 구조는 아닙니다)
-> 첫 번째 `id`는 `Char`를 인자로 받고, `a`는 `Char`와 동등합니다.
-> 두 번째 `id`는 `Int`를 인자로 받고, *구별된* `a`는 `Int`와 동등합니다.
-> 
-> 이 상황은 오직 최상위(top-level)에 정의한 함수에만 적용됩니다.
-> 만약 우리가 `incrementChar`에 인자로 전달할 지역 함수를 정의하고,
-> `id`와 같은 타입 시그니처를 가진다면, 모든 사용처에서 타입이 일치해야 합니다.
-> 다음 코드의 경우:
-> 
-> ```haskell
-> incrementChar :: (a -> a) -> Char -> Char
-> incrementChar func c = chr (ord (func c) + func 1)
-> ```
-> 
-> 타입 에러가 발생합니다. 직접 확인해보세요!
+:::caution
+만약 우리가 *매개변수화된 다형성*을 가진 함수를 두 번 이상 사용하거나,
+비슷한 타입 변수 이름을 가진 다른 함수를 사용한다면,
+이름이 같다고 해서 모든 인스턴스에서 타입 변수가 일치할 필요는 없습니다.
+각 인스턴스는 고유한 타입 변수 집합을 가집니다. 예를 들어:
+
+```haskell
+id :: a -> a
+ord :: Char -> Int
+chr :: Int -> Char
+
+incrementChar :: Char -> Char
+incrementChar c = chr (ord (id c) + id 1)
+```
+
+위의 코드에서 `id`를 두 번 사용합니다. (예시로 사용하기 위함일 뿐 좋은 구조는 아닙니다)
+첫 번째 `id`는 `Char`를 인자로 받고, `a`는 `Char`와 동등합니다.
+두 번째 `id`는 `Int`를 인자로 받고, *구별된* `a`는 `Int`와 동등합니다.
+
+이 상황은 오직 최상위(top-level)에 정의한 함수에만 적용됩니다.
+만약 우리가 `incrementChar`에 인자로 전달할 지역 함수를 정의하고,
+`id`와 같은 타입 시그니처를 가진다면, 모든 사용처에서 타입이 일치해야 합니다.
+다음 코드의 경우:
+
+```haskell
+incrementChar :: (a -> a) -> Char -> Char
+incrementChar func c = chr (ord (func c) + func 1)
+```
+
+타입 에러가 발생합니다. 직접 확인해보세요!
+:::
 
 ## 구조 확장하기
 
@@ -433,21 +438,19 @@ type Title = String
 
 이전 장에서 작성한 코드를 새로운 타입을 사용하도록 변경해보세요.
 
-> **Tips**
->
-> 이제 `makeHtml`과 `html_`를 합치고 `body_`, `head_`, `title_`을 제거할 수 있습니다.
-> `html_`에서 `el`을 직접 호출할 수 있으며, 타입은 `Title -> Structure -> Html`가 됩니다.
-> 이러면 HTML EDSL이 덜 유연하지만 더 간결해집니다.
->
-> 대안으로, `HtmlHead`와 `HtmlBody`라는 `newtype`을 만들고 `html_`에 전달할 수 있습니다.
-> 하지만 이번에는 API를 간단하게 유지하기 위해 사용하지 않았고 이후 장에서 다룰 예정입니다.
+:::tip
+이제 `makeHtml`과 `html_`를 합치고 `body_`, `head_`, `title_`을 제거할 수 있습니다.
+`html_`에서 `el`을 직접 호출할 수 있으며, 타입은 `Title -> Structure -> Html`가 됩니다.
+이러면 HTML EDSL이 덜 유연하지만 더 간결해집니다.
+
+대안으로, `HtmlHead`와 `HtmlBody`라는 `newtype`을 만들고 `html_`에 전달할 수 있습니다.
+하지만 이번에는 API를 간단하게 유지하기 위해 사용하지 않았고 이후 장에서 다룰 예정입니다.
+:::
 
 <details>
   <summary>정답</summary>
 
-```haskell
--- hello.hs
-
+```haskell title="hello.hs"
 main :: IO ()
 main = putStrLn (render myhtml)
 

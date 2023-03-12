@@ -1,3 +1,7 @@
+---
+slug: /
+---
+
 # 이 책에 대하여
 
 > 이 책은 활발하게 유지되고 있습니다. 오류를 발견하셨다면 [여기](https://github.com/soupi/learn-haskell-blog-generator/issues) 로 알려주세요.

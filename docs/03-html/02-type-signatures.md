@@ -257,9 +257,7 @@ myhtml =
 <details>
   <summary>최종 프로그램</summary>
 
-```haskell
--- hello.hs
-
+```haskell title="hello.hs"
 main :: IO ()
 main = putStrLn myhtml
 

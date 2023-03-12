@@ -104,9 +104,7 @@ import Html
 
 이제 `hello.hs` 파일은 다음과 같이 변경됩니다:
 
-```haskell
--- hello.hs
-
+```haskell title="hello.hs"
 import Html
 
 main :: IO ()
@@ -127,9 +125,7 @@ myhtml =
 
 그리고 `Html.hs` 파일은 다음과 같이 변경됩니다:
 
-```haskell
--- Html.hs
-
+```haskell title="Html.hs"
 module Html
   ( Html
   , Title
@@ -185,7 +181,9 @@ render html =
     Html str -> str
 ```
 
-> HTML 값을 만드는 함수의 접미사로 밑줄(`_`)을 사용한것을 눈치채신 분도 있을겁니다.
-> 이는 미학적인 결정으로, 개인적으로 EDSL을 더 쉽게 인식할 수 있다고 생각했기 때문입니다.
-> 또한 `head`와 같은 하스켈 표준 라이브러리에 정의된 함수와의 이름 충돌을 피할 수 있기에 유용합니다.
-> 이 아이디어는 `lucid`라는 하스켈 HTML 라이브러리에서 가져왔습니다!
+:::info
+HTML 값을 만드는 함수의 접미사로 밑줄(`_`)을 사용한것을 눈치채신 분도 있을겁니다.
+이는 미학적인 결정으로, 개인적으로 EDSL을 더 쉽게 인식할 수 있다고 생각했기 때문입니다.
+또한 `head`와 같은 하스켈 표준 라이브러리에 정의된 함수와의 이름 충돌을 피할 수 있기에 유용합니다.
+이 아이디어는 `lucid`라는 하스켈 HTML 라이브러리에서 가져왔습니다!
+:::

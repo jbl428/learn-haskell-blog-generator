@@ -39,12 +39,14 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/jbl428/learn-haskell-blog-generator/tree/book',
         },
+        blog: false,
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -57,6 +59,12 @@ const config = {
     ({
       // Replace with your project's social card
       image: 'img/book-logo-transparent.png',
+      docs: {
+        sidebar: {
+          hideable: true,
+          autoCollapseCategories: true,
+        }
+      },
       navbar: {
         title: '블로그 생성기를 만들면서 배우는 하스켈',
         logo: {
@@ -64,12 +72,6 @@ const config = {
           src: 'img/book-logo-transparent.png',
         },
         items: [
-          {
-            type: 'doc',
-            docId: 'SUMMARY',
-            position: 'left',
-            label: 'Book',
-          },
           {
             href: 'https://github.com/jbl428/learn-haskell-blog-generator',
             label: 'GitHub',
