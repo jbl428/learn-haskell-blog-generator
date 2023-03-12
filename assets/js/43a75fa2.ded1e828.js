@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunklearn_haskell_blog_generator=self.webpackChunklearn_haskell_blog_generator||[]).push([[234],{8247:e=>{e.exports=JSON.parse('{"label":"facebook","permalink":"/learn-haskell-blog-generator/blog/tags/facebook","allTagsPath":"/learn-haskell-blog-generator/blog/tags","count":1}')}}]);
