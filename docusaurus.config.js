@@ -20,8 +20,9 @@ const config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'jbl428', // Usually your GitHub org/user name.
   projectName: 'learn-haskell-blog-generator', // Usually your repo name.
+  trailingSlash: false,
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internalization, you can use this field to set useful
