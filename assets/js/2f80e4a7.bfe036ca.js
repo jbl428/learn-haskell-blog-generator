@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunklearn_haskell_blog_generator=self.webpackChunklearn_haskell_blog_generator||[]).push([[5170],{5091:e=>{e.exports=JSON.parse('{"permalink":"/learn-haskell-blog-generator/blog/tags/docusaurus","page":1,"postsPerPage":10,"totalPages":1,"totalCount":4,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);
