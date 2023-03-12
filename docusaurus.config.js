@@ -85,6 +85,9 @@ const config = {
         additionalLanguages: ["haskell"],
       },
     }),
+  plugins: [[require.resolve('docusaurus-lunr-search'), {
+    languages: ['en', 'ko'],
+  }]],
 };
 
 module.exports = config;
