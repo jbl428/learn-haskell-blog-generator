@@ -27,7 +27,7 @@
 
 `title_` 함수의 타입 시그니처를 작성해봅시다:
 
-```hs
+```haskell
 title_ :: String -> String
 ```
 
@@ -35,7 +35,7 @@ title_ :: String -> String
 
 `makeHtml` 함수의 타입 시그니처를 작성해봅시다:
 
-```hs
+```haskell
 makeHtml :: String -> String -> String
 ```
 
@@ -50,13 +50,13 @@ _반환된 함수_ 또한 **하나의** 문자열 인자를 받아서 최종적�
 이렇게 해석할 수 있는 이유는 `->` 기호가 오른쪽으로 결합되기 때문입니다.
 즉 다음과 같은 `makeHtml` 함수를
 
-```hs
+```haskell
 makeHtml :: String -> String -> String
 ```
 
 하스켈은 다음과 같이 해석합니다:
 
-```hs
+```haskell
 makeHtml :: String -> (String -> String)
 ```
 
@@ -67,7 +67,7 @@ makeHtml :: String -> (String -> String)
 
 설명을 위해, `el` 함수를 새로 정의해 `html_`와 `body_`를 다른 방식으로 구현해봅시다.
 
-```hs
+```haskell
 el :: String -> String -> String
 el tag content =
   "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
@@ -77,7 +77,7 @@ el tag content =
 
 이제 `el` 함수를 부분 적용하여 `html_`과 `body_`를 구현할 수 있습니다.
 
-```hs
+```haskell
 html_ :: String -> String
 html_ = el "html"
 
@@ -108,7 +108,7 @@ body_ = el "body"
 
 `"hello"`와 같은 표현식이 위치할 수 있는 모든곳에 다음과 같은 문법으로 익명 함수를 정의할 수 있습니다.
 
-```hs
+```haskell
 \<argument> -> <expression>
 ```
 
@@ -116,7 +116,7 @@ body_ = el "body"
 `->` 기호는 함수의 본문의 시작지점을 나타냅니다.
 람다 함수를 체인으로 연결하여 "다중 인자 함수"를 만들 수도 있습니다:
 
-```hs
+```haskell
 three = (\num1 -> \num2 -> num1 + num2) 1 2
 ```
 
@@ -127,7 +127,7 @@ three = (\num1 -> \num2 -> num1 + num2) 1 2
 
 이제 다음과 같은 함수가 있다면
 
-```hs
+```haskell
 el :: String -> String -> String
 el tag content =
   "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
@@ -135,7 +135,7 @@ el tag content =
 
 하스켈은 실제로 다음과 같이 해석합니다:
 
-```hs
+```haskell
 el :: String -> (String -> String)
 el = \tag -> \content ->
   "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
@@ -146,13 +146,13 @@ el = \tag -> \content ->
 익명 함수에 대한 문법적 설탕을 하나 더 소개하겠습니다:
 다중 인자 익명 함수를 정의할 때, 다음과 같이 작성할 수 있습니다:
 
-```hs
+```haskell
 \<arg1> <arg2> ... <argN> -> <expression>
 ```
 
 예를 들면:
 
-```hs
+```haskell
 three = (\num1 num2 -> num1 + num2) 1 2
 ```
 
@@ -181,72 +181,72 @@ three = (\num1 num2 -> num1 + num2) 1 2
 
 <details>
   <summary>연습문제 #1 정답</summary>
-  
-  ```hs
-  myhtml :: String
-  myhtml = makeHtml "Hello title" "Hello, world!"
 
-  makeHtml :: String -> String -> String
-  makeHtml title content = html_ (head_ (title_ title) <> body_ content)
+```haskell
+myhtml :: String
+myhtml = makeHtml "Hello title" "Hello, world!"
 
-  html_ :: String -> String
-  html_ content = "<html>" <> content <> "</html>"
-     
-  body_ :: String -> String
-  body_ content = "<body>" <> content <> "</body>"
+makeHtml :: String -> String -> String
+makeHtml title content = html_ (head_ (title_ title) <> body_ content)
 
-  head_ :: String -> String
-  head_ content = "<head>" <> content <> "</head>"
+html_ :: String -> String
+html_ content = "<html>" <> content <> "</html>"
 
-  title_ :: String -> String
-  title_ content = "<title>" <> content <> "</title>"
-  ```
+body_ :: String -> String
+body_ content = "<body>" <> content <> "</body>"
+
+head_ :: String -> String
+head_ content = "<head>" <> content <> "</head>"
+
+title_ :: String -> String
+title_ content = "<title>" <> content <> "</title>"
+```
 
 </details>
 
 <details>
   <summary>연습문제 #2 정답</summary>
-  
-  ```hs
-  html_ :: String -> String
-  html_ = el "html"
-     
-  body_ :: String -> String
-  body_ = el "body"
 
-  head_ :: String -> String
-  head_ = el "head"
+```haskell
+html_ :: String -> String
+html_ = el "html"
 
-  title_ :: String -> String
-  title_ = el "title"
-  ```
+body_ :: String -> String
+body_ = el "body"
+
+head_ :: String -> String
+head_ = el "head"
+
+title_ :: String -> String
+title_ = el "title"
+```
 
 </details>
 
 
 <details>
   <summary>연습문제 #3 정답</summary>
-  
-  ```hs
-  p_ :: String -> String
-  p_ = el "p"
 
-  h1_ :: String -> String
-  h1_ = el "h1"
-  ```
+```haskell
+p_ :: String -> String
+p_ = el "p"
+
+h1_ :: String -> String
+h1_ = el "h1"
+```
 
 </details>
 
 <details>
   <summary>연습문제 #4 정답</summary>
-  
-  ```hs
-  myhtml :: String
-  myhtml =
-    makeHtml
-      "Hello title"
-      (h1_ "Hello, world!" <> p_ "Let's learn about Haskell!")
-  ```
+
+```haskell
+myhtml :: String
+myhtml =
+ makeHtml
+   "Hello title"
+   (h1_ "Hello, world!" <> p_ "Let's learn about Haskell!")
+```
 
 </details>
 
@@ -256,44 +256,44 @@ three = (\num1 num2 -> num1 + num2) 1 2
 
 <details>
   <summary>최종 프로그램</summary>
-  
-  ```hs
-  -- hello.hs
 
-  main :: IO ()
-  main = putStrLn myhtml
+```haskell
+-- hello.hs
 
-  myhtml :: String
-  myhtml =
-    makeHtml
-      "Hello title"
-      (h1_ "Hello, world!" <> p_ "Let's learn about Haskell!")
+main :: IO ()
+main = putStrLn myhtml
+
+myhtml :: String
+myhtml =
+ makeHtml
+   "Hello title"
+   (h1_ "Hello, world!" <> p_ "Let's learn about Haskell!")
 
 
-  makeHtml :: String -> String -> String
-  makeHtml title content = html_ (head_ (title_ title) <> body_ content)
+makeHtml :: String -> String -> String
+makeHtml title content = html_ (head_ (title_ title) <> body_ content)
 
-  html_ :: String -> String
-  html_ = el "html"
-     
-  body_ :: String -> String
-  body_ = el "body"
+html_ :: String -> String
+html_ = el "html"
 
-  head_ :: String -> String
-  head_ = el "head"
+body_ :: String -> String
+body_ = el "body"
 
-  title_ :: String -> String
-  title_ = el "title"
+head_ :: String -> String
+head_ = el "head"
 
-  p_ :: String -> String
-  p_ = el "p"
+title_ :: String -> String
+title_ = el "title"
 
-  h1_ :: String -> String
-  h1_ = el "h1"
+p_ :: String -> String
+p_ = el "p"
 
-  el :: String -> String -> String
-  el tag content =
-    "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
-  ```
+h1_ :: String -> String
+h1_ = el "h1"
+
+el :: String -> String -> String
+el tag content =
+ "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
+```
 
 </details>

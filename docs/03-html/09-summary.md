@@ -15,7 +15,7 @@ We've also learned about:
 
 Here's our complete program up to this point:
 
-```hs
+```haskell
 -- hello.hs
 
 import Html
@@ -36,7 +36,7 @@ myhtml =
     )
 ```
 
-```hs
+```haskell
 -- Html.hs
 
 module Html
@@ -57,7 +57,7 @@ module Html
 import Html.Internal
 ```
 
-```hs
+```haskell
 -- Html/Internal.hs
 
 module Html.Internal where

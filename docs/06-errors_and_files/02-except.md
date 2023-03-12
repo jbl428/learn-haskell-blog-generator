@@ -8,7 +8,7 @@ possible.
 We could've potentially encoded Haskell functions like `readFile` and `writeFile` as `IO` operations
 that return `Either`, for example:
 
-```hs
+```haskell
 readFile :: FilePath -> IO (Either ReadFileError String)
 writeFile :: FilePath -> String -> IO (Either WriteFileError ())
 ```
@@ -16,7 +16,7 @@ writeFile :: FilePath -> String -> IO (Either WriteFileError ())
 However there are a couple of issues here, the first is that composing `IO` actions
 becomes more difficult. Previously we could write:
 
-```hs
+```haskell
 readFile "input.txt" >>= writeFile "output.html"
 ```
 
@@ -37,7 +37,7 @@ called [`ExceptT`](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Mo
 and stack it over `IO`.
 Let's see how `ExceptT` is defined:
 
-```hs
+```haskell
 newtype ExceptT e m a = ExceptT (m (Either e a))
 ```
 
@@ -46,7 +46,7 @@ Remember, a `newtype` is a new name for an existing type. And if we substitute
 And we can convert an `ExceptT Error IO a` into `IO (Either Error a)` using
 the function `runExceptT`:
 
-```hs
+```haskell
 runExceptT :: ExceptT e m a -> m (Either e a)
 ```
 
@@ -54,7 +54,7 @@ runExceptT :: ExceptT e m a -> m (Either e a)
 `Either`, and whatever `m` it takes. Because `ExceptT e m` has a `Monad` instance,
 a specialized version of `>>=` would look like this:
 
-```hs
+```haskell
 -- Generalized version
 (>>=) :: Monad m => m a -> (a -> m b) -> m b
 
@@ -68,13 +68,13 @@ Note that the `m` in the specialized version still needs to be an instance of `M
 
 Unsure how this works? Try to implement `>>=` for `IO (Either Error a)`:
 
-```hs
+```haskell
 bindExceptT :: IO (Either Error a) -> (a -> IO (Either Error b)) -> IO (Either Error b)
 ```
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 bindExceptT :: IO (Either Error a) -> (a -> IO (Either Error b)) -> IO (Either Error b)
 bindExceptT mx f = do
   x <- mx -- `x` has the type `Either Error a`
@@ -87,7 +87,7 @@ Note that we didn't actually use the implementation details of `Error` or `IO`,
 `Error` isn't mentioned at all, and for `IO` we only used the monadic interface with
 the do notation. We could write the same function with a more generalized type signature:
 
-```hs
+```haskell
 bindExceptT :: Monad m => m (Either e a) -> (a -> m (Either e b)) -> m (Either e b)
 bindExceptT mx f = do
   x <- mx -- `x` has the type `Either e a`
@@ -100,7 +100,7 @@ And because `newtype ExceptT e m a = ExceptT (m (Either e a))` we can just
 pack and unpack that `ExceptT` constructor and get:
 
 
-```hs
+```haskell
 bindExceptT :: Monad m => ExceptT e m a -> (a -> ExceptT e m b) -> ExceptT e m b
 bindExceptT mx f = ExceptT $ do
   -- `runExceptT mx` has the type `m (Either e a)`
@@ -121,20 +121,20 @@ bindExceptT mx f = ExceptT $ do
 
 `ExceptT` can enjoy both worlds - we can return error values using the function `throwError`:
 
-```hs
+```haskell
 throwError :: e -> ExceptT e m a
 ```
 
 and we can "lift" functions that return a value of the underlying monadic type `m` to return
 a value of `ExceptT e m a` instead:
 
-```hs
+```haskell
 lift :: m a -> ExceptT e m a
 ```
 
 for example:
 
-```hs
+```haskell
 getLine :: IO String
 
 lift getLine :: ExceptT e IO String
@@ -147,7 +147,7 @@ lift getLine :: ExceptT e IO String
 
 Now, if we had:
 
-```hs
+```haskell
 readFile :: FilePath -> ExceptT IOError IO String
 
 writeFile :: FilePath -> String -> ExceptT IOError IO ()
@@ -155,7 +155,7 @@ writeFile :: FilePath -> String -> ExceptT IOError IO ()
 
 We could compose them again without issue:
 
-```hs
+```haskell
 readFile "input.txt" >>= writeFile "ouptut.html"
 ```
 

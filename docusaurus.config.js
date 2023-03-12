@@ -55,7 +55,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/book-logo-transparent.png',
       navbar: {
         title: '블로그 생성기를 만들면서 배우는 하스켈',
         logo: {
@@ -65,7 +65,7 @@ const config = {
         items: [
           {
             type: 'doc',
-            docId: 'intro',
+            docId: 'SUMMARY',
             position: 'left',
             label: 'Book',
           },
@@ -79,6 +79,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+        additionalLanguages: ["haskell"],
       },
     }),
 };

@@ -85,7 +85,7 @@ test-suite hs-blog-gen-test
 In order for `hspec-discover` to work, we need to add the following
 to the "main" file of the test suite, for us this is `test/Spec.hs`:
 
-```hs
+```haskell
 {-# OPTIONS_GHC -F -pgmF hspec-discover #-}
 ```
 
@@ -114,7 +114,7 @@ Let's write our first test. We'll create a new module to test
 markup parsing. We'll call it `MarkupParsingSpec.hs`. We'll need
 the following imports as well:
 
-```hs
+```haskell
 module MarkupParsingSpec where
 
 import Test.Hspec
@@ -132,7 +132,7 @@ If they are, the test will pass, and if not, it will fail with a descriptive err
 
 Let's try it and write a test that obviously fails!
 
-```hs
+```haskell
 spec :: Spec
 spec = do
   describe "Markup parsing tests" $ do
@@ -144,14 +144,14 @@ spec = do
 
 After adding the module to the `other-modules` list in the cabal file:
 
-```hs
+```haskell
   other-modules:
     MarkupParsingSpec
 ```
 
 And running the tests, we get this output:
 
-```hs
+```haskell
 MarkupParsing
   Markup parsing tests
     empty FAILED [1]
@@ -176,7 +176,7 @@ whether the tests pass or fail, and if they fail, the output and the expected ou
 
 We can fix our test by matching the expected output:
 
-```hs
+```haskell
       shouldBe
         (parse "")
         []
@@ -184,7 +184,7 @@ We can fix our test by matching the expected output:
 
 Now, running the tests will produce:
 
-```hs
+```haskell
 MarkupParsing
   Markup parsing tests
     empty
@@ -195,7 +195,7 @@ Finished in 0.0001 seconds
 
 We can add a few more tests:
 
-```hs
+```haskell
     it "paragraph" $
       shouldBe
         (parse "hello world")
@@ -233,7 +233,7 @@ to make our test suite better organized.
 
 For example, we can write our tests like this:
 
-```hs
+```haskell
 spec :: Spec
 spec = do
   describe "Markup parsing tests" $ do
@@ -287,7 +287,7 @@ and write any string we want, with multi-lines and unescaped characters!
 We could use this to write the tests
 [we previously wrote](04-markup/01-data_type.html#exercises):
 
-```hs
+```haskell
 {-# language QuasiQuotes #-}
 
 ...
@@ -309,7 +309,7 @@ but list items remain separate.
 
 And add multi-line tests:
 
-```hs
+```haskell
 spec :: Spec
 spec = do
   describe "Markup parsing tests" $ do
@@ -348,7 +348,7 @@ example3Result =
 
 Running the tests:
 
-```hs
+```haskell
 MarkupParsing
   Markup parsing tests
     simple
@@ -371,7 +371,7 @@ Finished in 0.0004 seconds
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 multiline :: Spec
 multiline = do
   describe "Multi-line tests" $ do

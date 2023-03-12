@@ -17,13 +17,13 @@ These lists have the form:
 ```
 
  We want in our library a new function:
-```hs
+```haskell
 ul_ :: [Structure] -> Structure
 ```
 
 So that users can write this:
 
-```hs
+```haskell
 ul_
   [ p_ "item 1"
   , p_ "item 2"
@@ -55,7 +55,7 @@ Very similar to `<p>`, but use the `<pre>` tag. Call this function `code_`.
 <details>
   <summary>Unordered lists</summary>
 
-```hs
+```haskell
 ul_ :: [Structure] -> Structure
 ul_ =
   Structure . el "ul" . concat . map (el "li" . getStructureString)
@@ -67,7 +67,7 @@ ul_ =
 <details>
   <summary>Ordered lists</summary>
 
-```hs
+```haskell
 ol_ :: [Structure] -> Structure
 ol_ =
   Structure . el "ol" . concat . map (el "li" . getStructureString)
@@ -81,7 +81,7 @@ Note: the two functions above could be unified.
 <details>
   <summary>Code blocks</summary>
 
-```hs
+```haskell
 code_ :: String -> Structure
 code_ = Structure . el "pre" . escape
 ```

@@ -5,7 +5,7 @@
 Previously on partial functions, we mentioned that one way to avoid
 writing partial functions is to encode the absence of a result using `Maybe`:
 
-```hs
+```haskell
 data Maybe a
   = Nothing
   | Just a
@@ -21,7 +21,7 @@ the absence of a boolean value.
 We can use this to encode the result of `head`, a function that promises to return
 the first element of a list, without creating a partial function:
 
-```hs
+```haskell
 safeHead :: [a] -> Maybe a
 ```
 
@@ -47,7 +47,7 @@ As we've seen when discussing
 we can use **case expressions** and **function definitions** to deconstruct a `newtype`.
 Same for `data` types as well:
 
-```hs
+```haskell
 -- | A data type representing colors
 data Color
   = RGB Word8 Word8 Word8
@@ -67,7 +67,7 @@ a function argument. Also note that `_` matches any value *without* binding it t
 
 We can also try to match a value with more than one pattern:
 
-```hs
+```haskell
 data Brightness
   = Dark
   | Bright
@@ -123,7 +123,7 @@ we also have special syntax for their pattern match.
 We can use the same special syntax for creating lists when we pattern match on lists,
 replacing the *elements* of the list with patterns. For example:
 
-```hs
+```haskell
 safeHead :: [a] -> Maybe a
 safeHead list =
   case list of
@@ -134,7 +134,7 @@ safeHead list =
 	x : _ -> Just x
 ```
 
-```hs
+```haskell
 exactlyTwo :: [a] -> Maybe (a, a)
 exactlyTwo list =
   case list of
@@ -145,7 +145,7 @@ exactlyTwo list =
 	_ -> Nothing
 ```
 
-```hs
+```haskell
 -- This will also work
 exactlyTwoVersion2 :: [a] -> Maybe (a, a)
 exactlyTwoVersion2 list =
@@ -171,7 +171,7 @@ Solutions:
 
 <details><summary>Solution for (1)</summary>
 
-```hs
+```haskell
 isBright :: AnsiColor -> Bool
 isBright ansiColor =
   case ansiColor of
@@ -182,7 +182,7 @@ isBright ansiColor =
 </details>
 <details><summary>Solution for (2)</summary>
 
-```hs
+```haskell
 ansiToUbuntu :: AnsiColor -> Color
 ansiToUbuntu ansiColor =
   case ansiColor of
@@ -214,7 +214,7 @@ ansiToUbuntu ansiColor =
 Since pattern matching goes arbitrarily deep as we saw before, we could instead
 pattern match all the way through in one case expression:
 
-```hs
+```haskell
 ansiToUbuntu :: AnsiColor -> Color
 ansiToUbuntu ansiColor =
   case ansiColor of
@@ -242,7 +242,7 @@ to my taste in this case.
 </details>
 <details><summary>Solution for (3)</summary>
 
-```hs
+```haskell
 isEmpty :: [a] -> Bool
 isEmpty list =
   case listToMaybe list of
@@ -253,7 +253,7 @@ isEmpty list =
 </details>
 <details><summary>Solution for (4)</summary>
 
-```hs
+```haskell
 isEmpty :: [a] -> Bool
 isEmpty list =
   case list of
@@ -276,7 +276,7 @@ With new features under our belt we can now remember the exact context we are in
 
 Let's look again at the parsing code we wrote previously:
 
-```hs
+```haskell
 parse :: String -> Document
 parse = parseLines [] . lines
 
@@ -308,7 +308,7 @@ But we have learned of a way to represent the absence of a value with `Maybe`! S
 
 Let's rewrite our code above with our new context type:
 
-```hs
+```haskell
 parse :: String -> Document
 parse = parseLines Nothing . lines -- (1)
 
@@ -351,7 +351,7 @@ trim = unwords . words
 
    <details><summary>Solution</summary>
 
-   ```hs
+   ```haskell
    case context of
      Nothing -> parseLines Nothing rest
      Just structure -> structure : parseLines Nothing rest
@@ -371,7 +371,7 @@ trim = unwords . words
 
    <details><summary>Solution</summary>
 
-   ```hs
+   ```haskell
    ( case context of
        Nothing -> id
        Just structure -> (:) structure
@@ -395,7 +395,7 @@ trim = unwords . words
    So what do we do?
    There are many ways to handle that, one simple way is to create a different type with the right shape:
 
-   ```hs
+   ```haskell
    data Context
      = CtxHeading Natural String
      | CtxParagraph [String]
@@ -412,7 +412,7 @@ trim = unwords . words
 Let's cover more parsing cases, we want to handle headings and lists as well.
 We can do that by examining the first characters of a line:
 
-```hs
+```haskell
 parse :: String -> Document
 parse = parseLines Nothing . lines
 
@@ -461,7 +461,7 @@ Exercise: Add the `CodeBlock` and `OrderedList` cases.
 <details>
   <summary>Final module</summary>
 
-```hs
+```haskell
 -- Markup.hs
 
 module Markup
@@ -558,14 +558,14 @@ we can compare solutions with the `==` (equals) operator.
 
 Try it in GHCi! You can read a text file in GHCi using the following syntax:
 
-```hs
+```haskell
 ghci> txt <- readFile "/tmp/sample.txt"
 ```
 
 And then compare with the hand written example values from the solutions
 (after adding them to the module and loading them in GHCi):
 
-```hs
+```haskell
 ghci> parse txt == example4
 ```
 

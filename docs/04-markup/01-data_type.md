@@ -21,7 +21,7 @@ alternative structures. Think of them as combination of both structs and enums.
 
 `data` declarations look like this:
 
-```hs
+```haskell
 data <Type-name> <type-args>
   = <Data-constructor1> <types>
   | <Data-constructor2> <types>
@@ -43,7 +43,7 @@ Let's see a few of examples of data types:
 
 1. Bool
 
-   ```hs
+   ```haskell
    data Bool
      = True
      | False
@@ -55,7 +55,7 @@ Let's see a few of examples of data types:
 
 2. Person
 
-   ```hs
+   ```haskell
    data Person
      = Person String Int -- where the first is the name and the second is
                          -- the age
@@ -70,7 +70,7 @@ Let's see a few of examples of data types:
 
    For example:
 
-   ```hs
+   ```haskell
    Person "Gil" 32
    ```
 
@@ -82,7 +82,7 @@ Let's see a few of examples of data types:
    The above definition can also be written like this:
 
 
-   ```hs
+   ```haskell
    data Person
      = Person
        { name :: String
@@ -92,26 +92,26 @@ Let's see a few of examples of data types:
 
    Values of this type can be written exactly as before,
 
-   ```hs
+   ```haskell
    Person "Gil" 32
    ```
 
    Or with this syntax:
 
-   ```hs
+   ```haskell
    Person { name = "Gil", age = 32 }
    ```
 
    Haskell will also generate functions that can be used to extract the fields from the composite type:
 
-   ```hs
+   ```haskell
    name :: Person -> String
    age :: Person -> Int
    ```
 
    Which can be used like this:
 
-   ```hs
+   ```haskell
    ghci> age (Person { name = "Gil", age = 32 })
    32
    ```
@@ -119,7 +119,7 @@ Let's see a few of examples of data types:
    We even have special syntax for updating specific fields in a record. Of course,
    we do not update records in place - we generate a new value instead.
 
-   ```hs
+   ```haskell
    ghci> gil = Person { name = "Gil", age = 32 }
    ghci> age (gil { age = 33 })
    33
@@ -134,7 +134,7 @@ Let's see a few of examples of data types:
    The easiest way to solve this is to give fields unique names, for example
    by adding a prefix:
 
-   ```hs
+   ```haskell
    data Person
      = Person
        { pName :: String
@@ -147,7 +147,7 @@ Let's see a few of examples of data types:
 
 3. Tuple
 
-   ```hs
+   ```haskell
    data Tuple a b
      = Tuple a b
    ```
@@ -155,7 +155,7 @@ Let's see a few of examples of data types:
    This is pretty similar to `Person`, but we can plug any type we want
    for this definition. For example:
 
-   ```hs
+   ```haskell
    Tuple "Clicked" True :: Tuple String Bool
 
    Tuple 'a' 'z' :: Tuple Char Char
@@ -163,7 +163,7 @@ Let's see a few of examples of data types:
 
    This type has special syntax in Haskell:
 
-   ```hs
+   ```haskell
    ("Clicked", True) :: (String, Bool)
 
    ('a', 'z') :: (Char, Char)
@@ -175,7 +175,7 @@ Let's see a few of examples of data types:
     for types as input in order to return a data type. We can even take a look at the "type"
     signature of `Tuple` in `ghci` using the `:kind` command.
 
-    ```hs
+    ```haskell
     ghci> data Tuple a b = Tuple a b
     ghci> :kind Tuple
     Tuple :: * -> * -> *
@@ -198,7 +198,7 @@ Let's see a few of examples of data types:
 
 4. Either
 
-   ```hs
+   ```haskell
    data Either a b
      = Left a
      | Right b
@@ -208,7 +208,7 @@ Let's see a few of examples of data types:
    two. This means that we can choose which side we want. Here are a
    couple of values of type `Either String Int`:
 
-   ```hs
+   ```haskell
    Left "Hello"
 
    Right 17
@@ -224,7 +224,7 @@ in our markup language. We tag each structure using the data constructor
 and provide the rest of the information (the paragraph text, the list items, etc.)
 in the `<types>` section of the data declaration for each constructor:
 
-```hs
+```haskell
 type Document
   = [Structure]
 
@@ -301,7 +301,7 @@ Solutions:
 <details>
   <summary>Solution 1</summary>
 
-```hs
+```haskell
 example1 :: Document
 example1 =
   [ Paragraph "Hello, world!"
@@ -313,7 +313,7 @@ example1 =
 <details>
   <summary>Solution 2</summary>
 
-```hs
+```haskell
 example2 :: Document
 example2 =
   [ Heading 1 "Welcome"
@@ -326,7 +326,7 @@ example2 =
 <details>
   <summary>Solution 3</summary>
 
-```hs
+```haskell
 example3 :: Document
 example3 =
   [ Paragraph "Remember that multiple lines with no separation are grouped together to a single paragraph but list items remain separate."
@@ -342,7 +342,7 @@ example3 =
 <details>
   <summary>Solution 4</summary>
 
-```hs
+```haskell
 example4 :: Document
 example4 =
   [ Heading 1 "Compiling programs with ghc"
@@ -380,7 +380,7 @@ Note that in this case we *do* want to export the constructors of `Structure`.
 <details>
   <summary>Solution</summary>
 
-```hs
+```haskell
 -- Markup.hs
 
 module Markup

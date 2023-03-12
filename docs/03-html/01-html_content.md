@@ -6,7 +6,7 @@
 함수를 정의하기 위해서는 이전 장에서 본 것과 비슷한 정의를 만들고 `=` 뒤에 인자 이름을 추가하면 됩니다.
 따라서 함수 정의는 다음과 같은 형태를 가집니다:
 
-```hs
+```haskell
 <name> <arg1> <arg2> ... <argN> = <expression>
 ```
 
@@ -16,7 +16,7 @@
 함수는 주어진 문자열의 앞뒤에 `html`과 `body` 태그를 감싸서 반환합니다.
 문자열을 연결하기 위해 `<>` 연산자를 사용합니다.
 
-```hs
+```haskell
 wrapHtml content = "<html><body>" <> content <> "</body></html>"
 ```
 
@@ -25,25 +25,25 @@ wrapHtml content = "<html><body>" <> content <> "</body></html>"
 
 이제 이전 장에서 정의한 `myhtml`을 다음과 같이 변경할 수 있습니다:
 
-```hs
+```haskell
 myhtml = wrapHtml "Hello, world!"
 ```
 
 함수를 호출할 때에는 괄호가 필요하지 않는점을 주목하세요. 함수 호출은 다음과 같은 형태를 가집니다:
 
-```hs
+```haskell
 <name> <arg1> <arg2> ... <argN>
 ```
 
 하지만, `main = putStrLn myhtml`에서 `myhtml`을 그에 해당하는 표현식으로 교체하고 싶다면 괄호를 사용해야 합니다:
 
-```hs
+```haskell
 main = putStrLn (wrapHtml "Hello, world!")
 ```
 
 만약 다음과 같이 작성한다면:
 
-```hs
+```haskell
 main = putStrLn wrapHtml "Hello, world!"
 ```
 
@@ -62,20 +62,20 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 >
 > `<>`는 오른쪽 결합성을 갖기 때문에 Haskell은 `<>` 오른쪽에 보이지 않는 괄호를 추가합니다. 예를 들어:
 >
-> ```hs
+> ```haskell
 > "<html><body>" <> content <> "</body></html>"
 > ```
 >
 > 는 다음과 같이 해석됩니다:
 >
-> ```hs
+> ```haskell
 > "<html><body>" <> (content <> "</body></html>")
 > ```
 >
 > 표현식 `1 + 2 * 3`에서 `+` 연산자는 우선순위 6을 갖고, `*` 연산자는 우선순위 7을 갖기 때문에 `*` 연산자가 더 강하게 바인딩됩니다.
 > 따라서 Haskell은 이 표현식을 다음과 같이 해석합니다:
 >
-> ```hs
+> ```haskell
 > 1 + (2 * 3)
 > ```
 >
@@ -102,7 +102,7 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
    
    다음과 같은 입력에 대해:
    
-   ```hs
+   ```haskell
    makeHtml "My page title" "My page content"
    ```
    
@@ -119,82 +119,82 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 
 <details>
   <summary>연습문제 #1 정답</summary>
-  
-  ```hs
-  html_ content = "<html>" <> content <> "</html>"
-     
-  body_ content = "<body>" <> content <> "</body>"
-  ```
+
+```haskell
+html_ content = "<html>" <> content <> "</html>"
+
+body_ content = "<body>" <> content <> "</body>"
+```
 
 </details>
 
 <details>
   <summary>연습문제 #2 정답</summary>
-  
-  ```hs
-  myhtml = html_ (body_ "Hello, world!")
-  ```
+
+```haskell
+myhtml = html_ (body_ "Hello, world!")
+```
 
 </details>
 
 <details>
   <summary>연습문제 #3 정답</summary>
-  
-  ```hs
-  head_ content = "<head>" <> content <> "</head>"
-  
-  title_ content = "<title>" <> content <> "</title>"
-  ```
+
+```haskell
+head_ content = "<head>" <> content <> "</head>"
+
+title_ content = "<title>" <> content <> "</title>"
+```
 
 </details>
 
 <details>
   <summary>연습문제 #4 정답</summary>
-  
-  ```hs
-  makeHtml title content = html_ (head_ (title_ title) <> body_ content)
-  ```
+
+```haskell
+makeHtml title content = html_ (head_ (title_ title) <> body_ content)
+```
 
 </details>
 
 
 <details>
   <summary>연습문제 #5 정답</summary>
-  
-  ```hs
-  myhtml = makeHtml "Hello title" "Hello, world!"
-  ```
+
+```haskell
+myhtml = makeHtml "Hello title" "Hello, world!"
+```
 
 </details>
 
 
 <details>
   <summary>최종 프로그램</summary>
+
+```haskell
+-- hello.hs
+
+main = putStrLn myhtml
+
+myhtml = makeHtml "Hello title" "Hello, world!"
+
+makeHtml title content = html_ (head_ (title_ title) <> body_ content)
+
+html_ content = "<html>" <> content <> "</html>"
   
-  ```hs
-  -- hello.hs
+body_ content = "<body>" <> content <> "</body>"
 
-  main = putStrLn myhtml
+head_ content = "<head>" <> content <> "</head>"
 
-  myhtml = makeHtml "Hello title" "Hello, world!"
+title_ content = "<title>" <> content <> "</title>"
+```
 
-  makeHtml title content = html_ (head_ (title_ title) <> body_ content)
+이제 `hello.hs` 프로그램을 실행하고 출력을 파일로 파이프라인으로 전달하고 브라우저에서 열 수 있습니다:
 
-  html_ content = "<html>" <> content <> "</html>"
-     
-  body_ content = "<body>" <> content <> "</body>"
-
-  head_ content = "<head>" <> content <> "</head>"
-  
-  title_ content = "<title>" <> content <> "</title>"
-  ```
-
-   이제 `hello.hs` 프로그램을 실행하고 출력을 파일로 파이프라인으로 전달하고 브라우저에서 열 수 있습니다:
-   
-   ```sh
-   runghc hello.hs > hello.html
-   firefox hello.html
-   ```
+```sh
+runghc hello.hs > hello.html
+firefox hello.html
+```
 
 이제 `Hello, world!`가 페이지에 표시되고 페이지의 제목이 `Hello title`로 표시됩니다.
 
@@ -223,14 +223,14 @@ GHC는 `putStrLn`는 하나의 인자를 필요로 하지만 두 개가 주어�
 
 다음과 같은 예제가 있습니다:
 
-```hs
+```haskell
 main =
     putStrLn "Hello, world!"
 ```
 
 또는:
 
-```hs
+```haskell
 main =
     putStrLn
         (wrapHtml "Hello, world!")
@@ -238,12 +238,12 @@ main =
 
 __다음 스타일은 피하세요__. 들여쓰기 단계를 두 개 이상 사용하거나 완전히 무시하고 있습니다:
 
-```hs
+```haskell
 main = putStrLn
         (wrapHtml "Hello, world!")
 ```
 
-```hs
+```haskell
 main = putStrLn
                 (wrapHtml "Hello, world!")
 ```

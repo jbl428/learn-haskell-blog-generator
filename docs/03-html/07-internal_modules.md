@@ -58,7 +58,7 @@ This module will contain all of the code we previously had in the `Html`
 module, but **we will change the module declaration in `Html.Internal`
 and _omit_ the export list**:
 
-```hs
+```haskell
 -- Html/Internal.hs
 
 module Html.Internal where
@@ -69,7 +69,7 @@ module Html.Internal where
 And now in `Html.hs`, we will remove the code that we moved to `Html/Internal.hs`
 and in its stead we'll import the internal module:
 
-```hs
+```haskell
 -- Html.hs
 
 module Html
@@ -94,7 +94,7 @@ to work with our library, they could always work with `Html.Internal` instead.
 <details>
   <summary><b>Our revised Html.hs and Html/Internal.hs</b></summary>
 
-```hs
+```haskell
 -- Html.hs
 
 module Html
@@ -112,7 +112,7 @@ module Html
 import Html.Internal
 ```
 
-```hs
+```haskell
 -- Html/Internal.hs
 
 module Html.Internal where

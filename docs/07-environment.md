@@ -10,7 +10,7 @@ We can represent our environment as a record data type and build it from user in
 The user input can be from command-line arguments, a configuration file,
 or something else:
 
-```hs
+```haskell
 module HsBlog.Env where
 
 data Env
@@ -37,7 +37,7 @@ type from the `mtl` (or `transformers`) package.
 
 ### ReaderT
 
-```hs
+```haskell
 newtype ReaderT r m a = ReaderT (r -> m a)
 ```
 
@@ -87,13 +87,13 @@ The `Control.Monad.Reader` provides an alias: `Reader r a = ReaderT r Identity a
 >
 > <details><summary>Solution for liftA2</summary>
 >
-> ```hs
+> ```haskell
 > liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
 > ```
 >
 > <details><summary>Solution for (1)</summary>
 >
-> ```hs
+> ```haskell
 > -- Specialize: replace `f` with `ReaderT Env IO`
 > liftA2 :: (a -> b -> c) -> ReaderT Env IO a -> ReaderT Env IO b -> ReaderT Env IO c
 > ```
@@ -102,7 +102,7 @@ The `Control.Monad.Reader` provides an alias: `Reader r a = ReaderT r Identity a
 >
 > <details><summary>Solution for (2)</summary>
 >
-> ```hs
+> ```haskell
 > -- Unpack the newtype, replacing `ReaderT Env IO a` with `Env -> IO a`
 > liftA2 :: (a -> b -> c) -> (Env -> IO a) -> (Env -> IO b) -> (Env -> IO c)
 > ```
@@ -111,7 +111,7 @@ The `Control.Monad.Reader` provides an alias: `Reader r a = ReaderT r Identity a
 >
 > <details><summary>Solution for (3)</summary>
 >
-> ```hs
+> ```haskell
 > specialLiftA2 :: (a -> b -> c) -> (Env -> IO a) -> (Env -> IO b) -> (Env -> IO c)
 > specialLiftA2 combine funcA funcB env =
 >   liftA2 combine (funcA env) (funcB env)
@@ -132,13 +132,13 @@ The `Control.Monad.Reader` provides an alias: `Reader r a = ReaderT r Identity a
 
 Instead of defining a function like this:
 
-```hs
+```haskell
 txtsToRenderedHtml :: Env -> [(FilePath, String)] -> [(FilePath, String)]
 ```
 
 We define it like this:
 
-```hs
+```haskell
 txtsToRenderedHtml :: [(FilePath, String)] -> Reader Env [(FilePath, String)]
 ```
 
@@ -146,7 +146,7 @@ Now that our code uses `Reader`, we have to accommodate that in the way we write
 
 Before:
 
-```hs
+```haskell
 txtsToRenderedHtml :: Env -> [(FilePath, String)] -> [(FilePath, String)]
 txtsToRenderedHtml env txtFiles =
  let
@@ -161,7 +161,7 @@ Note how we needed to thread the `env` to the other functions that use it.
 
 After:
 
-```hs
+```haskell
 txtsToRenderedHtml :: [(FilePath, String)] -> Reader Env [(FilePath, String)]
 txtsToRenderedHtml txtFiles = do
   let
@@ -182,7 +182,7 @@ of `map` to compose the various `Reader` values `convertFile` will produce.
 When we want to use our `Env`, we need to *extract* it from the `Reader`.
 We can do it with:
 
-```hs
+```haskell
 ask :: ReaderT r m r
 ```
 
@@ -191,7 +191,7 @@ See the comparison:
 
 Before:
 
-```hs
+```haskell
 convertFile :: Env -> (FilePath, Markup.Document) -> (FilePath, Html.Html)
 convertFile env (file, doc) =
   (file, convert env (takeBaseName file) doc)
@@ -199,7 +199,7 @@ convertFile env (file, doc) =
 
 After:
 
-```hs
+```haskell
 convertFile :: (FilePath, Markup.Document) -> Reader Env (FilePath, Html.Html)
 convertFile (file, doc) = do
   env <- ask
@@ -218,7 +218,7 @@ Similar to handling the errors with `Either`, at some point we need to supply th
 a computation that uses `Reader`, and extract the result from the computation.
 We can do that with the functions `runReader` and `runReaderT`:
 
-```hs
+```haskell
 runReader :: Reader r a -> (r -> a)
 
 runReaderT :: ReaderT r m a -> (r -> m a)
@@ -227,7 +227,7 @@ runReaderT :: ReaderT r m a -> (r -> m a)
 These functions convert a `Reader` or `ReaderT` to a function that takes `r`.
 Then we can pass the initial environment to that function:
 
-```hs
+```haskell
 convertDirectory :: Env -> FilePath -> FilePath -> IO ()
 convertDirectory env inputDir outputDir = do
   DirContents filesToProcess filesToCopy <- getDirFilesAndContent inputDir
@@ -252,7 +252,7 @@ argument instead of a `Reader`, we can just extract the environment
 with `ask`, apply a function to the extracted environment,
 and pass the result to the function, like this:
 
-```hs
+```haskell
 outer :: Reader BigEnv MyResult
 outer = do
   env <- ask
@@ -269,7 +269,7 @@ But if `inner` uses a `Reader SmallEnv` instead of argument passing,
 we can use `runReader` to *convert `inner` to a normal function*,
 and use the same idea as above!
 
-```hs
+```haskell
 outer :: Reader BigEnv MyResult
 outer = do
   env <- ask
@@ -287,7 +287,7 @@ This pattern is generalized and captured by a function called
 [withReaderT](https://hackage.haskell.org/package/transformers-0.6.0.2/docs/Control-Monad-Trans-Reader.html#v:withReaderT),
 and works even for `ReaderT`:
 
-```hs
+```haskell
 withReaderT :: (env2 -> env1) -> ReaderT env1 m a -> ReaderT env2 m a
 ```
 
@@ -297,7 +297,7 @@ using this function.
 
 Let's see it concretely with our example:
 
-```hs
+```haskell
 outer :: Reader BigEnv MyResult
 outer = withReaderT extractSmallEnv inner
 ```
@@ -308,7 +308,7 @@ Question: what is the type of `withReaderT` when specialized in our case?
 
 <details><summary>Answer</summary>
 
-```hs
+```haskell
 withReaderT
   :: (BigEnv -> SmallEnv)     -- This is the type of `extractSmallEnv`
   -> Reader SmallEnv MyResult -- This is the type of `inner`
@@ -348,7 +348,7 @@ to build the `head`!
 
      <details><summary>src/HsBlog/Html.hs</summary>
 
-     ```hs
+     ```haskell
      -- Html.hs
 
      module HsBlog.Html
@@ -382,7 +382,7 @@ to build the `head`!
 
      <details><summary>src/HsBlog/Html/Internal.hs</summary>
 
-     ```hs
+     ```haskell
      newtype Head
        = Head String
 
@@ -430,7 +430,7 @@ to build the `head`!
 
      <details><summary>src/HsBlog/Convert.hs</summary>
 
-     ```hs
+     ```haskell
      import Prelude hiding (head)
      import HsBlog.Env (Env(..))
 
@@ -454,7 +454,7 @@ to build the `head`!
 
      <details><summary>src/HsBlog/Directory.hs</summary>
 
-     ```hs
+     ```haskell
      buildIndex :: [(FilePath, Markup.Document)] -> Reader Env Html.Html
      buildIndex files = do
        env <- ask
@@ -488,92 +488,92 @@ to build the `head`!
 3. Create a command-line parser for `Env`, attach it to the `convert-dir` command,
    and pass the result it to the `convertDirectory` function.
 
-   <details><summary>Solution</summary>
+<details><summary>Solution</summary>
 
-     <details><summary>src/HsBlog.hs</summary>
+<details><summary>src/HsBlog.hs</summary>
 
-     ```hs
-     import HsBlog.Env (defaultEnv)
+```haskell
+import HsBlog.Env (defaultEnv)
 
-     convertSingle :: String -> Handle -> Handle -> IO ()
+convertSingle :: String -> Handle -> Handle -> IO ()
 
-     process :: String -> String -> String
-     process title = Html.render . convert defaultEnv title . Markup.parse
-     ```
+process :: String -> String -> String
+process title = Html.render . convert defaultEnv title . Markup.parse
+```
 
-     </details>
+</details>
 
 
-     <details><summary>app/OptParse.hs</summary>
+<details><summary>app/OptParse.hs</summary>
 
-     ```hs
-     import HsBlog.Env
+```haskell
+import HsBlog.Env
 
-     ------------------------------------------------
-     -- * Our command-line options model
+------------------------------------------------
+-- * Our command-line options model
 
-     -- | Model
-     data Options
-       = ConvertSingle SingleInput SingleOutput
-       | ConvertDir FilePath FilePath Env
-       deriving Show
+-- | Model
+data Options
+ = ConvertSingle SingleInput SingleOutput
+ | ConvertDir FilePath FilePath Env
+ deriving Show
 
-     ------------------------------------------------
-     -- * Directory conversion parser
+------------------------------------------------
+-- * Directory conversion parser
 
-     pConvertDir :: Parser Options
-     pConvertDir =
-       ConvertDir <$> pInputDir <*> pOutputDir <*> pEnv
+pConvertDir :: Parser Options
+pConvertDir =
+ ConvertDir <$> pInputDir <*> pOutputDir <*> pEnv
 
-     -- | Parser for blog environment
-     pEnv :: Parser Env
-     pEnv =
-       Env <$> pBlogName <*> pStylesheet
+-- | Parser for blog environment
+pEnv :: Parser Env
+pEnv =
+ Env <$> pBlogName <*> pStylesheet
 
-     -- | Blog name parser
-     pBlogName :: Parser String
-     pBlogName =
-       strOption
-         ( long "name"
-           <> short 'N'
-           <> metavar "STRING"
-           <> help "Blog name"
-           <> value (eBlogName defaultEnv)
-           <> showDefault
-         )
+-- | Blog name parser
+pBlogName :: Parser String
+pBlogName =
+ strOption
+   ( long "name"
+     <> short 'N'
+     <> metavar "STRING"
+     <> help "Blog name"
+     <> value (eBlogName defaultEnv)
+     <> showDefault
+   )
 
-     -- | Stylesheet parser
-     pStylesheet :: Parser String
-     pStylesheet =
-       strOption
-         ( long "style"
-           <> short 'S'
-           <> metavar "FILE"
-           <> help "Stylesheet filename"
-           <> value (eStylesheetPath defaultEnv)
-           <> showDefault
-         )
+-- | Stylesheet parser
+pStylesheet :: Parser String
+pStylesheet =
+ strOption
+   ( long "style"
+     <> short 'S'
+     <> metavar "FILE"
+     <> help "Stylesheet filename"
+     <> value (eStylesheetPath defaultEnv)
+     <> showDefault
+   )
 
-     ```
+```
 
-     </details>
+</details>
 
-     <details><summary>app/Main.hs</summary>
+<details><summary>app/Main.hs</summary>
 
-     ```hs
-     main :: IO ()
-     main = do
-       options <- parse
-       case options of
-         ConvertDir input output env ->
-           HsBlog.convertDirectory env input output
+```haskell
+main :: IO ()
+main = do
+ options <- parse
+ case options of
+   ConvertDir input output env ->
+     HsBlog.convertDirectory env input output
 
-         ...
-     ```
+   ...
+```
 
-     </details>
+</details>
 
-   </details>
+</details>
 
 
 

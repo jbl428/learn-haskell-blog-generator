@@ -14,7 +14,7 @@
 
 모듈 정의는 다음과 같습니다:
 
-```hs
+```haskell
 module <모듈 이름>
   ( <내보내기(export) 목록>
   )
@@ -26,7 +26,7 @@ module <모듈 이름>
 
 `Html.hs`라는 이름의 새 소스 파일을 만들고 다음과 같이 모듈 선언 코드를 파일 상단에 추가합니다:
 
-```hs
+```haskell
 module Html
   ( Html
   , Title
@@ -50,7 +50,7 @@ module Html
 
 `hello.hs` 파일에서 HTML과 관련된 함수들도 `Html.hs`로 옮깁니다:
 
-```hs
+```haskell
 newtype Html
   = Html String
 
@@ -98,13 +98,13 @@ render html =
 
 `hello.hs` 파일 상단에 다음 코드를 추가합니다:
 
-```hs
+```haskell
 import Html
 ```
 
 이제 `hello.hs` 파일은 다음과 같이 변경됩니다:
 
-```hs
+```haskell
 -- hello.hs
 
 import Html
@@ -127,7 +127,7 @@ myhtml =
 
 그리고 `Html.hs` 파일은 다음과 같이 변경됩니다:
 
-```hs
+```haskell
 -- Html.hs
 
 module Html

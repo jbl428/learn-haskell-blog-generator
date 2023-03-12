@@ -11,7 +11,7 @@ Haskell provides us with a mechanism that can automatically generate the impleme
 
 The type of the function `show` looks like this:
 
-```hs
+```haskell
 show :: Show a => a -> String
 ```
 
@@ -25,7 +25,7 @@ interface for different types. In our case, Haskell's standard library
 defines the type class `Show` in the following way (this is a simplified
 version but good enough for our purposes):
 
-```hs
+```haskell
 class Show a where
   show :: a -> String
 ```
@@ -35,7 +35,7 @@ A type class declaration describes a common interface for Haskell types.
 of the type class `Show`.
 We can define an instance of a type class manually like this:
 
-```hs
+```haskell
 instance Show Bool where
   show x =
     case x of
@@ -47,7 +47,7 @@ Defining an instance means providing an implementation for the interface of a sp
 When we call the function `show` on a data type, the compiler will search the type's `Show` instance,
 and use the implementation provided in the instance declaration.
 
-```hs
+```haskell
 ghci> show True
 "True"
 ghci> show 187
@@ -69,7 +69,7 @@ If all the types in the definition of our data type already implement
 an instance of `Show`, we can *automatically derive* it by adding `deriving Show` at the
 end of the data definition.
 
-```hs
+```haskell
 data Structure
   = Heading Natural String
   | Paragraph String
@@ -82,7 +82,7 @@ data Structure
 Now we can use the function `show :: Show a => a -> String` for any
 type that implements an instance of the `Show` type class. For example, with `print`:
 
-```hs
+```haskell
 print :: Show a => a -> IO ()
 print = putStrLn . show
 ```
@@ -109,7 +109,7 @@ them to adhere to these rules.
 
 As an example, let's look at the `Semigroup` type class:
 
-```hs
+```haskell
 class Semigroup a where
   (<>) :: a -> a -> a
 ```
@@ -126,7 +126,7 @@ x <> (y <> z) = (x <> y) <> z
 
 An example of a lawful instance of `Semigroup` is lists with the append operation (`++`):
 
-```hs
+```haskell
 instance Semigroup [a] where
   (<>) = (++)
 ```
@@ -161,7 +161,7 @@ Exercise: Please do this and remove the `append_` function from the API.
 
 Replace this:
 
-```hs
+```haskell
 append_ :: Structure -> Structure -> Structure
 append_ c1 c2 =
   Structure (getStructureString c1 <> getStructureString c2)
@@ -169,7 +169,7 @@ append_ c1 c2 =
 
 With this:
 
-```hs
+```haskell
 instance Semigroup Structure where
   (<>) c1 c2 =
     Structure (getStructureString c1 <> getStructureString c2)

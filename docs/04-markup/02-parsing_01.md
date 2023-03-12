@@ -67,7 +67,7 @@ function add(n, m) {
 
 We can write the same algorithm in Haskell without mutation using recursion:
 
-```hs
+```haskell
 add n m =
   if m /= 0
     then add (increment n) (decrement m)
@@ -115,7 +115,7 @@ outside world, for example when writing a computation to standard output or send
 
 So unless this computation is required, it won't be evaluated. For example:
 
-```hs
+```haskell
 main =
   if add (increment 2) (decrement 3) == 5
     then putStrLn "Yes."
@@ -126,7 +126,7 @@ In the case above, we need the result of `add (increment 2) (decrement 3)`
 in order to know which message to write,
 so it will be evaluated. But:
 
-```hs
+```haskell
 main =
   let
     five = add (increment 2) (decrement 3)
@@ -140,7 +140,7 @@ But then if we know we need `add (increment 2) (decrement 3)`,
 do we use strict evaluation now? The answer is no - because we might not need
 to evaluate the arguments to complete the computation. For example in this case:
 
-```hs
+```haskell
 const a b = a
 
 main =
@@ -166,7 +166,7 @@ I've written a more in-depth blog post about how this works in Haskell:
 
 Please read it and try to evaluate the following program by hand:
 
-```hs
+```haskell
 import Prelude hiding (const) -- feel free to ignore this line
 
 increment n = n + 1
@@ -193,7 +193,7 @@ Remember that evaluation always begins from `main`.
 
 evaluating `main`
 
-```hs
+```haskell
 if const (add 3 2) (decrement 3) == 5
   then putStrLn "Yes."
   else putStrLn "No."
@@ -201,7 +201,7 @@ if const (add 3 2) (decrement 3) == 5
 
 expanding `const`
 
-```hs
+```haskell
 if add 3 2 == 5
   then putStrLn "Yes."
   else putStrLn "No."
@@ -209,7 +209,7 @@ if add 3 2 == 5
 
 expanding `add`
 
-```hs
+```haskell
 if (if 2 /= 0 then add (increment 3) (decrement 2) else 3) == 5
   then putStrLn "Yes."
   else putStrLn "No."
@@ -218,7 +218,7 @@ if (if 2 /= 0 then add (increment 3) (decrement 2) else 3) == 5
 evaluating the control flow `2 /= 0`
 
 
-```hs
+```haskell
 if (if True then add (increment 3) (decrement 2) else 3) == 5
   then putStrLn "Yes."
   else putStrLn "No."
@@ -226,7 +226,7 @@ if (if True then add (increment 3) (decrement 2) else 3) == 5
 
 Choosing the `then` branch
 
-```hs
+```haskell
 if (add (increment 3) (decrement 2)) == 5
   then putStrLn "Yes."
   else putStrLn "No."
@@ -234,7 +234,7 @@ if (add (increment 3) (decrement 2)) == 5
 
 expanding `add`
 
-```hs
+```haskell
 if
   ( if decrement 2 /= 0
     then add
@@ -248,7 +248,7 @@ if
 
 Evaluating `decrement 2` in the control flow (notice how both places change!)
 
-```hs
+```haskell
 if
   ( if 1 /= 0
     then add
@@ -262,7 +262,7 @@ if
 
 Evaluating the control flow `1 /= 0`
 
-```hs
+```haskell
 if
   ( if True
     then add
@@ -276,7 +276,7 @@ if
 
 Choosing the `then` branch
 
-```hs
+```haskell
 if
   ( add
     (increment (increment 3))
@@ -288,7 +288,7 @@ if
 
 Expanding `add`
 
-```hs
+```haskell
 if
   ( if decrement 1 /= 0
     then add
@@ -302,7 +302,7 @@ if
 
 Evaluating control flow `decrement 1`
 
-```hs
+```haskell
 if
   ( if 0 /= 0
     then add
@@ -316,7 +316,7 @@ if
 
 Evaluating control flow `0 /= 0`
 
-```hs
+```haskell
 if
   ( if False
     then add
@@ -330,7 +330,7 @@ if
 
 Choosing the `else` branch
 
-```hs
+```haskell
 if
   (increment (increment 3)) == 5
   then putStrLn "Yes."
@@ -339,7 +339,7 @@ if
 
 Evaluate control flow `increment (increment 3)`
 
-```hs
+```haskell
 if
   (increment 3 + 1) == 5
   then putStrLn "Yes."
@@ -348,7 +348,7 @@ if
 
 Evaluate in control flow `increment 3`
 
-```hs
+```haskell
 if
   (3 + 1 + 1) == 5
   then putStrLn "Yes."
@@ -357,7 +357,7 @@ if
 
 Evaluate in control flow `3 + 1`
 
-```hs
+```haskell
 if
   (4 + 1) == 5
   then putStrLn "Yes."
@@ -366,7 +366,7 @@ if
 
 Evaluate in control flow `4 + 1`
 
-```hs
+```haskell
 if
   5 == 5
   then putStrLn "Yes."
@@ -375,7 +375,7 @@ if
 
 Evaluate in control flow `5 == 5`
 
-```hs
+```haskell
 if
   True
   then putStrLn "Yes."
@@ -384,7 +384,7 @@ if
 
 Choosing the `then` branch
 
-```hs
+```haskell
 putStrLn "Yes."
 ```
 
@@ -410,13 +410,13 @@ with a specific value in place of every element.
 
 In Haskell, this function would have the following signature:
 
-```hs
+```haskell
 replicate :: Int -> a -> [a]
 ```
 
 Here are a few usage examples of `replicate`:
 
-```hs
+```haskell
 ghci> replicate 4 True
 [True,True,True,True]
 ghci> replicate 0 True
@@ -440,7 +440,7 @@ Try to write this in Haskell!
 <details>
 <summary>Solution</summary>
 
-```hs
+```haskell
 replicate :: Int -> a -> [a]
 replicate n x =
   if n <= 0    -- recognizing the base case
@@ -472,7 +472,7 @@ For example, let's write two functions, one that checks whether a natural number
 is even or not, and one that checks whether a number is odd or not
 only by decrementing it.
 
-```hs
+```haskell
 even :: Int -> Bool
 
 odd :: Int -> Bool
@@ -497,7 +497,7 @@ Try writing this in Haskell!
 <details>
 <summary>Solution</summary>
 
-```hs
+```haskell
 even :: Int -> Bool
 even n =
   if n == 0
@@ -580,7 +580,7 @@ Remember that we want to start by ignoring all of the markup syntax
 and just group lines together into paragraphs (paragraphs are separated by an empty line),
 and iteratively add new features later in the chapter:
 
-```hs
+```haskell
 parse :: String -> Document
 parse = parseLines [] . lines -- (1)
 

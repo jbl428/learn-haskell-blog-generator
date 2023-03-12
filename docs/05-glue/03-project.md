@@ -199,7 +199,7 @@ Do this now.
 
 1. `Main.hs` -> `src/HsBlog.hs`
 
-   ```hs
+   ```haskell
    module HsBlog
      ( main
 	 , process
@@ -213,7 +213,7 @@ Do this now.
 
 2. `Convert.hs` -> `src/HsBlog/Convert.hs`
 
-   ```hs
+   ```haskell
    module HsBlog.Convert where
 
    import qualified HsBlog.Markup as Markup
@@ -222,7 +222,7 @@ Do this now.
 
 3. `Html.hs` -> `src/HsBlog/Html.hs`
 
-   ```hs
+   ```haskell
    module HsBlog.Html
    ...
 
@@ -231,14 +231,14 @@ Do this now.
 
 4. `Html/Internal.hs` -> `src/HsBlog/Html/Internal.hs`
 
-   ```hs
+   ```haskell
    module HsBlog.Html.Internal where
    ```
 
 
 5. `Markup.hs` -> `src/HsBlog/Markup.hs`
 
-   ```hs
+   ```haskell
    module HsBlog.Markup
    ```
 
@@ -284,7 +284,7 @@ We can write many executables descriptions. In this case we only have one.
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 -- app/Main.hs
 
 module Main where

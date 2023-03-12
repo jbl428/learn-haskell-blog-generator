@@ -98,7 +98,7 @@ documentation. These constructs could be module headers, types, data constructor
 
 For example:
 
-```hs
+```haskell
 Haddock coverage:
 ...
    0% (  0 /  3) in 'HsBlog.Convert'
@@ -142,7 +142,7 @@ the definition, or by writing a comment block prefixed with `^` *after* the defi
 
 For example:
 
-```hs
+```haskell
 -- | Construct an HTML page from a `Head`
 --   and a `Structure`.
 html_
@@ -155,7 +155,7 @@ html_ = ...
 
 Here's another example:
 
-```hs
+```haskell
 {- | Represents a single markup structure. Such as:
 
 - A paragraph
@@ -177,7 +177,7 @@ data Structure
 
 And another:
 
-```hs
+```haskell
 {- | Markup to HTML conversion module.
 
 This module handles converting documents written in our custom
@@ -203,7 +203,7 @@ Headings are comments which are prefixed with a number of `*` (just like in our 
 
 For example:
 
-```hs
+```haskell
 -- * HTML EDSL
 
 html_ :: Head -> Structure -> Html
@@ -230,7 +230,7 @@ link_ = ...
 
 It is also possible to add headings to the export list instead:
 
-```hs
+```haskell
 module HsBlog.Html
   ( -- * HTML EDSL
     Html

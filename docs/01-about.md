@@ -1,6 +1,6 @@
 # 이 책에 대하여
 
-> <img src="book-logo-transparent.png" alt="book logo" style="max-height: 1.5em; vertical-align: top"> 이 책은 활발하게 유지되고 있습니다. 오류를 발견하셨다면 [여기](https://github.com/soupi/learn-haskell-blog-generator/issues)로 알려주세요.
+> 이 책은 활발하게 유지되고 있습니다. 오류를 발견하셨다면 [여기](https://github.com/soupi/learn-haskell-blog-generator/issues) 로 알려주세요.
 
 <!--
 <div style="text-align: center">
@@ -36,7 +36,7 @@
   이 책 (PDF로 내보내면) 약 200 페이지 정도입니다.
 - **프로젝트 지향적입니다**. 많은 하스켈 책은 하스켈을 배우기 위해 기본 개념과 기능을 진행하는 방법을 가르칩니다.
   하지만 이 책에서는 **하스켈 프로그램을 구축**하고, 그 과정에서 하스켈을 배웁니다.
-  이것은 몇몇 사람에게는 장점이 될 수 있지만, 다른 사람에게는 단점이 될 수 있습니다.<br>
+  이것은 몇몇 사람에게는 장점이 될 수 있지만, 다른 사람에게는 단점이 될 수 있습니다.<br/>
   이 책과 비슷한 다른 튜토리얼들이 있습니다. 가장 유명한 것들은
   [Beginning Haskell](https://www.apress.com/gp/book/9781430262510#otherversion=9781430262503)
   과 [Haskell via Sokoban](https://haskell-via-sokoban.nomeata.de/) 입니다.

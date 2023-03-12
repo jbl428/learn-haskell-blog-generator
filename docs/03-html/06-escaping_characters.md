@@ -13,7 +13,7 @@ for a list of characters we need to escape.
 
 Let's create a new function called `escape`:
 
-```hs
+```haskell
 escape :: String -> String
 escape =
   let
@@ -33,7 +33,7 @@ In `escape` we see a few new things:
 
 1. Let expressions: we can define local names using this syntax:
 
-   ```hs
+   ```haskell
    let
      <name> = <expression>
    in
@@ -88,19 +88,19 @@ and [concat](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-List.ht
 
 Using `map` we can apply a function to each of the elements in a list. Its type signature is:
 
-```hs
+```haskell
 map :: (a -> b) -> [a] -> [b]
 ```
 
 For example:
 
-```hs
+```haskell
 map not [False, True, False] == [True, False, True]
 ```
 
 Or as can be seen in our `escape` function, this can help us escape each character:
 
-```hs
+```haskell
 map escapeChar ['<','h','1','>'] == ["&lt;","h","1","&gt;"]
 ```
 
@@ -114,7 +114,7 @@ This is where `concat` enters the picture to help us flatten the list.
 
 `concat` has the type:
 
-```hs
+```haskell
 concat :: [[a]] -> [a]
 ```
 
@@ -235,7 +235,7 @@ Try adding the escaping function in those places.
 <details>
   <summary>Solution</summary>
 
-```hs
+```haskell
 html_ :: Title -> Structure -> Html
 html_ title content =
   Html
@@ -259,7 +259,7 @@ h1_ = Structure . el "h1" . escape
 <details>
   <summary><b>Our revised Html.hs</b></summary>
 
-```hs
+```haskell
 -- Html.hs
 
 module Html

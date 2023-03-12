@@ -21,7 +21,7 @@ can be regular text, links, images, and so on.
 
 <details><summary>src/Html/Internal.hs</summary>
 
-```hs
+```haskell
 module HsBlog.Html.Internal where
 
 import Numeric.Natural
@@ -157,7 +157,7 @@ escape =
 
 <details><summary>src/Html.hs</summary>
 
-```hs
+```haskell
 module HsBlog.Html
   ( Html
   , Title
@@ -185,7 +185,7 @@ import HsBlog.Html.Internal
 
 <details><summary>src/Convert.hs</summary>
 
-```hs
+```haskell
 module HsBlog.Convert where
 
 import qualified HsBlog.Markup as Markup
@@ -235,13 +235,13 @@ such as the first heading and paragraph). Our output should be an `Html` page.
 
 We need to implement the following function:
 
-```hs
+```haskell
 buildIndex :: [(FilePath, Markup.Document)] -> Html.Html
 ```
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 buildIndex :: [(FilePath, Markup.Document)] -> Html.Html
 buildIndex files =
   let

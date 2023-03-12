@@ -8,7 +8,7 @@ exceptions from `IO` code,
 Haskell exceptions in `IO` code, and even convert them to `IO (Either ...)`
 with the function [`try`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#g:7):
 
-```hs
+```haskell
 throwIO :: Exception e => e -> IO a
 
 catch
@@ -25,7 +25,7 @@ The important part of these type signatures is the
 type class. By making a type an instance of the `Exception` type class, we can throw it
 and catch it in `IO` code:
 
-```hs
+```haskell
 {-# language LambdaCase #-}
 
 import Control.Exception
@@ -96,7 +96,7 @@ We have created a custom exception and handled it specifically outside an `IO` b
 However, we have not handled exceptions that might be raised by `putStrLn`.
 What if, for example, for some reason we close the `stdout` handle before this block:
 
-```hs
+```haskell
 main :: IO ()
 main = do
   hClose stdout
@@ -126,7 +126,7 @@ include this, but unfortunately `putStrLn`'s does not. We could guess from the
 the `Exception` type class has; I think
 [`IOException`](https://hackage.haskell.org/package/base-4.16.4.0/docs/GHC-IO-Exception.html#t:IOException) fits. Now, how can we handle this case as well? We can chain catches:
 
-```hs
+```haskell
 -- need to add these at the top
 
 {-# language ScopedTypeVariables #-}
@@ -166,7 +166,7 @@ Or we could use the convenient function
 to pass a list of exception
 [handlers](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Exception.html#t:Handler):
 
-```hs
+```haskell
 main :: IO ()
 main = do
   hClose stdout
@@ -199,7 +199,7 @@ main = do
 
 And if we wanted to catch any exception, we'd catch `SomeException`:
 
-```hs
+```haskell
 main :: IO ()
 main = do
   hClose stdout
@@ -239,7 +239,7 @@ opened)? Which parts of the code could throw an exception? Which handles won't g
 
 <details><summary>Answer</summary>
 
-```hs
+```haskell
 import Control.Exception (bracket)
 
 main :: IO ()

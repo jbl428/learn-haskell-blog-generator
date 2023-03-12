@@ -5,7 +5,7 @@ We are going to look at one solution: using the type
 [Either](https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Either.html).
 Either is defined like this:
 
-```hs
+```haskell
 data Either a b
   = Left a
   | Right b
@@ -15,7 +15,7 @@ Simply put, a value of type `Either a b` can contain either a value of type `a`,
 or a value of type `b`.
 We can tell them apart from the constructor used.
 
-```hs
+```haskell
 Left True :: Either Bool b
 Right 'a' :: Either a Char
 ```
@@ -33,7 +33,7 @@ For example, let's say that we want to parse a `Char` as a decimal digit
 to an `Int`. This operation could fail if the Character is not a digit.
 We can represent this error as a data type:
 
-```hs
+```haskell
 data ParseDigitError
   = NotADigit Char
   deriving Show
@@ -41,7 +41,7 @@ data ParseDigitError
 
 And our parsing function can have the type:
 
-```hs
+```haskell
 parseDigit :: Char -> Either ParseDigitError Int
 ```
 
@@ -49,7 +49,7 @@ Now when we implement our parsing function we can return `Left` on an error
 describing the problem, and `Right` with the parsed value on successful parsing:
 
 
-```hs
+```haskell
 parseDigit :: Char -> Either ParseDigitError Int
 parseDigit c =
   case c of
@@ -74,7 +74,7 @@ For example, if we had three characters and we wanted to try and parse
 each of them and then find the maximum between them, we could use the
 applicative interface:
 
-```hs
+```haskell
 max3chars :: Char -> Char -> Char -> Either ParseDigitError Int
 max3chars x y z =
   (\a b c -> max a (max b c))
@@ -90,7 +90,7 @@ later phase. Semantically, the first Either in order that returns a `Left`
 will be the return value. We can see how this works in the implementation
 of the applicative instance:
 
-```hs
+```haskell
 instance Applicative (Either e) where
     pure          = Right
     Left  e <*> _ = Left e
@@ -112,7 +112,7 @@ as long as they are all in a data structure that implements `Traversable`.
 
 Let's see an example:
 
-```hs
+```haskell
 ghci> :t "1234567"
 "1234567" :: String
 -- remember, a String is an alias for a list of Char
@@ -141,7 +141,7 @@ Left (NotADigit 'a')
 
 The pattern of doing `map` and then `sequenceA` is another function called `traverse`:
 
-```hs
+```haskell
 ghci> :t traverse
 traverse
   :: (Traversable t, Applicative f) => (a -> f b) -> t a -> f (t b)
@@ -161,7 +161,7 @@ from a list of tuples using the
 [`fromList`](https://hackage.haskell.org/package/containers-0.6.5.1/docs/Data-Map-Strict.html#v:fromList)
 function - the first value in the tuple is the key, and the second is the type.
 
-```hs
+```haskell
 ghci> import qualified Data.Map as M -- from the containers package
 
 ghci> file1 = ("output/file1.html", "input/file1.txt")
@@ -193,7 +193,7 @@ instances of these type classes must have the
 kind `* -> *`.
 Remember that when we look at a type class function signature like:
 
-```hs
+```haskell
 fmap :: Functor f => (a -> b) -> f a -> f b
 ```
 
@@ -201,14 +201,14 @@ And we want to implement it for a specific type (in place of the `f`),
 we need to be able to *substitute* the `f` with the target type. If we'd try
 to do it with `Either` we would get:
 
-```hs
+```haskell
 fmap :: (a -> b) -> Either a -> Either b
 ```
 
 And neither `Either a` or `Either b` are *saturated*, so this won't type check.
 For the same reason if we'll try to substitute `f` with, say, `Int`, we'll get:
 
-```hs
+```haskell
 fmap :: (a -> b) -> Int a -> Int b
 ```
 
@@ -217,13 +217,13 @@ Which also doesn't make sense.
 While we can't use `Either`, we can use `Either e`, which has the kind
 `* -> *`. Now let's try substituting `f` with `Either e` in this signature:
 
-```hs
+```haskell
 liftA2 :: Applicative => (a -> b -> c) -> f a -> f b -> f c
 ```
 
 And we'll get:
 
-```hs
+```haskell
 liftA2 :: (a -> b -> c) -> Either e a -> Either e b -> Either e c
 ```
 
@@ -254,7 +254,7 @@ For example, a compiler such has GHC operates in stages, such as lexical analysi
 parsing, type-checking, and so on. Each stage depends on the output of the stage
 before it, and each stage might fail. We can write the types for these functions:
 
-```hs
+```haskell
 tokenize :: String -> Either Error [Token]
 
 parse :: [Token] -> Either Error AST
@@ -268,7 +268,7 @@ goes to `parse`, and the output of `parse` goes to `typecheck`.
 We know that we can lift a function over an `Either` (and other functors),
 we can also lift a function that returns an `Either`:
 
-```hs
+```haskell
 -- reminder the type of fmap
 fmap :: Functor f => (a -> b) -> f a -> f b
 -- specialized for `Either Error`
@@ -299,7 +299,7 @@ it looks something like this:
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 case tokenize string of
   Left err ->
     Left err
@@ -321,7 +321,7 @@ use the value on the next stage.
 Flattening this structure for `Either` is very similar to that last part - the body
 of the `Right tokens` case:
 
-```hs
+```haskell
 flatten :: Either e (Either e a) -> Either e a
 flatten e =
   case e of
@@ -339,21 +339,21 @@ from before:
 
 And now we can use this function again to compose with `typecheck`:
 
-```hs
+```haskell
 > flatten (fmap typecheck (flatten (fmap parse (tokenize string)))) :: Either Error TypedAST
 ```
 
 This `flatten` + `fmap` combination looks like a recurring pattern which
 we can combine into a function:
 
-```hs
+```haskell
 flatMap :: (a -> Either e b) -> Either a -> Either b
 flatMap func val = flatten (fmap func val)
 ```
 
 And now we can write the code this way:
 
-```hs
+```haskell
 > flatMap typecheck (flatMap parse (tokenize string)) :: Either Error TypedAST
 
 -- Or using backticks syntax to convert the function to infix form:
@@ -381,7 +381,7 @@ They can implement an instance of the `Monad` type class.
 
 With functors, we were able to "lift" a function to work over the type implementing the functor type class:
 
-```hs
+```haskell
 fmap :: (a -> b) -> f a -> f b
 ```
 
@@ -389,7 +389,7 @@ With applicative functors we were able to "lift" a function of multiple argument
 over multiple values of a type implementing the applicative functor type class,
 and also lift a value into that type:
 
-```hs
+```haskell
 pure :: a -> f a
 
 liftA2 :: (a -> b -> c) -> f a -> f b -> f c
@@ -398,7 +398,7 @@ liftA2 :: (a -> b -> c) -> f a -> f b -> f c
 With monads we can now flatten (or, "join" in Haskell terminology) types that implement
 the `Monad` interface:
 
-```hs
+```haskell
 join :: m (m a) -> m a
 
 -- this is =<< with the arguments reversed, pronounced "bind"
@@ -408,7 +408,7 @@ join :: m (m a) -> m a
 With `>>=` we can write our compilation pipeline from before in a left-to-right
 manner, which seems to be more popular for monads:
 
-```hs
+```haskell
 > tokenize string >>= parse >>= typecheck
 ```
 
@@ -436,7 +436,7 @@ Again, don't worry about analogies and metaphors, focus on the API and the
 Remember the [do notation](../05-glue/02-io.html#do-notation)? Turns out it works for any type that is
 an instance of `Monad`. How cool is that? Instead of writing:
 
-```hs
+```haskell
 pipeline :: String -> Either Error TypedAST
 pipeline string =
   tokenize string >>= \tokens ->
@@ -446,7 +446,7 @@ pipeline string =
 
 We can write:
 
-```hs
+```haskell
 pipeline :: String -> Either Error TypedAST
 pipeline string = do
   tokens <- tokenize string
@@ -460,7 +460,7 @@ is so concise it can only be beaten by using
 or
 [<=<](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:-60--61--60-):
 
-```hs
+```haskell
 (>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
 (<=<) :: Monad m => (b -> m c) -> (a -> m b) -> a -> m c
 
@@ -468,13 +468,13 @@ or
 (.) ::              (b ->   c) -> (a ->   b) -> a ->   c
 ```
 
-```hs
+```haskell
 pipeline  = tokenize >=> parse >=> typecheck
 ```
 
 or
 
-```hs
+```haskell
 pipeline = typecheck <=< parse <=< tokenize
 ```
 

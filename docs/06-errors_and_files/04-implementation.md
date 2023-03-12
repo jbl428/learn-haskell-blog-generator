@@ -24,7 +24,7 @@ Let's create a new module, `HsBlog.Directory`, which will be responsible for han
 directories and multiple files. From this module we will export the `convertDirectory`
 and `buildIndex` functions we've defined before:
 
-```hs
+```haskell
 -- | Process multiple files and convert directories
 
 module HsBlog.Directory
@@ -43,7 +43,7 @@ and types we've learned about: `Either`, `IO` and exceptions.
 
 For all of that, we need quite a few imports:
 
-```hs
+```haskell
 import qualified HsBlog.Markup as Markup
 import qualified HsBlog.Html as Html
 import HsBlog.Convert (convert, convertStructure)
@@ -82,7 +82,7 @@ encapsulates many smaller functions, each responsible for doing a specific thing
 `convertDirectory` is quite imperative looking, and looks like a different way to
 describe the steps of completing our task:
 
-```hs
+```haskell
 -- | Copy files from one directory to another, converting '.txt' files to
 --   '.html' files in the process. Recording unsuccessful reads and writes to stderr.
 --
@@ -105,7 +105,7 @@ Let's examine the steps in order.
 
 ### `getDirFilesAndContent`
 
-```hs
+```haskell
 -- | The relevant directory content for our application
 data DirContents
   = DirContents
@@ -124,7 +124,7 @@ getDirFilesAndContent :: FilePath -> IO DirContents
 both the ones we need to convert to markup (and their textual content) and other files we
 might want to copy as-is (such as images and style-sheets):
 
-```hs
+```haskell
 -- | Returns the directory content
 getDirFilesAndContent :: FilePath -> IO DirContents
 getDirFilesAndContent inputDir = do
@@ -155,7 +155,7 @@ Part (3) is a little bit more involved than the rest, let's explore it.
 
 `applyIoOnList` has the following type signature:
 
-```hs
+```haskell
 applyIoOnList :: (a -> IO b) -> [a] -> IO [(a, Either String b)]
 ```
 
@@ -166,7 +166,7 @@ we wrote earlier.
 
 <details><summary>Answer</summary>
 
-```hs
+```haskell
 -- | Try to apply an IO function on a list of values, document successes and failures
 applyIoOnList :: (a -> IO b) -> [a] -> IO [(a, Either String b)]
 applyIoOnList action inputs = do
@@ -214,7 +214,7 @@ all the cases that failed.
 
 `filterAndReportFailures` has the following type signature:
 
-```hs
+```haskell
 filterAndReportFailures :: [(a, Either String b)] -> IO [(a, b)]
 ```
 
@@ -224,7 +224,7 @@ Try to implement it!
 
 <details><summary>Answer</summary>
 
-```hs
+```haskell
 -- | Filter out unsuccessful operations on files and report errors to stderr.
 filterAndReportFailures :: [(a, Either String b)] -> IO [(a, b)]
 filterAndReportFailures =
@@ -240,7 +240,7 @@ filterAndReportFailures =
 This code may seem a bit surprising - how come we can use `foldMap` here? Reminder,
 the type of `foldMap` is:
 
-```hs
+```haskell
 foldMap :: (Foldable t, Monoid m) => (a -> m) -> t a -> m
 ```
 
@@ -267,7 +267,7 @@ let's look at the code for creating a new directory.
 
 ### `createOutputDirectoryOrExit`
 
-```hs
+```haskell
 -- | Creates an output directory or terminates the program
 createOutputDirectoryOrExit :: FilePath -> IO ()
 createOutputDirectoryOrExit outputDir =
@@ -303,7 +303,7 @@ we do nothing and report their decision.
 
 ### `txtsToRenderedHtml`
 
-```hs
+```haskell
 let
   outputHtmls = txtsToRenderedHtml filesToProcess
 ```
@@ -316,7 +316,7 @@ We then build the index page, and convert everything to HTML.
 
 Implement `txtsToRenderedHtml`, which has the following type signature:
 
-```hs
+```haskell
 txtsToRenderedHtml :: [(FilePath, String)] -> [(FilePath, String)]
 ```
 
@@ -324,7 +324,7 @@ txtsToRenderedHtml :: [(FilePath, String)] -> [(FilePath, String)]
 
 I implemented this by defining three functions:
 
-```hs
+```haskell
 txtsToRenderedHtml :: [(FilePath, String)] -> [(FilePath, String)]
 
 toOutputMarkupFile :: (FilePath, String) -> (FilePath, Markup.Document)
@@ -338,7 +338,7 @@ convertFile :: (FilePath, Markup.Document) -> (FilePath, Html.Html)
 
 <details><summary>Answer</summary>
 
-```hs
+```haskell
 -- | Convert text files to Markup, build an index, and render as html.
 txtsToRenderedHtml :: [(FilePath, String)] -> [(FilePath, String)]
 txtsToRenderedHtml txtFiles =
@@ -369,7 +369,7 @@ argument, just like `Either`!
 The only thing left to do is to write the directory
 content, after the processing is completed, to the newly created directory:
 
-```hs
+```haskell
 -- | Copy files to a directory, recording errors to stderr.
 copyFiles :: FilePath -> [FilePath] -> IO ()
 copyFiles outputDir files = do
@@ -385,7 +385,7 @@ to `filterAndReportFailures` to print the errors and filter out the unsuccessful
 Because we are not really interested in the output of `filterAndReportFailures`,
 we discard it with `void`, returning `()` as a result instead:
 
-```hs
+```haskell
 -- | Write files to a directory, recording errors to stderr.
 writeFiles :: FilePath -> [(FilePath, String)] -> IO ()
 writeFiles outputDir files = do
@@ -421,7 +421,7 @@ View the full module:
 
 <details><summary>HsBlog.Directory</summary>
 
-```hs
+```haskell
 -- | Process multiple files and convert directories
 
 module HsBlog.Directory

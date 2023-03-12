@@ -56,7 +56,7 @@ We want to be able to convert a single file or input stream to either a file
 or an output stream, or we want to process a whole directory and create a new directory.
 We can model it in an ADT like this:
 
-```hs
+```haskell
 data Options
   = ConvertSingle SingleInput SingleOutput
   | ConvertDir FilePath FilePath
@@ -117,7 +117,7 @@ parsers.
 
 Let's see an example for a small parser:
 
-```hs
+```haskell
 inp :: Parser FilePath
 inp =
   strOption
@@ -170,14 +170,14 @@ for a `ConvertSingle`. We need a `Parser SingleInput` and a
 it into `SingleInput` by using the `InputFile` constructor.
 Remember, `InputFile` is also a function:
 
-```hs
+```haskell
 InputFile :: FilePath -> SingleInput
 OutputFile :: FilePath -> SingleOutput
 ```
 
 However, to convert a parser, we need functions with these types:
 
-```hs
+```haskell
 f :: Parser FilePath -> Parser SingleInput
 g :: Parser FilePath -> Parser SingleOutput
 ```
@@ -191,7 +191,7 @@ that function and get a new function of the type `Parser a -> Parser b`.
 
 This function is called `fmap`:
 
-```hs
+```haskell
 fmap :: (a -> b) -> Parser a -> Parser b
 
 -- Or with its infix version
@@ -200,7 +200,7 @@ fmap :: (a -> b) -> Parser a -> Parser b
 
 We've seen `fmap` before in the interface of other types:
 
-```hs
+```haskell
 fmap :: (a -> b) -> [a] -> [b]
 
 fmap :: (a -> b) -> IO a -> IO b
@@ -209,14 +209,14 @@ fmap :: (a -> b) -> IO a -> IO b
 `fmap` is a type class function like `<>` and `show`. It belongs
 to the type class [`Functor`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Functor.html#t:Functor):
 
-```hs
+```haskell
 class Functor f where
   fmap :: (a -> b) -> f a -> f b
 ```
 
 And it has the following laws:
 
-```hs
+```haskell
 -- 1. Identity law:
 --    if we don't change the values, nothing should change
 fmap id = id
@@ -243,7 +243,7 @@ We need to choose a data type that has the kind `* -> *`. `Maybe` fits the bill.
 We need to implement a function `fmap :: (a -> b) -> Maybe a -> Maybe b`.
 Here's one very simple (and wrong) implementation:
 
-```hs
+```haskell
 mapMaybe :: (a -> b) -> Maybe a -> Maybe b
 mapMaybe func maybeX = Nothing
 ```
@@ -258,7 +258,7 @@ are satisfied, and why they are important. Unlawful `Functor` instances
 will behave differently from what we'd expect a `Functor` to behave.
 Let's try again!
 
-```hs
+```haskell
 mapMaybe :: (a -> b) -> Maybe a -> Maybe b
 mapMaybe func maybeX =
   case maybeX of
@@ -282,7 +282,7 @@ and all allows us to map over their "payload" type.
 We can use `fmap` on `Parser` to make a parser that returns `FilePath` to
 return a `SingleInput` or `SingleOutput` instead:
 
-```hs
+```haskell
 pInputFile :: Parser SingleInput
 pInputFile = fmap InputFile parser
   where
@@ -314,7 +314,7 @@ and `pOutputFile :: Parser SingleOutput`,
 we want to *combine* them as `Options`. Again, if we only had
 `SingleInput` and `SingleOutput`, we could use the constructor `ConvertSingle`:
 
-```hs
+```haskell
 ConvertSingle :: SingleInput -> SingleOutput -> Options
 ```
 
@@ -332,7 +332,7 @@ Yes. This function is called `liftA2` and it is from the `Applicative`
 type class. `Applicative` (also known as applicative functor) has three
 primary functions:
 
-```hs
+```haskell
 class Functor f => Applicative f where
   pure :: a -> f a
   liftA2 :: (a -> b -> c) -> f a -> f b -> f c
@@ -364,7 +364,7 @@ it can be used to apply a function with many arguments, instead of just two.
 To combine our two parsers to one, we can use either `liftA2` or
 a combination of `<$>` and `<*>`:
 
-```hs
+```haskell
 -- with liftA2
 pConvertSingle :: Parser Options
 pConvertSingle =
@@ -379,7 +379,7 @@ pConvertSingle =
 Note that both `<$>` and `<*>` associate to the left,
 so we have invisible parenthesis that look like this:
 
-```hs
+```haskell
 pConvertSingle :: Parser Options
 pConvertSingle =
   (ConvertSingle <$> pInputFile) <*> pOutputFile
@@ -388,7 +388,7 @@ pConvertSingle =
 Let's take a deeper look at the types of the sub-expressions
 we have here, to prove that this type-checks:
 
-```hs
+```haskell
 pConvertSingle :: Parser Options
 
 pInputFile :: Parser SingleInput
@@ -432,7 +432,7 @@ constructing parsers.
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 pInputDir :: Parser FilePath
 pInputDir =
   strOption
@@ -470,14 +470,14 @@ However, we'd like to make these flags optional, and when they are
 not specified, use the alternative standard i/o. We can do that by using
 the function `optional` from `Control.Applicative`:
 
-```hs
+```haskell
 optional :: Alternative f => f a -> f (Maybe a)
 ```
 
 `optional` works on types which implement instances of the
 [`Alternative`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Applicative.html#t:Alternative) type class:
 
-```hs
+```haskell
 class Applicative f => Alternative f where
   (<|>) :: f a -> f a -> f a
   empty :: f a
@@ -491,7 +491,7 @@ if the first one fails to parse, try the other.
 It also provides other useful functions such as `optional`,
 which will help us with our case:
 
-```hs
+```haskell
 pSingleInput :: Parser SingleInput
 pSingleInput =
   fromMaybe Stdin <$> optional pInputFile
@@ -506,7 +506,7 @@ the `a` out of the `Maybe` by supplying a value for the `Nothing` case.
 
 Now we can use these more appropriate functions in `pConvertSingle` instead:
 
-```hs
+```haskell
 pConvertSingle :: Parser Options
 pConvertSingle =
   ConvertSingle <$> pSingleInput <*> pSingleOutput
@@ -523,7 +523,7 @@ If the user would like to convert a single source, they can use
 We can create a parser with commands with the `subparser` and `command`
 functions:
 
-```hs
+```haskell
 subparser :: Mod CommandFields a -> Parser a
 
 command :: String -> ParserInfo a -> Mod CommandFields a
@@ -538,7 +538,7 @@ composed, meaning that we can append multiple commands to serve as alternatives.
 
 A `ParserInfo a` can be constructed with the `info` function:
 
-```hs
+```haskell
 info :: Parser a -> InfoMod a -> ParserInfo a
 ```
 
@@ -548,7 +548,7 @@ itself and each sub command can print some additional information.
 
 Let's see how to construct a `ParserInfo`:
 
-```hs
+```haskell
 pConvertSingleInfo :: ParserInfo Options
 pConvertSingleInfo =
   info
@@ -559,7 +559,7 @@ Note that `helper` adds a helper output screen in case the parser fails.
 
 Let's also build a command:
 
-```hs
+```haskell
 pConvertSingleCommand :: Mod CommandFields Options
 pConvertSingleCommand =
   command "convert" pConvertSingleInfo
@@ -569,7 +569,7 @@ Try creating a `Parser Options` combining the two options with `subparser`.
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 pOptions :: Parser Options
 pOptions =
   subparser
@@ -595,7 +595,7 @@ pOptions =
 Since we finished building a parser, we should wrap it up in a `ParserInfo`
 and add some information to it to make it ready to run:
 
-```hs
+```haskell
 opts :: ParserInfo Options
 opts =
   info (helper <*> pOptions)
@@ -618,7 +618,7 @@ Here's what we have up until now:
 
 <details><summary>app/OptParse.hs</summary>
 
-```hs
+```haskell
 -- | Command-line options parsing
 
 module OptParse
@@ -766,7 +766,7 @@ does not expose this kind of API. So let's go to our `src/HsBlog.hs`
 module and change the API. We can delete `main` from that file and
 add two new functions instead:
 
-```hs
+```haskell
 convertSingle :: Html.Title -> Handle -> Handle -> IO ()
 
 convertDirectory :: FilePath -> FilePath -> IO ()
@@ -778,7 +778,7 @@ Before, we used `writeFile` and `getContents` - these functions either
 get a `FilePath` to open and work on, or they assume the `Handle` is the standard I/O.
 We can use the explicit versions that take a `Handle` from `System.IO` instead:
 
-```hs
+```haskell
 convertSingle :: Html.Title -> Handle -> Handle -> IO ()
 convertSingle title input output = do
   content <- hGetContents input
@@ -794,7 +794,7 @@ Let's look at our full `app/Main.hs` and `src/HsBlog.hs`:
 
 <details><summary>app/Main.hs</summary>
 
-```hs
+```haskell
 -- | Entry point for the hs-blog-gen program
 
 module Main where
@@ -859,7 +859,7 @@ confirm =
 
 <details><summary>src/HsBlog.hs</summary>
 
-```hs
+```haskell
 -- HsBlog.hs
 module HsBlog
   ( convertSingle

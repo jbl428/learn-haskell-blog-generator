@@ -12,7 +12,7 @@
 
 가장 일반적인 형태의 정의는 다음과 같습니다:
 
-```hs
+```haskell
 <이름> = <표현식>
 ```
 
@@ -26,7 +26,7 @@
 
 첫 번째 하스켈 소스코드 파일을 작성해 보겠습니다. `hello.hs`라는 이름의 새로운 파일을 만들고 다음과 같이 작성하세요:
 
-```hs
+```haskell
 main = putStrLn "<html><body>Hello, world!</body></html>"
 ```
 
@@ -100,7 +100,7 @@ Linking hello ...
 `putStrLn` 함수에 직접 문자열을 전달하는 대신, HTML 문자열을 정의하는 새로운 이름을 만들어서 전달할 수도 있습니다.
 이전에 만든 `hello.hs` 파일을 다음과 같이 수정하세요:
 
-```hs
+```haskell
 main = putStrLn myhtml
 
 myhtml = "<html><body>Hello, world!</body></html>"

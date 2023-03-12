@@ -5,7 +5,7 @@ to convert our `Markup` data types to `Html`.
 
 We'll start by creating a new module and import both the `Markup` and the `Html` modules.
 
-```hs
+```haskell
 module Convert where
 
 import qualified Markup
@@ -24,7 +24,7 @@ If we would've imported `Html.Internal` qualified, we'd have to write
 
 We can also give the module a new name with the `as` keyword:
 
-```hs
+```haskell
 import qualified Html.Internal as HI
 ```
 
@@ -51,7 +51,7 @@ Converting a markup structure to an HTML structure is mostly straightforward
 at this point, we need to pattern match on the markup structure and use
 the relevant HTML API.
 
-```hs
+```haskell
 convertStructure :: Markup.Structure -> Html.Structure
 convertStructure structure =
   case structure of
@@ -94,7 +94,7 @@ which we'll use to define arbitrary headings (such as `<h1>`, `<h2>`, and so on)
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 import Numeric.Natural
 
 h_ :: Natural -> String -> Structure
@@ -112,7 +112,7 @@ Exercise: Fix `convertStructure` using `h_`.
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 convertStructure :: Markup.Structure -> Html.Structure
 convertStructure structure =
   case structure of
@@ -164,7 +164,7 @@ HTML structure.
 
 Let's add this to `Html.Internal`:
 
-```hs
+```haskell
 empty_ :: Structure
 empty_ = Structure ""
 ```
@@ -175,7 +175,7 @@ Now we can write our recursive function. Try it!
 
 <details><summary>Solution</summary>
 
-```hs
+```haskell
 concatStructure :: [Structure] -> Structure
 concatStructure list =
   case list of
@@ -211,7 +211,7 @@ as one argument to `<>`, we will always get the other argument back.
 
 For `String`, the empty string, `""`, satisfies this:
 
-```hs
+```haskell
 "" <> "world" = "world"
 "hello" <> "" = "hello"
 ```
@@ -222,7 +222,7 @@ Actually, if we move out of the Haskell world for a second, even integers
 with `+` as the associative binary operations `+` (in place of `<>`)
 and `0` in place of the identity member form a monoid:
 
-```hs
+```haskell
 17 + 0 = 17
 0 + 99 = 99
 ```
@@ -240,7 +240,7 @@ We learn new things from this:
 And indeed, there exists a type class in `base` called `Monoid` which has
 `Semigroup` as a **super class**.
 
-```hs
+```haskell
 class Semigroup a => Monoid a where
   mempty :: a
 ```
@@ -253,20 +253,20 @@ class Semigroup a => Monoid a where
 We could add an instance of `Monoid` for our HTML `Structure` data type:
 
 
-```hs
+```haskell
 instance Monoid Structure where
   mempty = empty_
 ```
 
 And now, instead of using our own `concatStructure`, we can use the library function:
 
-```hs
+```haskell
 mconcat :: Monoid a => [a] -> a
 ```
 
 Which could theoretically be implemented as:
 
-```hs
+```haskell
 mconcat :: Monoid a => [a] -> a
 mconcat list =
   case list of
@@ -291,7 +291,7 @@ Abstractions help us identify common patterns and **reuse** code!
 > and [Product](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Monoid.html#t:Product).
 > See how they can be used in `ghci`:
 >
-> ```hs
+> ```haskell
 > ghci> import Data.Monoid
 > ghci> Product 2 <> Product 3 -- note, Product is a data constructor
 > Product {getProduct = 6}
@@ -311,7 +311,7 @@ or "reduced", into a summary value. This abstraction and type class is called **
 
 For a simpler understanding of `Foldable`, we can look at `fold`:
 
-```hs
+```haskell
 fold :: (Foldable t, Monoid m) => t m -> m
 
 -- compare with
@@ -330,7 +330,7 @@ cannot be a `Foldable`.
 payload type of the `Foldable` type right before combining them
 with the `<>` function.
 
-```hs
+```haskell
 foldMap :: (Foldable t, Monoid m) => (a -> m) -> t a -> m
 
 -- compare to a specialized version with:
@@ -354,7 +354,7 @@ We'll cover it in a later chapter!
 
 Let's finish our code by writing `convert`:
 
-```hs
+```haskell
 convert :: Html.Title -> Markup.Document -> Html.Html
 convert title = Html.html_ title . foldMap convertStructure
 ```
@@ -362,7 +362,7 @@ convert title = Html.html_ title . foldMap convertStructure
 Now we have a full implementation and are able to convert markup documents
 to HTML:
 
-```hs
+```haskell
 -- Convert.hs
 module Convert where
 
