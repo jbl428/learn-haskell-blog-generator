@@ -1,17 +1,14 @@
-# Escaping characters
+# 문자 이스케이프 처리하기
 
-Now that `Html` has its own source file and module, and creating
-HTML code can be done only via the functions we exported,
-we can also handle user input that may contain characters
-that may conflict with our meta language, HTML,
-such as `<` and `>` which are used for creating HTML tags.
+이제 `Html`에는 자체 소스 파일과 모듈이 있으며, 내보내기 한 함수들만 사용하여 HTML 코드를 만들 수 있습니다.
+또한 우리의 메타 언어와 충돌하는 문자를 포함할 수 있는 사용자 입력을 처리해야 합니다.
+그러한 문자 중 하나는 HTML 태그를 만드는 데 사용되는 `<`와 `>`입니다.
 
-We can convert these characters into different strings that HTML can handle.
+이러한 문자를 HTML이 처리할 수 있는 다른 문자열로 변환할 수 있습니다.
 
-See [Stack overflow question](https://stackoverflow.com/questions/7381974/which-characters-need-to-be-escaped-in-html)
-for a list of characters we need to escape.
+다음 [Stack overflow 질문](https://stackoverflow.com/questions/7381974/which-characters-need-to-be-escaped-in-html)에서 처리해야 하는 문자 목록을 확인할 수 있습니다.
 
-Let's create a new function called `escape`:
+`escape` 함수를 만들어봅시다:
 
 ```haskell
 escape :: String -> String
@@ -29,107 +26,106 @@ escape =
     concat . map escapeChar
 ```
 
-In `escape` we see a few new things:
+함수 정의에서 몇 가지 새로운 것을 볼 수 있습니다:
 
-1. Let expressions: we can define local names using this syntax:
+1. `Let` 표현식: 이 구문을 사용하여 지역 이름을 정의할 수 있습니다:
 
    ```haskell
    let
-     <name> = <expression>
+     <이름> = <표현식>
    in
-     <expression>
+     <표현식>
    ```
 
-   This will make `<name>` available as a variable `in` the second `<expression>`.
+   이렇게 하면 `<이름>`을 `in` 다음에 나오는 두 번째 `<표현식>`에서 사용할 수 있습니다.
 
-2. Pattern matching with multiple patterns: we match on different
-   characters and convert them to a string. Note that `_` is a "catch
-   all" pattern that will always succeed.
+2. 여러 패턴과 일치하는 패턴 매칭: 다른 문자를 일치시키고 문자열로 변환합니다.
+   `_`는 항상 성공하는 "모든 것" 패턴입니다.
 
-3. Two new functions: `map` and `concat`, we'll talk about these more in depth
+3. 새로운 함수: `map`과 `concat`입니다. 이들에 대해 더 자세히 알아보겠습니다.
 
-4. That the syntax highlighting broke a bit for this snippet for some reason. Don't worry about it.
+4. 어떤 이유로 인해 이 코드 블록의 구문 강조가 약간 깨졌습니다. 걱정하지 마십시오.
 
-## Linked lists briefly
+## 연결 리스트
 
-Linked lists are very common data structures in Haskell, so common that
-they have their own special syntax:
+하스켈에서 연결 리스트(linked lists)는 매우 일반적인 데이터 구조입니다.
+그래서 이를 위한 특별한 구문(syntax)이 존재합니다:
 
-1. The list types are denoted with brackets and inside them is the type of the element. For example:
-   - `[Int]` - a list of integers
-   - `[Char]` - a list of characters
-   - `[String]` - a list of strings
-   - `[[String]]` - a list of a list of strings
-   - `[a]` - a list of any single type (all elements must be of the same type)
-2. An empty list is written like this: `[]`
-3. Prepending an element to a list is done with the operator `:` (pronounced cons) which is right-associative (like `->`).
-   For example: `1 : []`, or `1 : 2 : 3 : []`.
-4. The above lists can also be written like this: `[1]` and `[1, 2, 3]`.
+1. 리스트의 유형은 대괄호로 표시되며 대괄호 안에는 요소의 타입이 있습니다. 예를 들어:
+   - `[Int]` - 정수의 리스트
+   - `[Char]` - 문자의 리스트
+   - `[String]` - 문자열의 리스트
+   - `[[String]]` - 문자열의 리스트의 리스트
+   - `[a]` - 임의의 단일 유형의 리스트 (모든 요소는 동일한 타입이어야 함)
+2. 빈 리스트는 다음과 같이 작성됩니다: `[]`
+3. 리스트에 요소를 추가하는 것은 `:` 연산자를 사용하여 수행합니다 (이를 `cons`라고 함).
+   이 연산자는 오른쪽 결합성(right-associative)을 가집니다 (예: `->`).
+   예를 들어: `1 : []`, 또는 `1 : 2 : 3 : []`.
+4. 위 목록은 다음과 같이 작성할 수 있습니다: `[1]` 및 `[1, 2, 3]`.
 
-Also, Strings are linked lists of characters - String is defined as:
-`type String = [Char]`, so we can use them the same way we use lists.
+또한, 문자열은 문자의 연결 리스트입니다 - 문자열은 다음과 같이 정의됩니다:
+`type String = [Char]`이므로 우리는 문자열을 리스트와 동일한 방식으로 사용할 수 있습니다.
 
-> Do note, however, that linked lists, despite their convenience, are often
-> not the right tool for the job. They are not particularly space efficient
-> and are slow for appending, random access and more. That also makes `String`
-> a lot less efficient than what it could be. And I generally recommend using a
-> different string type, `Text`, instead, which is available in an external package.
-> We will talk about lists, `Text`, and other data structures in the future!
+:::note
+연결 리스트는 편리한 데이터 구조이지만, 모든 경우에 적합한 것은 아닙니다.
+특히 공간 효율성이 떨어지고, 데이터 추가, 임의 접근(random access) 등에 느립니다.
+따라서 `String`을 사용하는 것이 효율적이지 않을 수 있습니다.
+그래서 외부 패키지에서 제공하는 `Text`라는 다른 문자열 타입을 사용하는 것을 권장합니다.
+`Text`와 다른 데이터 구조에 대해서는 이후에 다루겠습니다!
+:::
 
-We can implement our own operations on lists by using pattern matching and recursion.
-And we'll touch on this subject later when talking about ADTs.
+리스트에 대한 연산을 패턴 매칭과 재귀(recursion)를 사용하여 구현할 수 있습니다.
+이에 대한 자세한 내용은 ADT를 소개할 때 다루겠습니다.
 
-For now, we will use the various functions found in the
-[Data.List](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-List.html) module.
-Specifically, [map](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-List.html#v:map)
-and [concat](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-List.html#v:concat).
+지금은, [Data.List](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-List.html) 모듈에 있는 다양한 함수를 사용하겠습니다.
+그 중에서 [map](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-List.html#v:map)과
+[concat](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-List.html#v:concat) 함수를 사용하겠습니다.
 
 ### `map`
 
-Using `map` we can apply a function to each of the elements in a list. Its type signature is:
+`map`을 사용하면 리스트의 각 요소에 함수를 적용할 수 있습니다.
+이 함수의 타입 시그니처는 다음과 같습니다:
 
 ```haskell
 map :: (a -> b) -> [a] -> [b]
 ```
 
-For example:
+예를 들면:
 
 ```haskell
 map not [False, True, False] == [True, False, True]
 ```
 
-Or as can be seen in our `escape` function, this can help us escape each character:
+또는 이전에 정의한 `escape` 함수처럼, 각 문자열을 이스케이프할 때 사용할 수 있습니다:
 
 ```haskell
 map escapeChar ['<','h','1','>'] == ["&lt;","h","1","&gt;"]
 ```
 
-However, note that the `escapeChar` has the type `Char -> String`,
-so the result type of `map escapeChar ['<','h','1','>']` is `[String]`,
-and what we really want is a `String` and not `[String]`.
+하지만 `escapeChar`의 타입은 `Char -> String`이므로,
+`map escapeChar ['<','h','1','>']`의 반환 타입은 `[String]`이자만, 원하는 것은 `String`입니다.
 
-This is where `concat` enters the picture to help us flatten the list.
+그래서 리스트를 평평하게(flatten) 만들어 줄 `concat` 함수가 필요합니다.
 
 ### `concat`
 
-`concat` has the type:
+`concat`의 타입은 다음과 같습니다:
 
 ```haskell
 concat :: [[a]] -> [a]
 ```
 
-It flattens a list of list of something into a list of something.
-In our case it will flatten `[String]` into `String`, remember that
-`String` is a **type alias** for `[Char]`, so we actually have
-`[[Char]] -> [Char]`.
+이 함수는 리스트의 리스트를 받아서 리스트를 반환합니다.
+예제의 경우, `concat`은 `[String]`을 받아서 `String`을 반환합니다.
+`String`은 `[Char]`의 타입 별칭(type alias)이므로, 실제로는 `[[Char]] -> [Char]`입니다.
 
 ## GHCi
 
-One way we can quickly see our code in action is using the interactive development environment **GHCi**.
-Running `ghci` will open an interactive prompt where Haskell expressions can be written and
-evaluated. This is called a "Read-Evaluate-Print Loop" (for short - REPL).
+우리가 작성한 코드를 빠르게 확인하는 방법 중 하나는 **GHCi**라는 대화식 개발 환경(interactive development environment)을 사용하는 것입니다.
+`ghci`를 실행하면 대화식 프롬프트가 열리고, 하스켈 표현식을 작성하고 평가할 수 있습니다.
+이를 "Read-Evaluate-Print Loop" (REPL)이라고 합니다.
 
-For example:
+예를 들면:
 
 ```
 ghci> 1 + 1
@@ -138,7 +134,7 @@ ghci> putStrLn "Hello, world!"
 Hello, world!
 ```
 
-We can define new names:
+새로운 이름도 정의할 수 있습니다:
 
 ```
 ghci> double x = x + x
@@ -146,7 +142,7 @@ ghci> double 2
 4
 ```
 
-We can write multi-line code by surrounding it with `:{` and `:}`:
+`:{`와 `:}`로 코드 블록을 감싸면 여러 줄의 코드를 작성할 수 있습니다:
 
 ```
 ghci> :{
@@ -170,7 +166,7 @@ ghci> escape "<html>"
 
 ```
 
-We can import Haskell source files using the `:load` command (`:l` for short):
+하스켈 소스 파일은 `:load`(또는 `:l`로 줄여서) 명령어로 불러올 수 있습니다:
 
 ```
 ghci> :load Html.hs
@@ -180,7 +176,7 @@ ghci> render (html_ "<title>" (p_ "<body>"))
 "<html><head><title>&lt;title&gt;</title></head><body><p>&lt;body&gt;</p></body></html>"
 ```
 
-As well as import library modules:
+라이브러리 모듈도 불러올 수 있습니다:
 
 ```
 ghci> import Data.Bits
@@ -190,50 +186,48 @@ ghci> clearBit 33 0
 32
 ```
 
-We can even ask the type of an expression using the `:type` command
-(`:t` for short):
+표현식의 타입을 알고 싶다면 `:type`(또는 `:t`로 줄여서) 명령어를 사용할 수도 있습니다:
 
 ```
 λ> :type escape
 escape :: String -> String
 ```
 
-To exit `ghci`, use the `:quit` command (or `:q` for short)
+`ghci`를 종료하려면, `:quit`(또는 `:q`로 줄여서) 명령어를 사용합니다:
 
 ```
 ghci> :quit
 Leaving GHCi.
 ```
 
-GHCi is a very useful tool for quick experiments and exploration.
-We've seen a couple of examples of that above - passing the string `"<html>"` to our
-`escape` function returns the string `"&lt;html&gt;"`, which can be rendered by
-a browser as `<html>` instead of an HTML tag.
+GHCi는 빠른 실험과 탐색에 유용한 도구입니다.
+위에서 몇 가지 예를 보았습니다 - `escape` 함수에 문자열 `"<html>"`을 전달하면 `"&lt;html&gt;"`라는 문자열을 반환합니다.
+이 문자열은 브라우저에서 HTML 태그 대신 `<html>`로 렌더링됩니다.
 
-If you are having a hard time figuring out what a particular function does, consider
-testing it in GHCi - pass it different inputs, and see if it matches your expectations.
-Concrete examples of running code can aid a lot in understanding it!
+만약 특정한 함수가 무엇을 하는지 이해하기 어렵다면, GHCi에서 테스트해보세요.
+다양한 입력을 넣어보고, 예상한 결과와 일치하는지 확인하세요.
+구체적인 예제를 실행하는 것은 코드를 이해하는 데 많은 도움이 될 수 있습니다!
 
-> If you'd like to learn more about GHCi, you can find a more thorough introduction in the
-> [GHC user guide](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghci.html).
+:::tip
+GHCi에 대해 더 자세히 알고 싶다면, [GHC 사용자 가이드](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghci.html)에서 더 자세한 소개를 찾을 수 있습니다.
+:::
 
-## Escaping
+## 이스케이프
 
 ---
 
-The user of our library can currently only supply strings in a few places:
+현재 우리가 작성한 라이브러리는 오직 다음 항목만 지원합니다:
 
-1. Page title
-2. Paragraphs
-3. Headings
+1. 페이지 제목
+2. 문단
+3. 제목
 
-We can apply our escape function at these places before doing anything else with it.
-That way all HTML constructions are safe.
+더 진행하기 전에, escape 함수를 적용해 HTML 생성을 안전하게 만들려고 합니다.
 
-Try adding the escaping function in those places.
+escape 함수를 적용해보세요.
 
 <details>
-  <summary>Solution</summary>
+  <summary>정답</summary>
 
 ```haskell
 html_ :: Title -> Structure -> Html
@@ -257,11 +251,9 @@ h1_ = Structure . el "h1" . escape
 ---
 
 <details>
-  <summary><b>Our revised Html.hs</b></summary>
+  <summary><b>수정된 Html.hs</b></summary>
 
-```haskell
--- Html.hs
-
+```haskell title="Html.hs"
 module Html
   ( Html
   , Title
@@ -341,9 +333,9 @@ escape =
 
 </details>
 
-Try constructing an invalid HTML in `hello.hs` to see if this works or not!
+`hello.hs` 파일에서 유효하지 않은 HTML을 제공하면 제대로 동작하는지 확인해보세요!
 
-Now we can use our tiny HTML library safely. But what if the user
-wants to use our library with a valid use case we didn't think about, for
-example adding unordered lists? We are completely blocking them from
-extending our library. We'll talk about this next.
+이제 우리는 작은 HTML 라이브러리를 안전하게 사용할 수 있습니다.
+그러나 사용자가 예상하지 못한 유효한 사용 사례, 예를 들어 순서 없는 목록을 추가하려는 경우에는 어떻게 해야 할까요?
+우리는 라이브러리를 확장하는 것을 완전히 막고 있습니다.
+다음에는 이에 대해 이야기 해보겠습니다.
