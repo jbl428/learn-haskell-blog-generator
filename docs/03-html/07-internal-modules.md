@@ -1,77 +1,53 @@
-# Exposing internal functionality (Internal modules)
+# 내부 기능 노출하기 (내부 모듈)
 
-We have now built a very small but convenient and safe way to write
-HTML code in Haskell. This is something that we could (potentially)
-publish as a _library_ and share with the world by uploading it
-to a package repository such as [Hackage](https://hackage.haskell.org/).
-Users who are interested in our library could use a package manager
-to include our library in their project and build their own HTML pages
-with it.
+지금까지 하스켈로 작지만 편리하고 안전하게 HTML 코드를 만드는 프로그램을 만들었습니다.
+이것은 [Hackage](https://hackage.haskell.org/)와 같은 패키지 저장소에 업로드하여 전 세계에 공유할 수 있는 *라이브러리*로 만들 수 있습니다.
+라이브러리에 관심이 있는 사용자는 패키지 관리자를 사용하여 프로젝트에 라이브러리를 포함시키고 이를 통해 HTML 페이지를 만들 수 있습니다.
 
-It is important to note that users are building their project against
-the API that we expose to them, and the package manager doesn't generally
-provide access to the source code, so they can't, for example,
-modify the `Html` module (that we expose) in their project directly
-without jumping through some hoops.
+사용자는 우리가 노출한 API를 사용하여 프로젝트를 빌드하며 패키지 관리자는 일반적으로 소스 코드에 대한 접근을 제공하지 않는다는 점을 유의해야 합니다.
+예들 들어, 사용자는 (우리가 노출한) `Html` 모듈을 직접 수정할 수 없습니다.
 
-Because we wanted our `Html` EDSL to be safe, we **hid the internal
-implementation from the user**, and the only way to interact with the
-library is via the API we provide.
+이는 우리의 `Html` EDSL을 안전하게 만들기 위해 **사용자로부터 내부 구현을 숨겼기 때문입니다**.
+현재 라이브러리와 상호 작용하는 유일한 방법은 우리가 제공하는 API를 사용하는 것입니다.
 
-This provides the safety we wanted to provide, but in this case it also
-_blocks_ the user from extending our library _in their own project_ with
-things we haven't implemented yet, such as lists or code blocks.
+이는 우리가 원하는 안전성을 제공하지만, 이 경우에는 사용자가 라이브러리를 확장하는 것을 *차단*합니다.
+예를 들어, 아직 구현하지 않은 목록이나 코드 블록과 같은 기능을 *사용자의 프로젝트*에서 확장할 수 없습니다.
 
-When a user runs into trouble with a library (such as missing features)
-the best course of action usually is to open an issue in the repository or
-submit a pull request, but sometimes the user needs things to work _now_.
+사용자가 라이브러리에 문제를 겪을 때 (예를 들어, 누락된 기능) 가장 좋은 방법은 저장소에서 이슈를 열거나 풀 리퀘스트를 만드는 것입니다.
+하지만 때로는 사용자가 지금 _당장_ 기능이 필요할 수 있습니다.
 
-We admit that we are not perfect and can't think of all use cases for our
-library. Sometimes the restrictions we add are too great and may limit
-the usage of advanced users that know how things work under the hood and
-need certain functionality in order to use our library.
+우리는 완벽하지 않다는 것을 인정합니다. 라이브러리를 위한 모든 사용 사례를 생각해내는 것이 불가능하기 때문입니다.
+때로는 우리가 추가하는 제한이 너무 크기 때문에, 프로그램 내부 동작을 잘 알고 있고 특정 기능이 필요한 고급 사용자들의 사용을 제한할 수도 있습니다.
 
-### Internal modules
+### 내부 모듈
 
-For that we can expose internal modules to provide some flexibility for
-advanced users. Internal modules are not a language concept but
-rather a (fairly common) design pattern (or idiom) in Haskell.
+이를 위해 내부 모듈을 노출하여 고급 사용자에게 일부 유연성을 제공할 수 있습니다.
+내부 모듈은 언어 개념이 아니라 하스켈에서 흔히 볼 수 있는 디자인 패턴(또는 관용구)입니다.
 
-Internal modules are simply modules named `<something>.Internal`,
-which export all of the functionality and implementation details in that module.
+내부 모듈은 `<something>.Internal`과 같이 이름이 지정된 모듈로, 해당 모듈의 모든 기능과 구현 세부 사항을 노출합니다.
 
-Instead of writing the implementation in (for example) the `Html` module,
-we write it in the `Html.Internal` module, which will export everything.
-Then we will import that module in the `Html` module, and write an explicit export list
-to only export the API we'd like to export (as before).
+예를 들어, 내부 구현을 `Html` 모듈에 작성하는 대신 모든 항목을 내보내는 `Html.Internal` 모듈에 작성합니다.
+그리고 해당 모듈을 `Html` 모듈에 가져와서 (이전처럼) 우리가 원하는 API만 명시적으로 내보냅니다.
 
-`Internal` modules are considered unstable and risky to use by convention.
-If you end up using one yourself when using an external Haskell library,
-make sure to open a ticket in the library's repository after the storm has passed!
+`Internal` 모듈은 관례적으로 불안정하고 사용하기 위험하다고 간주됩니다.
+만약 외부 하스켈 라이브러리를 사용할 때 `Internal` 모듈을 사용하게 되면, 모든 문제를 해결하고 나서 라이브러리 저장소에 이슈를 열어주세요!
 
-### Let's make the changes
+### 수정하기
 
-We will create a new directory named `Html` and inside it a new file
-named `Internal.hs`. The name of this module should be `Html.Internal`.
+이제 `Html` 이라는 디렉터리를 만들고 그 안에 `Internal.hs`라는 파일을 만듭니다.
+이 모듈의 이름은 `Html.Internal`이어야 합니다.
 
-This module will contain all of the code we previously had in the `Html`
-module, but **we will change the module declaration in `Html.Internal`
-and _omit_ the export list**:
+이 모듈은 이전에 `Html` 모듈에 있었던 모든 코드를 포함하지만, **모듈 선언을을 수정해 내보내기 목록을 *생략*할 것입니다**:
 
-```haskell
--- Html/Internal.hs
-
+```haskell title="Html/Internal.hs"
 module Html.Internal where
 
 ...
 ```
 
-And now in `Html.hs`, we will remove the code that we moved to `Html/Internal.hs`
-and in its stead we'll import the internal module:
+이제 `Html.hs` 파일에서 `Html/Internal.hs`로 옮긴 코드를 제거하고 대신 내부 모듈을 가져옵니다:
 
-```haskell
--- Html.hs
-
+```haskell title="Html.hs"
 module Html
   ( Html
   , Title
@@ -87,16 +63,13 @@ module Html
 import Html.Internal
 ```
 
-Now, users of our library can still import `Html` and safely use our library,
-but if they run into trouble and have a dire need to implement unordered lists
-to work with our library, they could always work with `Html.Internal` instead.
+이제 사용자는 `Html` 모듈을 가져와 안전하게 라이브러리를 사용할 수 있습니다.
+만약 사용자가 라이브러리를 통해 순서없는 목록(ul, ui 태그)기능을 구현하고 싶다면, `Html.Internal` 모듈을 사용할 수 있습니다.
 
 <details>
-  <summary><b>Our revised Html.hs and Html/Internal.hs</b></summary>
+  <summary><b>수정된 Html.hs 과 Html/Internal.hs</b></summary>
 
-```haskell
--- Html.hs
-
+```haskell title="Html.hs"
 module Html
   ( Html
   , Title
@@ -112,9 +85,7 @@ module Html
 import Html.Internal
 ```
 
-```haskell
--- Html/Internal.hs
-
+```haskell title="Html/Internal.hs"
 module Html.Internal where
 
 -- * Types
@@ -184,17 +155,14 @@ escape =
 
 </details>
 
-## Summary
+## 요약
 
-For our particular project, `Internal` modules aren't necessary.
-Because our project and the source code for the HTML EDSL are
-part of the same project, and we have access to the `Html`
-module directly, we can always go and edit it if we want
-(and we are going to do that throughout the book).
+우리 프로젝트에서는, `내부` 모듈이 필요하지 않습니다.
+우리 프로젝트와 HTML EDSL의 소스 코드는 동일한 프로젝트에 있으며, `Html` 모듈에 직접 접근 할 수 있기 때문입니다.
+우리는 원할 때 언제든지 모듈을 수정 할 수 있습니다.
 
-However, if we were planning to release our HTML EDSL as a _library_
-for other developers to use, it would be nice
-to also expose the internal implementation as an `Internal`
-module. Just so we can save some trouble for potential users!
+하지만 만약 다른 개발자가 사용하기 위해 HTML EDSL을 라이브러리로 출시하려고 한다면,
+사용자가 내부 구현에 접근할 수 있도록 `Internal` 모듈을 노출하는 것이 좋습니다.
+이렇게 하면 사용자가 라이브러리를 사용하는 데 어려움을 겪지 않을 수 있습니다!
 
-We will see how to create a package from our source code in a later chapter.
+소스 코드로부터 패키지를 만드는 방법에 대해서는 이후에 다룰 예정입니다.
