@@ -1,12 +1,11 @@
-# Exercises
+# 연습문제
 
-We need a few more features for our HTML library to be useful for
-our blog software. Add the following features to our `Html.Internal` module
-and expose them from `Html`.
+블로그 소프트웨어를 위해 HTML 라이브러리에 몇 가지 기능이 더 필요합니다.
+`Html.Internal` 모듈에 다음 기능을 추가하고 `Html` 모듈에서 내보내세요.
 
-## 1. Unordered lists
+## 1. 순서 없는 목록
 
-These lists have the form:
+HTML에서 순서 없는 목록은 다음 형태를 가집니다:
 
 ```html
 <ul>
@@ -16,13 +15,13 @@ These lists have the form:
 </ul>
 ```
 
-We want in our library a new function:
+라이브러리에 다음 함수를 추가하고자 합니다:
 
 ```haskell
 ul_ :: [Structure] -> Structure
 ```
 
-So that users can write this:
+이제 사용자는 다음과 같이 작성할 수 있습니다:
 
 ```haskell
 ul_
@@ -32,7 +31,7 @@ ul_
   ]
 ```
 
-and get this:
+그리고 다음 결과를 얻습니다:
 
 ```html
 <ul>
@@ -42,18 +41,18 @@ and get this:
 </ul>
 ```
 
-## 2. Ordered lists
+## 2. 순서 있는 목록
 
-Very similar to unordered lists, but instead of `<ul>` we use `<ol>`
+순서없는 목록과 유사하지만, `<ul>` 대신 `<ol>`을 사용합니다.
 
-## 3. Code blocks
+## 3. 코드 블록
 
-Very similar to `<p>`, but use the `<pre>` tag. Call this function `code_`.
+`<p>`와 유사하지만, `<pre>` 태그를 사용합니다. `code_`라는 함수를 정의하세요.
 
-## Solutions
+## 정답
 
 <details>
-  <summary>Unordered lists</summary>
+  <summary>순서없는 목록</summary>
 
 ```haskell
 ul_ :: [Structure] -> Structure
@@ -64,7 +63,7 @@ ul_ =
 </details>
 
 <details>
-  <summary>Ordered lists</summary>
+  <summary>순서있는 목록</summary>
 
 ```haskell
 ol_ :: [Structure] -> Structure
@@ -72,12 +71,14 @@ ol_ =
   Structure . el "ol" . concat . map (el "li" . getStructureString)
 ```
 
-Note: the two functions above could be unified.
+:::note
+위 두 함수를 하나의 함수로 합칠 수 있습니다.
+:::
 
 </details>
 
 <details>
-  <summary>Code blocks</summary>
+  <summary>코드 블록</summary>
 
 ```haskell
 code_ :: String -> Structure

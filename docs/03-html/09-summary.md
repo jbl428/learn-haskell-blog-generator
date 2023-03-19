@@ -1,23 +1,21 @@
-# Summary
+# 요약
 
-In this chapter we built a very minimal HTML EDSL.
-We will later use this library to convert our custom markup formatted text to HTML.
+이번 장에서는 매우 최소한의 HTML EDSL을 만들었습니다.
+이후에 이 라이브러리를 사용하여 커스텀 마크업 형식의 텍스트를 HTML로 변환할 것입니다.
 
-We've also learned about:
+이번 장에서 우리는 다음과 같은 것들을 배웠습니다:
 
-- Defining and using functions
-- Types and type signatures
-- Embedded domain specific languages
-- Chaining functions using the `.` operator
-- Preventing incorrect use with `newtype`s
-- Defining modules and the `Internal` module pattern
-- Encapsulation using `newtype`s and modules
+- 함수를 정의하고 사용하는 방법
+- 타입과 타입 시그니처
+- 내장 도메인 특화 언어
+- `.` 연산자를 사용하여 함수를 합성
+- `newtype`을 사용하여 잘못된 사용을 방지
+- 모듈을 정의하는 방법과 `내부` 모듈 패턴
+- `newtype`과 모듈을 사용하여 캡슐화하기
 
-Here's our complete program up to this point:
+지금까지 작성한 라이브러리 코드는 다음과 같습니다:
 
-```haskell
--- hello.hs
-
+```haskell title="hello.hs"
 import Html
 
 main :: IO ()
@@ -36,9 +34,7 @@ myhtml =
     )
 ```
 
-```haskell
--- Html.hs
-
+```haskell title="Html.hs"
 module Html
   ( Html
   , Title
@@ -57,9 +53,7 @@ module Html
 import Html.Internal
 ```
 
-```haskell
--- Html/Internal.hs
-
+```haskell title="Html/Internal.hs"
 module Html.Internal where
 
 -- * Types
@@ -138,4 +132,4 @@ escape =
     concat . map escapeChar
 ```
 
-> You can also [browse the code as a tree](https://github.com/soupi/learn-haskell-blog-generator/tree/2a4691de627bcb280e92f3d02a88d5404179dc86).
+> [저장소 코드](https://github.com/soupi/learn-haskell-blog-generator/tree/2a4691de627bcb280e92f3d02a88d5404179dc86)에서 확인할 수도 있습니다.
