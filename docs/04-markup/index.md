@@ -1,17 +1,16 @@
-# Custom markup language
+# 사용자 정의 마크업 언어
 
-In this chapter we will define our own simple markup language
-and parse documents written in this language into Haskell data structures.
+이번 장에서는 간단한 마크업 언어를 정의하고, 이 언어로 작성된 문서를 하스켈 데이터 구조로 만드는 방법을 알아보겠습니다.
 
-Our markup language will contain the following features:
+이번에 만들 마크업 언어는 다음과 같은 기능을 가질 것입니다:
 
-- Headings: prefix by a number of `*` characters
-- Paragraphs: a group of lines without empty lines in between
-- Unordered lists: a group of lines each prefixed with `- `
-- Ordered lists: a group of lines each prefixed with `# `
-- Code blocks: a group of lines each prefixed with `> `
+- 제목: `*` 문자를 앞에 붙입니다.
+- 단락: 빈 줄이 없는 그룹의 줄들
+- 순서 없는 목록: 각 줄이 `- `로 시작합니다.
+- 순서 있는 목록: 각 줄이 `# `로 시작합니다.
+- 코드 블록: 각 줄이 `> `로 시작합니다.
 
-Here's a sample document:
+다음 예제 문서를 보겠습니다:
 
 ```org
 * Compiling programs with ghc
@@ -45,7 +44,7 @@ GHC will produce an executable when the source file satisfies both conditions:
 Otherwise, it will only produce the .o and .hi files.
 ```
 
-which we will, eventually, convert into this (modulo formatting) HTML:
+이 문서는 다음 HTML로 변환됩니다:
 
 ```html
 <h1>Compiling programs with ghc</h1>

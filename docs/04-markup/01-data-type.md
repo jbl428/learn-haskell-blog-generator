@@ -1,45 +1,38 @@
-# Representing the markup language as a Haskell data type
+# 하스켈 데이터 타입으로 마크업 언어 표현하기
 
-One of the clear differentiators between Haskell (also other ML-family of languages)
-and most mainstream languages is the ability to represent data precisely and succinctly.
+하스켈(그리고 다른 ML-계열의 언어들)과 대부분의 주류 언어들 간의 가장 큰 차이점은 데이터를 정확하고 간결하게 표현할 수 있다는 점입니다.
 
-So how do we represent our markup language using Haskell?
+그렇다면 하스켈을 사용하여 마크업 언어를 어떻게 표현할 수 있을까요?
 
-Previously, in our HTML builder library, we used `newtype`s to differentiate
-between HTML documents, structures and titles, but we didn't really need to
-differentiate between different kinds of structures such as paragraphs and headings,
-not without parsing the data at least.
+이전 HTML 생성 라이브러리에서는 HTML 문서, 구조, 제목을 구분하기 위해 `newtype`을 사용했습니다.
+하지만 데이터를 분석하지 않는 이상, 문단과 제목과 같은 다른 구조를 구분할 필요는 없었습니다.
 
-In this case, we have a list of structures, and each structure could be
-one of a few specific options (a paragraph, a heading, a list, etc.),
-and we want to be able to know which structure is which so we can easily
-convert it into the equivalent HTML representation.
+이러한 경우, 동일한 구조의 목록을 가지면서 각 구조에는 몇 가지 특정 옵션(문단, 제목, 목록 등)을 가지는 형태를 생각할 수 있습니다.
+우리는 각 구조가 어떤 항목인지만 알면 동일한 HTML로 쉽게 변환할 수 있습니다.
 
-For that, we have `data` definitions. `data` gives us the ability to
-create custom types by grouping multiple types together and having
-alternative structures. Think of them as combination of both structs and enums.
+이를 위해 `data` 정의를 사용할 수 있습니다.
+`data`는 여러 타입을 그룹화하여 대체 구조를 가지도록 하는 사용자 정의 타입을 제공합니다.
+`data`는 `struct`와 `enum`의 조합으로 생각할 수 있습니다.
 
-`data` declarations look like this:
+`data` 선언은 다음과 같이 생겼습니다:
 
 ```haskell
-data <Type-name> <type-args>
-  = <Data-constructor1> <types>
-  | <Data-constructor2> <types>
+data <타입 이름> <타입 매개변수>
+  = <타입 생성자1> <타입>
+  | <타입 생성자2> <타입>
   | ...
 ```
 
-It looks really similar to `newtype`, but there are two important
-differences:
+이는 `newtype`과 매우 유사해 보이지만, 두 가지 중요한 차이점이 있습니다:
 
-1. In the `<types>` part we can write many types (Like `Int`, `String`, or `Bool`).
-   For `newtype`s we can only write one.
-2. We can have alternative structures using `|`, `newtype`s have no
-   alternatives.
+1. `<types>` 부분에서는 많은 타입(예: `Int`, `String`, `Bool`)을 작성할 수 있습니다.
+   `newtype`에서는 하나만 작성할 수 있습니다.
+2. `|`를 사용하여 여러 구조를 가질 수 있습니다.
+   `newtype`은 오직 하나의 구조만 가질 수 있습니다.
 
-This is because `newtype` is used to provide a type safe **alias**, and `data`
-is used to build a new **composite** type that can potentially have _alternatives_.
+이는 `newtype`이 **타입 안전한 별칭**을 제공하기 위해 사용되고, `data`는 새로운 **복합** 타입을 만들기 위해 사용되기 때문입니다.
 
-Let's see a few of examples of data types:
+`data`를 사용하여 다음과 같은 몇 가지 예를 살펴보겠습니다:
 
 1. Bool
 
@@ -49,37 +42,36 @@ Let's see a few of examples of data types:
      | False
    ```
 
-   We created a new data type named `Bool` with the possible values `True` or `False`.
-   In this case we only have _constructor_ alternatives and none of the constructors
-   carry additional values. This is similar to enums in other languages.
+   `True`와 `False`만 가질 수 있는 `Bool`이라는 새로운 타입을 만들었습니다.
+
+   이 경우 *생성자* 목록만 가지고 있을뿐 추가적인 값은 없습니다.
+   이는 다른 언어의 열거형(enum)과 유사합니다.
 
 2. Person
 
    ```haskell
    data Person
-     = Person String Int -- where the first is the name and the second is
-                         -- the age
+     = Person String Int -- 첫 번째 인자는 이름, 두 번째 인자는 나이
    ```
 
-   We created a new data type named `Person`. Values of the type `Person`
-   look like this:
+   이번에는 `Person`이라는 새로운 타입을 만들었습니다.
+   이 타입의 값은 다음과 같이 생겼습니다:
 
    ```
-   Person <some-string> <some-int>
+   Person <문자열> <정수>
    ```
 
-   For example:
+   예를 들면:
 
    ```haskell
    Person "Gil" 32
    ```
 
-   In this case we create a _composite_ of multiple types, without alternatives.
-   This is similar to structs in other language, but structs give each field
-   a name, and here we distinguish them by position.
+   이 경우에는 다른 생성자는 없고 여러 타입을 *함성*하는 생성자만 있습니다.
+   이는 다른 언어에서 구조체(struct)와 유사하지만, 각 필드를 이름으로 구별하는 대신 위치로 구분합니다.
 
-   Alternatively, Haskell has _syntactic sugar_ for naming fields called **records**.
-   The above definition can also be written like this:
+   그 대신, 하스켈은 **records**라고 불리는 필드 이름을 지정하는 **문법적 설탕**를 제공합니다.
+   위 정의는 다음과 같이 작성할 수 있습니다:
 
    ```haskell
    data Person
@@ -89,26 +81,26 @@ Let's see a few of examples of data types:
        }
    ```
 
-   Values of this type can be written exactly as before,
+   위 타입의 값은 이전과 동일하게 작성할 수 있거나,
 
    ```haskell
    Person "Gil" 32
    ```
 
-   Or with this syntax:
+   다음과 같이 작성할 수 있습니다:
 
    ```haskell
    Person { name = "Gil", age = 32 }
    ```
 
-   Haskell will also generate functions that can be used to extract the fields from the composite type:
+   하스켈은 복합 타입에서 필드를 추출하기 위한 용도의 함수또한 생성합니다:
 
    ```haskell
    name :: Person -> String
    age :: Person -> Int
    ```
 
-   Which can be used like this:
+   다음과 같이 사용할 수 있습니다:
 
    ```haskell
    ghci> age (Person { name = "Gil", age = 32 })
