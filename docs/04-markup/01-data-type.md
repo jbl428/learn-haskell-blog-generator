@@ -107,8 +107,8 @@ data <타입 이름> <타입 매개변수>
    32
    ```
 
-   We even have special syntax for updating specific fields in a record. Of course,
-   we do not update records in place - we generate a new value instead.
+   record에서 특정 필드를 업데이트하기 위한 특별한 문법도 제공합니다.
+   당연하게도, 기존 값을 업데이트하는 대신 새로운 값을 생성합니다.
 
    ```haskell
    ghci> gil = Person { name = "Gil", age = 32 }
@@ -118,12 +118,10 @@ data <타입 이름> <타입 매개변수>
    32
    ```
 
-   Unfortunately, having specialized functions for each field also means that if we
-   defined a different data type with the field `age`, the functions which GHC needs
-   to generate will clash.
+   안타깝게도, 각 필드에 대해 특별한 함수를 생성하는 것은 다른 데이터 타입에 `age`라는 필드를 정의할 경우 GHC가 함수를 생성할 때 이름이 충돌할 수 있다는 것을 의미합니다.
 
-   The easiest way to solve this is to give fields unique names, for example
-   by adding a prefix:
+   이러한 문제를 해결하는 가장 쉬운 방법은 필드에 고유한 이름을 부여하는 것입니다.
+   예를 들어 다음과 같이 접두사를 추가할 수 있습니다:
 
    ```haskell
    data Person
@@ -133,8 +131,8 @@ data <타입 이름> <타입 매개변수>
        }
    ```
 
-   Another way is by using extensions to the Haskell language, which we will cover
-   in later chapters.
+   또 다른 방법은 하스켈 언어의 확장을 사용하는 것입니다.
+   이는 이후 장에서 다루겠습니다.
 
 3. Tuple
 
@@ -143,8 +141,7 @@ data <타입 이름> <타입 매개변수>
      = Tuple a b
    ```
 
-   This is pretty similar to `Person`, but we can plug any type we want
-   for this definition. For example:
+   `Person`과 비슷하지만, 이번에는 어떠한 타입도 넣을 수 있는 `Tuple`이라는 새로운 타입을 만들었습니다. 예를 들면:
 
    ```haskell
    Tuple "Clicked" True :: Tuple String Bool
@@ -152,7 +149,7 @@ data <타입 이름> <타입 매개변수>
    Tuple 'a' 'z' :: Tuple Char Char
    ```
 
-   This type has special syntax in Haskell:
+   하스켈에서는 다음과 같은 특별한 문법을 제공합니다:
 
    ```haskell
    ("Clicked", True) :: (String, Bool)
@@ -160,11 +157,10 @@ data <타입 이름> <타입 매개변수>
    ('a', 'z') :: (Char, Char)
    ```
 
-   This `Tuple` definition is polymorphic, we define the structure but are able to
-   plug different types into the structure to get concrete types. You can think of `Tuple`
-   as a _template_ for a data type waiting to be filled, or as a **function** waiting
-   for types as input in order to return a data type. We can even take a look at the "type"
-   signature of `Tuple` in `ghci` using the `:kind` command.
+   `Tuple`의 정의는 다형적이기에, 구체적인 타입을 만들 때 매번 다른 타입을 넣을 수 있습니다.
+   이는 `Tuple`을 이후에 값을 채워지기를 기다리는 **템플릿**이라고 생각할 수 있습니다.
+   또는 데이터 타입을 반환하기 위해 타입을 입력으로 받는 **함수**라고 생각할 수도 있습니다.
+   `ghci`에서 `:kind` 명령을 사용하여 `Tuple`의 "타입"을 살펴볼 수 있습니다.
 
    ```haskell
    ghci> data Tuple a b = Tuple a b
@@ -172,20 +168,19 @@ data <타입 이름> <타입 매개변수>
    Tuple :: * -> * -> *
    ```
 
-   > #### Quick detour: Kinds
-   >
-   > The `:kind` command is called as such because the "type" of a type is called a **kind**.
-   > Kinds can be one of two things, either a `*` which means a saturated (or concrete) type,
-   > such as `Int` or `Person`, or an `->` of two kinds, which is, as you might have guessed,
-   > a type function, taking kind and returning a kind.
-   >
-   > Note that only types that have the kind `*` can have values. So for example while `Tuple Int`
-   > is a valid Haskell concept that has the _kind_ `* -> *`, and we can write code that will
-   > work "generically" for all types that have a certain kind (e.g. `* -> *`), we cannot
-   > construct a value that will have the kind `* -> *`. All values have types, and all
-   > types that have values have the kind `*`.
-   >
-   > We will talk more about kinds later, for now let's focus on types!
+   :::note Kinds
+   타입의 "종류(type)"를 **kind**라고 부르기 때문에 `:kind` 명령어라 이름을 붙였습니다.
+   kind에는 두 가지 종류가 있습니다. 하나는 `*`로 `Int`나 `Person`과 같은 **포화된(또는 구체적인)** 타입을 의미하고,
+   다른 하나는 `->`로 kind를 받아 kind를 반환하는 **타입 함수**를 의미합니다.
+
+   kind가 `*`인 타입만 값을 가질 수 있다는 것을 기억하세요.
+   예를 들어 `Tuple Int`는 *kind*가 `* -> *`이기 때문에 하스켈의 개념으로는 유효하며,
+   모든 `* -> *` kind를 가진 타입에 대해 일반적으로 작동하는 코드를 작성할 수 있지만,
+   `* -> *` kind를 가진 값을 만들 수는 없습니다.
+   모든 값은 타입을 가지며, 값을 가지고 있는 타입의 kind는 `*`입니다.
+
+   kind에 대한 더 자세한 내용은 이후에 살펴볼 예정이며, 지금은 타입에 집중하겠습니다!
+   :::
 
 4. Either
 
@@ -195,9 +190,9 @@ data <타입 이름> <타입 매개변수>
      | Right b
    ```
 
-   Similar to Tuple but instead of having only one constructor, we have
-   two. This means that we can choose which side we want. Here are a
-   couple of values of type `Either String Int`:
+   Tuple과 유사하지만 두 개의 생성자를 가지고 있습니다.
+   이는 어느 쪽을 선택할지 선택할 수 있다는 것을 의미합니다.
+   다음은 몇 가지 `Either String Int` 타입의 값의 예시입니다:
 
    ```haskell
    Left "Hello"
@@ -205,15 +200,11 @@ data <타입 이름> <타입 매개변수>
    Right 17
    ```
 
-   This type is useful for modeling errors. Either we succeeded and got
-   what we wanted (The `Right` constructor with the value), or we didn't
-   and got an error instead (The `Left` constructor with a string or a
-   custom error type).
+   이 타입은 에러를 모델링하는 데 유용합니다.
+   성공했다면 원하는 값을 얻고 (`Right` 생성자와 값), 그렇지 않다면 에러를 얻습니다. (`Left` 생성자와 문자열 또는 사용자 정의 에러 타입).
 
-In our program we use `data` types to model the different kinds of content types
-in our markup language. We tag each structure using the data constructor
-and provide the rest of the information (the paragraph text, the list items, etc.)
-in the `<types>` section of the data declaration for each constructor:
+우리 프로그램에서, 마크업 언어에 쓰이는 다양한 본문의 유형을 모델링하기 위해 `data` 타입을 사용합니다.
+각 구조체에 태그를 달고, 각 생성자의 `<types>` 섹션에 나머지 정보(문단 텍스트, 리스트 항목 등)를 제공합니다:
 
 ```haskell
 type Document
@@ -227,14 +218,16 @@ data Structure
   | CodeBlock [String]
 ```
 
-Note: `Natural` is defined in the `base` package but not exported from `Prelude`.
-Find out which module to import `Natural` by using [Hoogle](https://hoogle.haskell.org).
+:::note
+`Natural`은 `base` 패키지에 정의되어 있지만 `Prelude`에서는 내보내지 않습니다.
+`Natural`을 어떤 모듈에서 가져올 수 있는지 알아내려면 [Hoogle](https://hoogle.haskell.org)을 사용하세요.
+:::
 
 ---
 
-### Exercises
+### 연습문제
 
-Represent the following markup documents as values of `Document`:
+다음 마크업 문서를 `Document` 값으로 표현하세요:
 
 1. ```org
    Hello, world!
@@ -287,10 +280,10 @@ Represent the following markup documents as values of `Document`:
    Otherwise, it will only produce the .o and .hi files.
    ```
 
-Solutions:
+정답:
 
 <details>
-  <summary>Solution 1</summary>
+  <summary>정답 1</summary>
 
 ```haskell
 example1 :: Document
@@ -302,7 +295,7 @@ example1 =
 </details>
 
 <details>
-  <summary>Solution 2</summary>
+  <summary>정답 2</summary>
 
 ```haskell
 example2 :: Document
@@ -315,7 +308,7 @@ example2 =
 </details>
 
 <details>
-  <summary>Solution 3</summary>
+  <summary>정답 3</summary>
 
 ```haskell
 example3 :: Document
@@ -331,7 +324,7 @@ example3 =
 </details>
 
 <details>
-  <summary>Solution 4</summary>
+  <summary>정답 4</summary>
 
 ```haskell
 example4 :: Document
@@ -365,15 +358,13 @@ example4 =
 
 </details>
 
-Add a new module named `Markup` and add the data type definition to it.
-Note that in this case we _do_ want to export the constructors of `Structure`.
+`Markup` 모듈을 만들고 `data` 타입 정의를 추가하세요.
+`Structure`의 생성자들을 내보내야 하는 것에 주의하세요.
 
 <details>
-  <summary>Solution</summary>
+  <summary>정답</summary>
 
-```haskell
--- Markup.hs
-
+```haskell title=Markup.hs
 module Markup
   ( Document
   , Structure(..)
@@ -397,21 +388,19 @@ data Structure
 
 ---
 
-## Translating directly?
+## 바로 변환하면 안되나요?
 
-You might ask "Why do we even need to represent the markup as a type?
-Why don't we convert it into HTML as soon as we parse it
-instead?". That's a good question and a valid strategy. The reason we
-first represent it as a Haskell type is for flexibility and modularity.
+아마 다음과 같은 의문이 들 수 있습니다.
 
-If the parsing code is coupled with HTML generation, we lose the
-ability to pre-process the markup document. For example we might want
-to take only a small part of the document (for summary) and present
-it, or create a table of content from headings. Or maybe we'd like to
-add other targets and not just HTML - maybe markdown format or a GUI reader?
+- 왜 마크업을 타입으로 표현해야 하나요?
+- 파싱할 때 바로 HTML로 변환하면 어떨까요?
 
-Parsing to an "abstract data type" (ADT) representation (one that does
-not contain the details of the language, for example '#' for
-ordered lists) gives us the freedom to do so much more than just
-conversion to HTML that it's usually worth it in my opinion unless you
-really need to optimize the process.
+좋은 질문이고 유효한 전략입니다.
+우리가 마크업을 먼저 하스켈 타입으로 표현하는 이유는 유연성과 모듈성 때문입니다.
+
+만약 해석 작업이 HTML 생성과 결합되어 있다면, 마크업 문서를 사전 처리할 수 있는 기회를 잃게 됩니다.
+예를 들어 요약을 위해 문서의 일부분만 가져오거나, 제목으로 목차를 만들기 어렵게됩니다.
+또는 단순히 HTML이 아닌 마크다운 형식이나 GUI 리더기 같은 다른 형식으로 변환하고 싶을 수도 있습니다.
+
+해석을 "추상 데이터 타입" (ADT) 표현으로(예를 들어 순서 목록을 위한 '#' 같은 언어의 세부 사항을 포함하지 않는)하면 HTML 변환 외에도 많은 일을 할 수 있습니다.
+따라서 최적화가 정말로 필요하지 않는 한 ADT로 변환하는 것이 좋다고 생각합니다.
