@@ -1,59 +1,46 @@
-# Parsing markup part 01 (Recursion)
+# 마크업 파싱하기 01 (재귀)
 
-Let's have a look at how to parse a multi-lined string of markup text
-written by a user and convert it to the `Document` type we defined
-in the previous chapter.
+이전 장에서 정의한 `Document` 타입을 사용하여 사용자가 작성한 여러 줄의 마크업 텍스트를 파싱하는 방법을 살펴보겠습니다.
 
-Our strategy is to take the string of markup text, and:
+전략은 마크업 문자열을 다음과 같이 처리하는 것입니다:
 
-1. Split it to a list where each element represents a separate line, and
-2. Go over the list line by line and process it, remembering
-   information from previous lines if necessary
+1. 각 줄을 개별적인 요소로 분할하고
+2. 요소를 순회하면서 줄 별로 처리하고, 필요하다면 이전 줄의 정보를 기억합니다
 
-So the first thing we want to do is to process the string line by line.
-We can do that by converting the string to a list of string.
-Fortunately the Haskell
+따라서 처음 해야할 일은 문자열을 줄 단위로 처리하는 것입니다.
+이를 위해 문자열을 문자열의 리스트로 변환할 수 있습니다.
+다행히도 하스켈 표준 라이브러리 [`base`](https://hackage.haskell.org/package/base)의
 [`Prelude`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#v:lines)
-module from the Haskell standard library
-[`base`](https://hackage.haskell.org/package/base) exposes the function
-[`lines`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#v:lines)
-that does exactly what we want. The `Prelude` module is exposed in every
-Haskell file by default so we don't need to import it.
+모듈에서 [`lines`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#v:lines)
+함수를 제공하고 있습니다.
+`Prelude` 모듈은 기본적으로 모든 하스켈 파일에서 사용할 수 있으므로 가져올(import) 필요가 없습니다.
 
-For the line processing part, let's start by ignoring all of the markup syntax
-and just group lines together into paragraphs (paragraphs are separated by an empty line),
-and iteratively add new features later in the chapter.
+줄 처리를 위해, 먼저 마크업 문법은 무시하고 줄을 그룹화하여 단락(paragraph)으로 만들어 보겠습니다.
+(단락은 빈 줄로 구분됩니다) 그리고 나중에 장의 뒷부분에서 새로운 기능을 반복적으로 추가할 것입니다.
 
-A common solution in imperative programs would be to iterate over the lines
-using some _loop_ construct and accumulate lines that should be grouped together
-into some intermediate mutable variable. When we reach an empty line, we insert
-the content of that variable into another mutable variable that accumulates the
-results.
+명령형 프로그램에서의 일반적인 해결책은 *loop* 구조를 사용하여 순회하고 그룹화해야 하는 줄을 중간 가변 변수에 누적하는 것입니다.
+빈 줄에 도달하면 그 변수의 내용을 다른 가변 변수에 누적하여 결과를 저장합니다.
 
-Our approach in Haskell isn't so different, except that we do not use loops
-or mutable variables. Instead, we use **recursion**.
+하스켈의 접근 방식은 루프나 가변 변수를 사용하지 않는다는 점을 제외하고는 크게 다르지 않습니다.
+하스켈은 대신 **재귀**를 사용합니다.
 
-## Recursion and accumulating information
+## 재귀와 정보 누적
 
-Instead of loops, in Haskell we use recursion to model iteration.
+loop 대신, 하스켈에서는 재귀를 사용하여 반복을 모델링합니다.
 
-Consider the following contrived example: let's say that
-we want to write an algorithm for adding two natural numbers together,
-and we don't have a standard operation to do that (+), but we do
-have two operations we could use on each number: `increment`
-and `decrement`.
+다음과 같은 인위적인 예를 생각해 보겠습니다: 두 개의 자연수를 더하는 알고리즘이 필요하다고 가정해 보겠습니다.
+하지만 일반적인 덧셈 연산자 `+`를 사용할 수 없고, 각 숫자에 대해 `increment`와 `decrement`라는 두 개의 연산을 사용할 수 있습니다.
 
-A solution we could come up with is to slowly "pass" one number
-to the other number iteratively, by incrementing one, and decrementing the other.
-And we do that until the number we decrement reaches 0.
+이 문제를 해결하기 위한 방법은 하나의 숫자를 다른 숫자로 점진적으로 "전달"하는 것입니다.
+즉, 하나를 증가시키고 다른 하나를 감소시키고, 이를 반복하여 두 번째 숫자가 0이 될 때까지 수행합니다.
 
-For example for `3` and `2`:
+예를 들어 `3`과 `2`를 더한다고 가정해 보겠습니다:
 
-- We start with `3` and `2`, and we increment `3` and decrement `2`
-- On the next step we now have `4` and `1`, we increment `4` and decrement `1`
-- On the next step we now have `5` and `0`, since the second number is `0` we declare `5` as the result.
+- `3`과 `2`를 시작으로 합니다. `3`을 증가시키고 `2`를 감소시킵니다.
+- 다음 단계에서는 `4`와 `1`이 됩니다. `4`를 증가시키고 `1`을 감소시킵니다.
+- 다음 단계에서는 `5`와 `0`이 됩니다. `2`가 `0`이므로 `5`를 결과로 반환합니다.
 
-This can be written imperatively using a loop:
+이를 명령형으로 작성하면 다음과 같습니다:
 
 ```js
 function add(n, m) {
@@ -65,7 +52,7 @@ function add(n, m) {
 }
 ```
 
-We can write the same algorithm in Haskell without mutation using recursion:
+하스켈에서는 변수의 변경없이 재귀를 사용하여 동일한 알고리즘을 작성할 수 있습니다:
 
 ```haskell
 add n m =
@@ -74,46 +61,41 @@ add n m =
     else n
 ```
 
-In Haskell, in order to _emulate iteration with mutable state_, we call the function again
-with the values we want the variables to have in the next iteration.
+하스켈에서는 *가변 상태를 활용해 반복을 구현*하는 대신, 함수를 다시 호출하여 변수의 값을 다음 반복에 사용하도록 합니다.
 
-### Evaluation of recursion
+### 재귀의 평가
 
-Recursion commonly has a bad reputation for being slow and possibly unsafe compared to loops.
-This is because in imperative languages, calling a function often requires creating
-a new call stack.
+배귀는 일반적으로 loop보다 느리고, 안전하지 않다고 알려져 있습니다.
+이는 명령형 언어에서 함수 호출이 새로운 호출 스택을 생성을 요구하기 때문입니다.
 
-However, functional languages (and Haskell in particular) play by different
-rules and implement a feature called tail call elimination - when the result of a function call
-is the result of the function (this is called tail position), we can just drop the current
-stack frame and then allocate one for the function we call, so we don't require `N` stack frames
-for `N` iterations.
+그러나 함수형 언어(특히 하스켈)는 다른 규칙을 따르며, *꼬리 호출 제거(tail call elimination)* 이라는 기능을 구현합니다.
+함수 호출의 결과가 함수 자체의 결과인 경우(이를 *꼬리 위치(tail position)* 이라고 함),
+현재 스택 프레임을 삭제하고 호출하는 함수를 위한 하나의 스택 프레임을 할당하여 `N`번의 반복에 대해 `N`개의 스택 프레임이 필요하지 않도록 합니다.
 
-This is of course only one way to do tail call elimination and other
-strategies exist, such as translating code like our recursive `add` above to the iteration version.
+물론, 이는 꼬리 호출 제거를 수행하는 한 가지 방법일 뿐이며,
+우리가 위에서 재귀적으로 작성한 `add` 함수와 같은 코드를 반복 버전으로 변환하는 것과 같은 다른 전략도 존재합니다.
 
-#### Laziness
+#### 지연성
 
-Haskell plays by slightly different rules because it uses a _lazy evaluation strategy_
-instead of the much more common strict evaluation strategy. An _evaluation strategy_
-refers to "when do we evaluate a computation". In a strict language the answer is simple:
-_we evaluate the arguments of a function before entering a function_.
+Haskell은 흔히 사용되는 엄격한 평가 전략(strict evaluation strategy)이 아닌 *지연 평가 전략(lazy evaluation strategy)*을 사용하기 때문에 조금 다른 규칙을 따릅니다.
+여기서 *평가 전략(evaluation strategy)*이란 "언제 계산을 평가할 것인가"를 의미합니다.
+엄격한 언어에서의 법칙은 간단합니다: *함수에 전달되는 인수를 함수에 진입하기 전에 평가합니다*.
 
-So for example the evaluation of `add (increment 3) (decrement 2)` using strict evaluation
-will look like this:
+예를 들어 `add (increment 3) (decrement 2)`를 엄격하게 평가하면 다음과 같습니다:
 
+1. `increment 3`을 평가하여 `4`를 얻습니다.
+2. `decrement 2`를 평가하여 `1`을 얻습니다.
+3. `add 4 1`을 평가합니다
 1. Evaluate `increment 3` to `4`
 2. Evaluate `decrement 2` to `1`
 3. Evaluate `add 4 1`
 
-Or, alternatively (depending on the language) we reverse (1) and (2) and evaluate the arguments
-from right-to-left instead of left-to-right.
+또는 (언어에 따라서) (1)과 (2)의 순서를 반대로 하고 인수를 오른쪽에서 왼쪽으로 평가합니다.
 
-On the other hand, with lazy evaluation, we _only evaluate computation when we need it_, which
-is when it is part of a computation that will have some effect on the
-outside world, for example when writing a computation to standard output or sending it over the network.
+반면 지연 평가 전략에서는, *실제로 필요한 시점에만 계산을 평가합니다*.
+예를 들어 표준 출력에 연산을 출력하거나 네트워크로 보내는 등, 외부 세계에 영향을 미치는 연산을 포함할 때 평가합니다.
 
-So unless this computation is required, it won't be evaluated. For example:
+따라서 계산이 필요하지 않은 경우, 평가하지 않습니다. 예들 들면:
 
 ```haskell
 main =
@@ -122,9 +104,7 @@ main =
     else putStrLn "No."
 ```
 
-In the case above, we need the result of `add (increment 2) (decrement 3)`
-in order to know which message to write,
-so it will be evaluated. But:
+이 경우 `add (increment 2) (decrement 3)`의 결과가 필요하므로 평가합니다. 하지만:
 
 ```haskell
 main =
@@ -134,11 +114,11 @@ main =
     putStrLn "Not required"
 ```
 
-In the case above we don't actually need `five`, so we don't evaluate it!
+이 경우는 `five`가 필요하지 않으므로 평가하지 않습니다!
 
-But then if we know we need `add (increment 2) (decrement 3)`,
-do we use strict evaluation now? The answer is no - because we might not need
-to evaluate the arguments to complete the computation. For example in this case:
+그렇다면 `add (increment 2) (decrement 3)`가 필요하다고 판단하면 엄격한 평가를 수행할까요?
+그렇지 않습니다 - 왜냐하면 계산을 완료하기 위해 인자를 평가할 필요가 없을 수도 있기 때문입니다.
+예를 들어 다음과 같은 경우:
 
 ```haskell
 const a b = a
@@ -149,25 +129,20 @@ main =
     else putStrLn "No."
 ```
 
-`const` ignores the second argument and returns the first, so we don't actually need
-to calculate `decrement 3` in order to provide an answer to the computation and in
-turn output an answer to the screen.
+`const`는 두 번째 인자를 무시하고 첫 번째 인자를 반환하므로, 계산의 결과를 제공하고 화면에 출력하기 위해 `decrement 3`을 평가할 필요가 없습니다.
 
-With the lazy evaluation strategy we will evaluate expressions when we need to (when they are required
-in order to do something for the user), and we evaluate from the outside in - first
-we enter functions, and then we evaluate the arguments when we need to (usually when the thing
-we want to evaluate appears in some control flow such as the condition of an `if` expression
-or a pattern in pattern matching).
+지연 평가 전략에서는 필요할 때만 계산을 평가하며 (사용자가 무언가를 수행하기 위해 필요할 때),
+바깥에서 안으로 평가합니다 - 먼저 함수에 진입하고, 그 다음에 필요할 때 인자를 평가합니다 (대부분의 경우 `if` 표현식의 조건이나 패턴 매칭의 패턴에 나타날 때).
 
 ---
 
-I've written a more in-depth blog post about how this works in Haskell:
+하스켈에서 이런 전략이 어떻게 이루어지는지에 대한 자세한 내용을 다음 블로그 포스트에서 확인할 수 있습니다:
 [Substitution and Equational Reasoning](https://gilmi.me/blog/post/2020/10/01/substitution-and-equational-reasoning).
 
-Please read it and try to evaluate the following program by hand:
+읽어본 후, 다음 프로그램을 직접 평가해 보세요:
 
 ```haskell
-import Prelude hiding (const) -- feel free to ignore this line
+import Prelude hiding (const) -- 이 줄은 무시해도 좋습니다
 
 increment n = n + 1
 
@@ -186,12 +161,12 @@ main =
     else putStrLn "No."
 ```
 
-Remember that evaluation always begins from `main`.
+평가는 언제나 `main`에서 시작하는 점을 명심하세요.
 
 <details>
-  <summary>Solution</summary>
+  <summary>정답</summary>
 
-evaluating `main`
+`main` 평가
 
 ```haskell
 if const (add 3 2) (decrement 3) == 5
@@ -199,7 +174,7 @@ if const (add 3 2) (decrement 3) == 5
   else putStrLn "No."
 ```
 
-expanding `const`
+`const` 평가
 
 ```haskell
 if add 3 2 == 5
@@ -207,7 +182,7 @@ if add 3 2 == 5
   else putStrLn "No."
 ```
 
-expanding `add`
+`add` 평가
 
 ```haskell
 if (if 2 /= 0 then add (increment 3) (decrement 2) else 3) == 5
@@ -215,7 +190,7 @@ if (if 2 /= 0 then add (increment 3) (decrement 2) else 3) == 5
   else putStrLn "No."
 ```
 
-evaluating the control flow `2 /= 0`
+제어문 `2 /= 0` 평가 
 
 ```haskell
 if (if True then add (increment 3) (decrement 2) else 3) == 5
@@ -223,7 +198,7 @@ if (if True then add (increment 3) (decrement 2) else 3) == 5
   else putStrLn "No."
 ```
 
-Choosing the `then` branch
+`then` 분기 평가
 
 ```haskell
 if (add (increment 3) (decrement 2)) == 5
@@ -231,7 +206,7 @@ if (add (increment 3) (decrement 2)) == 5
   else putStrLn "No."
 ```
 
-expanding `add`
+`add` 평가
 
 ```haskell
 if
@@ -245,7 +220,7 @@ if
   else putStrLn "No."
 ```
 
-Evaluating `decrement 2` in the control flow (notice how both places change!)
+제어문에서 `decrement 2` 평가 (두 곳이 변경되는 것에 주목하세요!)
 
 ```haskell
 if
@@ -259,7 +234,7 @@ if
   else putStrLn "No."
 ```
 
-Evaluating the control flow `1 /= 0`
+제어문 `1 /= 0` 평가
 
 ```haskell
 if
@@ -273,7 +248,7 @@ if
   else putStrLn "No."
 ```
 
-Choosing the `then` branch
+`then` 분기 평가
 
 ```haskell
 if
@@ -285,7 +260,7 @@ if
   else putStrLn "No."
 ```
 
-Expanding `add`
+`add` 평가
 
 ```haskell
 if
@@ -299,7 +274,7 @@ if
   else putStrLn "No."
 ```
 
-Evaluating control flow `decrement 1`
+제어문 `decrement 1` 평가
 
 ```haskell
 if
@@ -313,7 +288,7 @@ if
   else putStrLn "No."
 ```
 
-Evaluating control flow `0 /= 0`
+제어문 `0 /= 0` 평가
 
 ```haskell
 if
@@ -327,7 +302,7 @@ if
   else putStrLn "No."
 ```
 
-Choosing the `else` branch
+`else` 분기 평가
 
 ```haskell
 if
@@ -336,7 +311,7 @@ if
   else putStrLn "No."
 ```
 
-Evaluate control flow `increment (increment 3)`
+제어문 `increment (increment 3)` 평가
 
 ```haskell
 if
@@ -345,7 +320,7 @@ if
   else putStrLn "No."
 ```
 
-Evaluate in control flow `increment 3`
+제어문 `increment 3` 평가
 
 ```haskell
 if
@@ -354,7 +329,7 @@ if
   else putStrLn "No."
 ```
 
-Evaluate in control flow `3 + 1`
+제어문 `3 + 1` 평가
 
 ```haskell
 if
@@ -363,7 +338,7 @@ if
   else putStrLn "No."
 ```
 
-Evaluate in control flow `4 + 1`
+제어문 `4 + 1` 평가
 
 ```haskell
 if
@@ -372,7 +347,7 @@ if
   else putStrLn "No."
 ```
 
-Evaluate in control flow `5 == 5`
+제어문 `5 == 5` 평가
 
 ```haskell
 if
@@ -381,13 +356,13 @@ if
   else putStrLn "No."
 ```
 
-Choosing the `then` branch
+`then` 분기 평가
 
 ```haskell
 putStrLn "Yes."
 ```
 
-Which when run will print `Yes.` to the screen.
+화면에 `Yes.`를 출력합니다.
 
 </details>
 
