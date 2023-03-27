@@ -368,27 +368,27 @@ putStrLn "Yes."
 
 ---
 
-### General recursion
+### 일반 재귀
 
+일반적으로, 재귀적으로 문제를 해결하려면 다음 세 가지 부분을 고려해야 합니다:
 In general, when trying to solve problems recursively, it is useful to think
 about the problem in three parts:
 
-1. Finding the **base case** (the most simple cases - the ones we already know how to answer)
-2. Figuring out how to **reduce** the problem to something simpler (so it gets closer to the base case)
-3. **Mitigating the difference** between the reduced version and the solution we need to provide
+1. **기저 사례(base case)** (가장 간단한 경우 - 이미 답을 알고 있는 경우)
+2. 문제를 더 간단한 것으로 **축소(reduce)**하는 방업을 찾습니다. (기저 사례에 가까워지도록)
+3. 축소된 버전과 제공해야 하는 해결책 간의 **차이를 완화(mitigate)**합니다.
 
-The reduce and mitigate steps together are usually called the _recursive step_.
+축소와 완화 단계를 합쳐서 *재귀 단계(recursive step)*라고 부릅니다.
 
-Let's take a look at another example problem: generating a list of a particular size
-with a specific value in place of every element.
+또 다른 예제 문제를 살펴보겠습니다: 특정 크기로 목록을 생성하고 각 요소에 특정 값을 넣는 것입니다.
 
-In Haskell, this function would have the following signature:
+하스켈에서는, 다음과 같은 시그니처를 가진 함수가 있습니다:
 
 ```haskell
 replicate :: Int -> a -> [a]
 ```
 
-Here are a few usage examples of `replicate`:
+다음은 `replicate`의 몇 가지 사용 예입니다:
 
 ```haskell
 ghci> replicate 4 True
@@ -399,52 +399,47 @@ ghci> replicate (-13) True
 []
 ```
 
-How would we implement this function recursively? How would describe it in three steps above?
+어떻게 이 함수를 재귀적으로 구현할 수 있을까요? 위의 세 단계를 어떻게 적용할 수 있을까요?
 
-1. **Base case**: the cases we already know how to generate are the cases where the length
-   of the list is zero (or less) - we just return an empty list.
-2. **Reduce**: while we might not know how to generate a list of size `N` (where `N` is positive),
-   if we knew the solution for `N-1` we could:
-3. **Mitigate**: Add another element to the solution for `N-1` using the `:` (cons) operator.
+1. **기저 사례**: 이미 알고 있는 경우는 목록의 길이가 0(또는 그 이하)인 경우입니다. 이 경우에는 빈 목록을 반환합니다.
+2. **축소**: (양수인) `N` 크기의 목록을 생성하는 방법을 모르더라도, `N-1` 크기의 목록을 생성하는 방법을 알고 있다면 유도할 수 있습니다.
+3. **완화**: `N-1` 크기일 때의 해답에 `:` (cons) 연산자를 사용하여 다른 요소를 추가합니다.
 
 ---
 
-Try to write this in Haskell!
+하스켈로 이를 구현해보세요!
 
 <details>
-<summary>Solution</summary>
+<summary>정답</summary>
 
 ```haskell
 replicate :: Int -> a -> [a]
 replicate n x =
-  if n <= 0    -- recognizing the base case
+  if n <= 0    -- 기저 사례인 경우
     then
-      []       -- the solution for the base case
+      []       -- 기저 사례의 답
     else
         x : replicate (n - 1) x
   --   ---  -------------------
   --    ^           ^
   --    |           |
-  --    |           +-------- reduction
+  --    |           +-------- 축소
   --    |
-  --    +--- mitigation
+  --    +--- 완화
 ```
 
 </details>
 
 ---
 
-### Mutual recursion
+### 상호 재귀
 
-When solving functions recursively we usually call the same function again,
-but that doesn't have to be the case. It is possible to reduce our problem
-to something simpler that requires an answer from a different function.
-If, in turn, that function will (or another function in that call chain)
-call our function again, we have a **mutual recursive** solution.
+함수를 재귀적으로 해결할 때 우리는 보통 같은 함수를 다시 호출합니다.
+하지만 꼭 그렇게 할 필요는 없습니다. 다른 함수를 호출하여 문제를 더 간단한 것으로 축소할 수도 있습니다.
+만약, 그 함수가 (또는 호출 체인의 또 다른 함수가) 다시 기존 함수를 호출한다면, 이는 **상호 재귀적(mutual recursive)** 이라고 할 수 있습니다.
 
-For example, let's write two functions, one that checks whether a natural number
-is even or not, and one that checks whether a number is odd or not
-only by decrementing it.
+예를 들어, 주어진 자연수가 짝수인지 홀수인지를 판별하는 두 개의 함수를 작성해보겠습니다.
+이 함수들은 주어진 수를 감소시키는 방법을 사용하여 문제를 해결할 수 있습니다.
 
 ```haskell
 even :: Int -> Bool
@@ -452,24 +447,24 @@ even :: Int -> Bool
 odd :: Int -> Bool
 ```
 
-Let's start with `even`, how should we solve this recursively?
+먼저 `even`을 구현해보겠습니다. 어떻게 하면 이 함수를 재귀적으로 구현할 수 있을까요?
 
-1. **Base case**: We know the answer for `0` - it is `True`.
-2. **Reduction**: We might not know the answer for a general `N`, but we could check whether `N - 1` is odd,
-3. **Mitigation**: if `N - 1` is odd, then `N` is even! if it isn't odd, then `N` isn't even.
+1. **기저 사례**: 이미 알고 있는 경우는 `0`인 경우입니다. 이 경우에는 `True`를 반환합니다.
+2. **축소**: 일반적인 `N`에 대한 답을 모르더라도, `N - 1`에 대한 답은 확인할 수 있습니다.
+3. **완화**: `N - 1`이 홀수인 경우, `N`은 짝수입니다! `N - 1`이 홀수가 아닌 경우, `N`은 짝수가 아닙니다.
 
-What about `odd`?
+`odd`는 어떻게 구현할 수 있을까요?
 
-1. **Base case**: We know the answer for `0` - it is `False`.
-2. **Reduction**: We might not know the answer for a general `N`, but we could check whether `N - 1` is even,
-3. **Mitigation**: if `N - 1` is even, then `N` is odd! if it isn't even, then `N` isn't odd.
+1. **기저 사례**: 이미 알고 있는 경우는 `0`인 경우입니다. 이 경우에는 `False`를 반환합니다.
+2. **축소**: 일반적인 `N`에 대한 답을 모르더라도, `N - 1`에 대한 답은 확인할 수 있습니다.
+3. **완화**: `N - 1`이 짝수인 경우, `N`은 홀수입니다! `N - 1`이 짝수가 아닌 경우, `N`은 홀수가 아닙니다.
 
 ---
 
-Try writing this in Haskell!
+이제 하스켈로 구현해보세요!
 
 <details>
-<summary>Solution</summary>
+<summary>정답</summary>
 
 ```haskell
 even :: Int -> Bool
@@ -494,65 +489,53 @@ odd n =
 
 ---
 
-## Partial functions
+## 부분 함수
 
-Because we didn't handle the negative numbers cases in the example above,
-our functions will loop forever when a negative value is passed as input.
-A function that does not return a result for some value
-(either by not terminating or by throwing an error) is called **a partial function**
-(because it only returns a result for a part of the possible inputs).
+위 예제에서 음수에 대한 경우는 다루지 않았기때문에, 음수를 입력으로 받으면 무한 루프에 빠질 수 있습니다.
+특정 값에 대해 결과를 반환하지 않는 함수(함수가 종료되지 않거나 에러를 발생시키는 경우)를
+(가능한 입력의 일부에 대해서만 결과를 반환하기 때문에) **부분 함수(partial function)** 라고 합니다.
 
-Partial functions are generally considered **bad practice** because they can have
-undesired behaviour at runtime (a runtime exception or an infinite loop),
-so we want to **avoid using** partial functions
-as well as **avoid writing** partial functions.
+부분 함수는 런타임에 예상하지 못한 동작(런타임 예외 또는 무한루프)을 할 수 있기 때문에, **나쁜 관례(bad practice)**로 여겨집니다.
+그래서, 부분 함수 **사용을 지양하고**, 부분 함수 **작성을 지양해야**합니다.
 
-The best way to avoid writing partial functions is by covering all inputs!
-In the situation above, it is definitely possible to handle negative numbers
-as well, so we should do that! Or, instead, we could require that our functions
-accept a `Natural` instead of an `Int`, and then the type system would've stopped
-us from using these functions with values that we did not handle.
+부분 함수를 작성하지 않는 가장 좋은 방법은 모든 입력을 처리하는 것입니다!
+위의 경우에는 음수를 처리할 수 있기 때문에, 이를 처리해야합니다!
+또는 함수가 `Int` 대신 `Natural`을 받도록 만들 수 있고, 이 경우 타입 시스템이 우리가 처리하지 않은 값을 사용하는 것을 막아줄 것입니다.
 
-There are cases where we can't possibly cover all inputs, in these cases it is important
-to re-examine the code and see if we could further restrict the inputs using types to
-mitigate these issues.
+모든 입력을 처리할 수 없는 경우에는, 코드를 다시 검토해보고 타입을 사용하여 입력을 더 제한할 수 있는지 확인해야합니다.
 
-For example, the `head :: [a] -> a` function from `Prelude` promises
-to return the first element (the head) of a list, but we know that lists
-could possibly be empty, so how can this function deliver on its promise?
+예를 들어, `Prelude` 모듈의 `head :: [a] -> a` 함수는 목록의 첫 번째 요소를 반환할 것으로 기대합니다.
+하지만 빈 목록을 제공한다면, 이 함수가 기대한 대로 동작할 수 있을까요?
 
-Unfortunately, it can't. But there exists a different function that can:
-`head :: NonEmpty a -> a` from the
-[`Data.List.NonEmpty`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-List-NonEmpty.html)
-module! The trick here is that this other `head` does not take a general list
-as input, it takes a different type entirely, one that promises to have
-at least one element, and therefore can deliver on its promise!
+아쉽게도, 그렇지 않습니다. 하지만 정상적으로 동작하는 다른 함수가 있습니다:
 
-We could also potentially use smart constructors with `newtype` and enforce some sort
-of restrictions in the type system, as we saw in earlier chapters,
-But this solution can sometimes be less ergonomic to use.
+바로 [`Data.List.NonEmpty`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-List-NonEmpty.html) 모듈의
+`head :: NonEmpty a -> a` 함수입니다!
+이 함수는 일반 목록이 아닌 완전히 다른 타입을 입력으로 받습니다.
+이 타입은 적어도 하나의 요소가 있음을 보장하기 때문에, 함수는 기대한 대로 동작할 수 있습니다!
 
-An alternative approach is to use `data` types to encode the absence of a proper result,
-for example, using `Maybe`, as we'll see in a future chapter.
+이전 장에서 본 것처럼, `newtype`을 활용하는 스마트 생성자를 사용해 타입 시스템에 어떤 제한을 강제할 수도 있습니다.
+하지만 이 해결책은 때때로 사용하기에 불편할 수 있습니다.
 
-Make sure the functions you write return a result for every input,
-either by constraining the input using types, or by encoding the absence of a result using
-types.
+또 다른 해결책은 `data` 타입을 사용하여 결과가 없는 경우를 표현하는 것입니다.
+예를 들어, `Maybe` 타입을 사용할 수 있습니다.
+이에 대해서는 이후 장에서 자세히 다루겠습니다.
 
-## Parsing markup?
+함수를 작성할 때에는 입력을 제한하거나, 결과가 없는 경우를 표현하는 타입을 사용해서 모든 입력에 대해 결과를 반환할 수 있도록 해야합니다.
 
-Let's get back to the task at hand.
+## 마크업 파싱하기
 
-As stated previously, our strategy for parsing the markup text is:
+우리의 원래 목표로 돌아가봅시다.
 
-1. Split the string to a list where each element is a separate line
-   (which we can do with [`lines`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#v:lines)), and
-2. Go over the list line by line and process it, remembering
-   information from previous lines if necessary
+이전에 언급했듯이, 마크업을 파싱하는 전략은 다음과 같습니다:
 
-Remember that we want to start by ignoring all of the markup syntax
-and just group lines together into paragraphs (paragraphs are separated by an empty line),
-and iteratively add new features later in the chapter:
+1. 문자열을 줄 단위로 분할해 목록을 만듭니다.
+   (이는 [`lines`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#v:lines)) 함수를 사용하여 수행할 수 있습니다.)
+2. 목록을 순회하면서, 각 줄을 처리합니다.
+   필요한경우 이전 줄의 정보를 기억합니다.
+
+처음에는 모든 마크업 문법은 무시하고 줄을 그룹화하여 문단을 만들기로 한 것을 기억하세요. (문단은 빈 줄로 구분됩니다)
+그리고 이후 장에서 점진적으로 새로운 기능을 추가합니다.
 
 ```haskell
 parse :: String -> Document
@@ -576,31 +559,27 @@ trim :: String -> String
 trim = unwords . words
 ```
 
-Things to note:
+주목할 점:
 
-1. We pass a list that contains the currently grouped paragraph (paragraphs are separated by an empty line)
-2. Because of laziness, `paragraph` is not computed until it's needed, so we don't have to worry about
-   the performance implications in the case that we are still grouping lines
-3. Why do we reverse `currentParagraph`? (See point (6))
-4. We saw case expressions used to deconstruct `newtype`s and `Char`s,
-   but we can also pattern match on lists and other ADTs as well!
-   In this case we match against two patterns, an empty list (`[]`),
-   and a "cons cell" - a list with at least one element (`currentLine : rest`).
-   In the body of the "cons" pattern, we bind the first element to the name `currentLine`,
-   and the rest of the elements to the name `rest`.
+1. 문단으로 그룹화할 목록을 전달합니다. (문단은 빈 줄로 구분됩니다)
+2. 지연평가로 인해, `paragraph`는 필요할 때까지 계산되지 않습니다.
+   따라서, 아직 문단을 그룹화하는 중이라면 성능을 걱정할 필요가 없습니다.
+3. 왜 `currentParagraph`를 뒤집을까요? (6번을 참고하세요)
+4. case 표현식을 사용해 `newtype`과 `Char`를 구조분해 한것처럼, 다른 ADT와 목록에 대해서도 패턴 매칭을 할 수 있습니다!
+   이 경우에는 두 가지 패턴을 사용합니다. 빈 목록 (`[]`)과 "cons cell" - 적어도 하나의 요소가 있는 목록 (`currentLine : rest`)입니다.
+   "cons" 패턴의 본문에서, 첫 번째 요소를 `currentLine`이라는 이름으로 바인딩하고, 나머지 요소를 `rest`라는 이름으로 바인딩합니다.
 
-   We will talk about how all of this works really soon!
+   이것이 어떻게 작동하는지는 곧 알아볼 예정입니다!
 
-5. When we run into an empty line we add the accumulated paragraph to the resulting list (A `Document` is a list of structures) and start the function again with the rest of the input.
-6. We pass the new lines to be grouped in a paragraph **in reverse order** because of
-   performance characteristics - because of the nature of singly-linked lists,
-   prepending an element is fast, and appending is slow. Prepending only requires
-   us to create a new cons (`:`) cell to hold a pointer to the value and a pointer to the list,
-   but appending requires us to traverse the list to its end and rebuild the cons cells -
-   the last one will contain the last value of the list and a pointer to the list to append,
-   the next will contain the value before the last value of the list and a pointer to the
-   list which contains the last element and the appended list, and so on.
+5. 빈 줄에 도달한 경우 누적한 문단을 목록에 추가하고 (`Document`는 `Structure`의 목록입니다) 나머지 입력으로 함수를 다시 호출합니다.
+6. 새로운 줄을 문단에 추가할 때 **역순으로** 추가합니다.
+   이는 성능을 고려했기 때문입니다 - 단일 연결 리스트의 특성 때문에, 요소를 추가하는 것은 느리지만, 앞에 추가하는 것은 빠릅니다.
+   요소를 앞에 추가하는 것은 값과 목록을 가리키는 포인터를 담은 새로운 cons (`:`) 셀을 생성하는 것만으로 충분하지만,
+   요소를 뒤에 추가하는 것은 목록의 끝까지 이동하고 cons 셀을 재구성해야 합니다.
+   마지막 cons 셀은 리스트의 마지막 값을 가리키고 추가할 리스트를 가리키는 포인터를 포함하고,
+   그 다음 cons 셀은 리스트의 마지막 값의 앞의 값을 가리키고 마지막 요소와 추가된 리스트를 가리키는 포인터를 포함합니다.
+   이와 같은 과정이 반복됩니다.
 
-This code above will group together paragraphs in a structure, but how do we view our result?
-In the next chapter we will take a short detour and talk about type classes, and how
-they can help us in this scenario.
+위 함수는 이제 우리가 원하는 기능을 제공할것입니다.
+하지만 함수의 결과를 어떻게 확인할 수 있을까요?
+다음 장에서는 타입 클래스에 대해 간략히 살펴보고, 이를 사용하여 결과를 확인하는 방법을 알아보겠습니다.
