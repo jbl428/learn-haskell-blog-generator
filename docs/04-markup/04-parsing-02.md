@@ -1,9 +1,8 @@
-# Parsing markup part 02 (Pattern matching)
+# 마크업 파싱하기 02 (패턴 매칭)
 
 ## Maybe
 
-Previously on partial functions, we mentioned that one way to avoid
-writing partial functions is to encode the absence of a result using `Maybe`:
+이전에 부분 함수를 만들지 않는 방법 중 하나로, `Maybe`를 사용하여 결과가 없는 경우를 표현하는 것을 살펴 보았습니다.
 
 ```haskell
 data Maybe a
@@ -11,44 +10,37 @@ data Maybe a
   | Just a
 ```
 
-`Maybe` is a data type from the standard library (named [base](https://hackage.haskell.org/package/base))
-for adding an additional value to a type: the absence of a value.
-For example, `Maybe Bool` has three values,
-two with the `Just` constructor to represent regular boolean values
-(`Just True` and `Just False`) and another value, `Nothing` to represent
-the absence of a boolean value.
+`Maybe`는 표준 라이브러리([base](https://hackage.haskell.org/package/base))에서 제공하는 데이터 타입으로,
+값의 부재를 의미하는 추가적인 값을 타입에 추가하는 데 사용됩니다.
+예를 들어, `Just` 생성자는 일반적인 불리언 값이 있음을 나타내고, (`Just True`와 `Just False`)
+`Nothing` 생성자는 불리언 값이 없음을 나타냅니다.
 
-We can use this to encode the result of `head`, a function that promises to return
-the first element of a list, without creating a partial function:
+이를 통해 주어진 리스트의 첫 번째 요소를 반환하는 `head` 함수를 부분 함수로 만들지 않고 항상 값을 반환하게 만들 수 있습니다.
 
 ```haskell
 safeHead :: [a] -> Maybe a
 ```
 
-This way, when the list is empty, we can return `Nothing`, and when it has at least
-one element, we can return `Just <first element>`. This function can be found in
-the [Data.Maybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Maybe.html)
-module under the name
-[listToMaybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Maybe.html#v:listToMaybe).
+위 방식은 리스트가 비어있다면, `Nothing`을 반환하고, 비어있지 않다면 `Just <첫 번째 요소>`를 반환합니다.
+[Data.Maybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Maybe.html) 모듈의
+[listToMaybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Maybe.html#v:listToMaybe) 함수가 이 역할을 합니다.
 
-In order to _consume_ values of type `Maybe <something>`, and other types created with
-`data`, we can use pattern matching.
+`Maybe <무언가>` 또는 다른 `data`로 생성된 타입의 값을 *꺼내기*위해, 패턴 매칭을 사용할 수 있습니다.
 
-## Pattern Matching
+## 패턴 매칭
 
-We've already seen pattern matching a few times.
-It is an incredibly versatile feature of Haskell, we can use it to do two main things:
+이전에 패턴 매칭에 대해 이미 몇 번 보았습니다.
+패턴 매칭은 하스켈의 매우 유용한 기능으로, 주로 두 가지 주요 목적으로 사용합니다:
 
-1. Deconstruct complex values
-2. Control flow
+1. 복잡한 값을 분해
+2. 흐름 제어
 
-As we've seen when discussing
-[newtypes](../03-html/04-safer-construction.md#using-newtypes),
-we can use **case expressions** and **function definitions** to deconstruct a `newtype`.
-Same for `data` types as well:
+이전 [newtype](../03-html/04-safer-construction.md#using-newtypes)을 소개할 때,
+**case 표현식**과 **함수 정의**를 사용하여 `newtype`을 분해하는 방법을 살펴보았습니다.
+`data` 타입에 대해서도 같은 방법을 적용할 수 있습니다:
 
 ```haskell
--- | A data type representing colors
+-- | 색상을 표현하는 데이터 타입
 data Color
   = RGB Word8 Word8 Word8
 
@@ -58,14 +50,13 @@ getBluePart color =
     RGB _ _ blue -> blue
 ```
 
-In `getBluePart` we deconstruct a composite value into its part and extract the third component
-representing the blue value in a color represented by red, green and blue components (RGB).
+`getBluePart` 함수는 주어진 합성 값을 분해하여 RGB에서 세 번째 요소인 파란색 값을 추출합니다.
 
-Note that `blue` is the name we give to the third component so it will be bound
-to the right of the arrow that comes after the pattern. This is similar to
-a function argument. Also note that `_` matches any value _without_ binding it to a name.
+`blue`는 `color`의 세 번째 요소에 준 이름으로 오른쪽 화살표 다음에 오는 패턴에 바인딩됩니다.
+이는 함수 인수와 유사합니다.
+또한 `_`는 이름을 바인딩하지 않고 모든 값과 일치하는 패턴입니다.
 
-We can also try to match a value with more than one pattern:
+값을 두 개 이상의 패턴과 비교할 수도 있습니다:
 
 ```haskell
 data Brightness
@@ -99,38 +90,38 @@ ansiColorToVGA ansicolor =
     -- and so on
 ```
 
-It's important to notice a few things here:
+다음 항목을 주목하세요:
 
-1. Patterns can be nested, notice how we deconstructed `ansicolor` on multiple levels
-2. We try to match patterns from the top down, it is possible for patterns to overlap with one another and the top one will win
-3. If the value we try to match does not match any of the patterns listed, an error will be thrown at runtime
+1. 패턴은 중첩될 수 있습니다. `ansicolor`를 여러 단계로 분해하는 것을 알 수 있습니다.
+2. 패턴은 위에서 아래로 매칭되므로, 패턴이 중첩되면 위에 있는 패턴이 우선합니다.
+3. 어떤 값이 주어진 모든 패턴과 일치하지 않으면 런타임에 에러가 발생합니다.
 
-We can ask GHC to notify us when we accidentally write overlapping patterns,
-or when we haven't listed enough patterns to match all possible values,
-by passing the flag `-Wall` to `ghc` or `runghc`.
+GHC에게 우리가 실수로 패턴을 중복해서 작성했거나, 모든 가능한 값을 매칭할 수 있도록 작성하지 않았다는 것을 알려주도록 할 수 있습니다.
+`ghc` 또는 `runghc`에 `-Wall` 플래그를 전달하면 됩니다.
 
-**My recommendation is to always use `-Wall`**!
+**항상 `-Wall`을 사용하는 것을 권장합니다**!
 
-> As an aside, while it is possible to use pattern matching in function definitions by defining a function
-> multiple times, [I personally don't like that feature very much](https://twitter.com/_gilmi/status/1257225601079029760)
-> and I would encourage you to avoid it,
-> but if you want to use it instead of case expressions, it is possible.
+:::note
+함수를 여러번 정의하는 방식을 통해, 패턴 매칭을 함수 정의에도 사용할 수도 있습니다.
+하지만 [개인적으로 그 기능을 썩 좋아하지 않습니다](https://twitter.com/_gilmi/status/1257225601079029760)
+가능하면 case 표현식을 사용하는 것을 권장합니다.
+하지만 원한다면 case 표현식 대신 사용해도 좋습니다.
+:::
 
-### Pattern matching on linked lists
+### 연결 리스트 패턴 매칭
 
-Because linked lists have their own [special syntax](../03-html/06-escaping-characters.md#linked-lists-briefly),
-we also have special syntax for their pattern match.
-We can use the same special syntax for creating lists when we pattern match on lists,
-replacing the _elements_ of the list with patterns. For example:
+연결 리스트에는 [특별한 문법](../03-html/06-escaping-characters.md#linked-lists-briefly)이 있는데, 패턴 매칭에도 특별한 문법이 있습니다.
+리스트를 만들 때 사용한 특별한 문법을 통해, 리스트의 *요소*를 패턴으로 사용할 수 있습니다.
+예를 들어:
 
 ```haskell
 safeHead :: [a] -> Maybe a
 safeHead list =
   case list of
-    -- Empty list
+    -- 빈 리스트
     [] -> Nothing
 
-    -- Cons cell pattern, will match any list with at least one element
+    -- cons 셀 패턴, 리스트의 첫 번째 요소를 x에 매칭
 	x : _ -> Just x
 ```
 
@@ -138,37 +129,37 @@ safeHead list =
 exactlyTwo :: [a] -> Maybe (a, a)
 exactlyTwo list =
   case list of
-    -- Will match a list with exactly two elements
+    -- 정확히 두 개의 요소를 가진 리스트와 매칭
 	[x, y] -> Just (x, y)
 
-    -- Will match any other pattern
+    -- 나머지 모든 패턴과 매칭
 	_ -> Nothing
 ```
 
 ```haskell
--- This will also work
+-- 다음 함수도 같은 결과를 반환합니다
 exactlyTwoVersion2 :: [a] -> Maybe (a, a)
 exactlyTwoVersion2 list =
   case list of
-    -- Will match a list with exactly two elements
+    -- 정확히 두 개의 요소를 가진 리스트와 매칭
 	x : y : [] -> Just (x, y)
 
-    -- Will match any other pattern
+    -- 나머지 모든 패턴과 매칭
 	_ -> Nothing
 ```
 
 ---
 
-Exercises:
+연습문제:
 
-1. Create a function `isBright :: AnsiColor -> Bool` that checks whether a color is bright
-2. Use [this table](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit) to write `ansiToUbuntu`
-3. Create a function `isEmpty :: [a] -> Bool` that uses `listToMaybe` to check whether a list is empty
-4. Create a function `isEmpty :: [a] -> Bool` that _doesn't_ use `listToMaybe` to check whether a list is empty
+1. 주어진 색이 밝은 색인지를 확인하는 `isBright :: AnsiColor -> Bool` 함수를 작성하세요.
+2. [이 표](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit)를 사용하여 `ansiToUbuntu` 함수를 작성하세요.
+3. `listToMaybe`를 사용해 리스트가 비어있는지 확인하는 `isEmpty :: [a] -> Bool` 함수를 작성하세요.
+4. `listToMaybe`를 *사용하지 않고* 리스트가 비어있는지 확인하는 `isEmpty :: [a] -> Bool` 함수를 작성하세요.
 
-Solutions:
+정답:
 
-<details><summary>Solution for (1)</summary>
+<details><summary>연습문제 (1)</summary>
 
 ```haskell
 isBright :: AnsiColor -> Bool
@@ -179,7 +170,7 @@ isBright ansiColor =
 ```
 
 </details>
-<details><summary>Solution for (2)</summary>
+<details><summary>연습문제 (2)</summary>
 
 ```haskell
 ansiToUbuntu :: AnsiColor -> Color
@@ -210,8 +201,7 @@ ansiToUbuntu ansiColor =
             White -> RGB 233 235 235
 ```
 
-Since pattern matching goes arbitrarily deep as we saw before, we could instead
-pattern match all the way through in one case expression:
+위 코드처럼 패턴 매칭은 한 없이 깊어질 수 있기에, 하나의 `case` 표현식을 사용해 모든 경우를 매칭할 수도 있습니다.
 
 ```haskell
 ansiToUbuntu :: AnsiColor -> Color
@@ -235,11 +225,10 @@ ansiToUbuntu ansiColor =
     AnsiColor Bright White -> RGB 233 235 235
 ```
 
-But this is a bit too much repetition of `AnsiColor`, `Dark` and `Bright`
-to my taste in this case.
+하지만 이 방식은 `AnsiColor`, `Dark` 그리고 `Bright`가 많이 반복되는 단점이 있습니다.
 
 </details>
-<details><summary>Solution for (3)</summary>
+<details><summary>연습문제 (3)</summary>
 
 ```haskell
 isEmpty :: [a] -> Bool
@@ -250,7 +239,7 @@ isEmpty list =
 ```
 
 </details>
-<details><summary>Solution for (4)</summary>
+<details><summary>연습문제 (4)</summary>
 
 ```haskell
 isEmpty :: [a] -> Bool
