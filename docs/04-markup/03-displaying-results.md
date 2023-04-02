@@ -92,68 +92,58 @@ print = putStrLn . show
 그 중에 동등성을 위한 `Eq`와 정렬을 위한 `Ord`도 있습니다.
 이 두 타입 클래스 역시 인스턴스를 자동으로 생성할 수 있습니다.
 
-## Laws
+## 법칙
 
-Type classes often come with "rules" or "laws" that instances should satisfy,
-the purpose of these laws is to provide _predictable behaviour_ across
-instances, so that when we run into a new instance we can be confident
-that it will behave in an expected way, and we can write code
-that works generically for all instances of a type class while expecting
-them to adhere to these rules.
+타입 클래스에는 인스턴스가 준수해야 하는 "법칙"이나 "규칙"이 있습니다.
+이러한 법칙의 목적은 인스턴스 간에 *예측 가능한 동작*을 제공하는 것입니다.
+따라서 새로운 인스턴스를 접할 때, 이것이 예상대로 동작할 것이라고 확신할 수 있으며,
+이러한 법칙을 준수하는 모든 인스턴스에 대해 일반적으로 작동하는 코드를 작성할 수 있습니다.
 
-As an example, let's look at the `Semigroup` type class:
+예들 들어, `Semigroup` 타입 클래스를 살펴보겠습니다:
 
 ```haskell
 class Semigroup a where
   (<>) :: a -> a -> a
 ```
 
-This type class provides a common interface for types with an operation `<>`
-that can combine two values into one in some way.
+이 타입 클래스는 두 값을 어떠한 방식으로 결합해 하나의 값을 만들 수 있는 연산자 `<>`를 제공하는 타입에 대한 공통된 인터페이스를 제공합니다.
 
-This type class also mentions that this `<>` operation should be associative,
-meaning that these two sides should evaluate to the same result:
+이 타입 클래스는 또한 `<>` 연산자가 결합법칙을 만족해야 한다는 것을 의미합니다.
+즉, 아래 등식이 성립해야 합니다.
 
 ```
 x <> (y <> z) = (x <> y) <> z
 ```
 
-An example of a lawful instance of `Semigroup` is lists with the append operation (`++`):
+`Semigroup`을 만족하는 인스턴스의 예로 리스트와 `++` 연산자가 있습니다:
 
 ```haskell
 instance Semigroup [a] where
   (<>) = (++)
 ```
 
-Unfortunately the Haskell type system cannot "prove" that instances
-satisfy these laws, but as a community we often shun unlawful instances.
+아쉽게도 하스켈 타입 시스템은 이러한 법칙을 "증명"할 수 없기에, 법칙을 만족하지 않는 인스턴스 사용하지 않는것이 좋습니다.
 
-Many data types (together with their respective operations) can
-form a `Semigroup`, and instances
-don't even have to look similar or have a common analogy/metaphor
-(and this is true for many other type classes as well).
+많은 데이터 타입(그리고 각 연산자)은 `Semigroup`을 만족하며, 인스턴스들은 비슷해 보이거나 공통적인 유사성/비유를 가져야 할 필요가 없습니다.
+(이는 많은 다른 타입 클래스에도 해당됩니다.)
 
-**Type classes are often just _interfaces_ with _laws_** (or expected behaviours if you will).
-Approaching them with this mindset can be very liberating!
+**타입 클래스는 종종 *법칙*(또는 예상 동작)이 있는 *인터페이스*에 불과합니다.**
+이러한 관점으로 접근하면 매우 자유로울 수 있습니다!
 
-To put it differently, **type classes can be used to create abstractions** -
-interfaces with laws/expected behaviours where we don't actually care about the
-concrete details of the underlying type, just that it _implements a certain
-API and behaves in a certain way_.
+다르게 말하면, **타입 클래스는 추상화를 만드는 데 사용할 수 있습니다.**
+주어진 타입의 구체적인 세부 사항에 대해 신경 쓰지 않고, 단지 *API를 구현하고 특정 방식으로 동작한다는 것을 보장하는* 인터페이스입니다.
 
-Regarding `Semigroup`, we have [previously](../03-html/04-safer-construction.md#appending-htmlstructure)
-created a function that looks like `<>` for our `Html` EDSL!
-We can add a `Semigroup` instance for our `Structure` data type
-and have a nicer API!
+사실 [이전 장](../03-html/04-safer-construction.md#appending-htmlstructure)에서 `Html` EDSL을 위한 `<>` 연산자를 만들었습니다!
+`Structure` 타입에 `Semigroup` 인스턴스를 추가하면 더 나은 API를 가질 수 있습니다!
 
 ---
 
-Exercise: Please do this and remove the `append_` function from the API.
+연습문제: `append_` 함수를 제거하고 `Semigroup` 인스턴스를 추가하세요.
 
 <details>
-  <summary>Solution</summary>
+  <summary>정답</summary>
 
-Replace this:
+다음 코드를:
 
 ```haskell
 append_ :: Structure -> Structure -> Structure
@@ -161,7 +151,7 @@ append_ c1 c2 =
   Structure (getStructureString c1 <> getStructureString c2)
 ```
 
-With this:
+아래처럼 변경합니다:
 
 ```haskell
 instance Semigroup Structure where
@@ -169,10 +159,10 @@ instance Semigroup Structure where
     Structure (getStructureString c1 <> getStructureString c2)
 ```
 
-And remove the export of `append_` in `Html.hs`. You won't need to further export anything
-as type class instances are exported automatically.
+그리고 `Html.hs`에서 `append_`를 제거합니다.
+타입 클래스는 자동으로 내보내지기 때문에 따로 내보내지 않아도 됩니다.
 
-You will also need to replace the usage of `append_` with `<>` in `hello.hs`.
+`hello.hs`에서 `append_`를 `<>`로 바꾸는 작업도 필요합니다.
 
 </details>
 
