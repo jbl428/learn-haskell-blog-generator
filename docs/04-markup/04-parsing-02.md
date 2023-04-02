@@ -155,7 +155,7 @@ exactlyTwoVersion2 list =
 1. 주어진 색이 밝은 색인지를 확인하는 `isBright :: AnsiColor -> Bool` 함수를 작성하세요.
 2. [이 표](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit)를 사용하여 `ansiToUbuntu` 함수를 작성하세요.
 3. `listToMaybe`를 사용해 리스트가 비어있는지 확인하는 `isEmpty :: [a] -> Bool` 함수를 작성하세요.
-4. `listToMaybe`를 *사용하지 않고* 리스트가 비어있는지 확인하는 `isEmpty :: [a] -> Bool` 함수를 작성하세요.
+4. `listToMaybe`를 _사용하지 않고_ 리스트가 비어있는지 확인하는 `isEmpty :: [a] -> Bool` 함수를 작성하세요.
 
 정답:
 

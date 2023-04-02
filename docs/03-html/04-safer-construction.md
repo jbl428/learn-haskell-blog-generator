@@ -517,4 +517,4 @@ render html =
 하지만 `Structure "hello"`처럼 제목도 문단도 아닌 값을 사용할 수 있는 문제가 남아있습니다.
 사용자의 실수를 방지할 수 있게 노력했지만 아직 원하는만큼 **불변성을 강제**하지 못했습니다.
 
-다음 장에서는 *모듈(modules)*과 *스마트 생성자(smart constructors)*를 사용해 \*`Structure "hello"`와 같은 표현식을 사용할 수 없게 만들어보겠습니다.
+다음 장에서는 *모듈(modules)*과 *스마트 생성자(smart constructors)*를 사용해 `Structure "hello"`와 같은 표현식을 사용할 수 없게 만들어보겠습니다.
