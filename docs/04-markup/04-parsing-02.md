@@ -253,13 +253,12 @@ isEmpty list =
 
 ---
 
-## Parsing with rich context
+## 풍부한 문맥을 통해 파싱하기
 
-Previously we wrote a parser that separates documents into different paragraphs.
-With new features under our belt we can now remember the exact context we are in
-(whether it is a text paragraph, a list, or a code block) and act accordingly!
+이전에는 문서를 여러 문단으로 분리하는 파서를 작성했습니다.
+새로운 기능을 추가하여 이제는 우리가 어떤 문맥(context)에 있는지(텍스트 단락, 목록, 또는 코드 블록) 정확히 기억하고 그에 따라 작동할 수 있습니다!
 
-Let's look again at the parsing code we wrote previously:
+이전에 작성한 파싱 코드를 다시 살펴보겠습니다:
 
 ```haskell
 parse :: String -> Document
@@ -283,15 +282,15 @@ trim :: String -> String
 trim = unwords . words
 ```
 
-Previously our context, `currentParagraph`, was used to group adjacent lines in an accumulative list.
+위 코드에서 `currentParagraph`이 문맥을 의미하며, 인접한 줄들을 그룹으로 묶는 역할을 합니다.
 
-Next, instead of using a `[String]` type to denote adjacent lines, we can instead use a `Structure` to denote the context.
+이번에는 인접한 줄을 `[String]`이 아닌 문맥을 나타내는 `Structure` 타입으로 표현해보겠습니다.
 
-One issue we might have though with representing context with the `Structure` type,
-is that when we start parsing we don't have any context.
-But we have learned of a way to represent the absence of a value with `Maybe`! So our new context type can be `Maybe Structure` instead.
+하지만 `Structure` 타입으로 문맥을 표현할 때의 문제점 중 하나는, 파싱을 시작할 때는 어떤 문맥도 가지고 있지 않다는 것입니다.
+그러나 `Maybe`를 사용하여 값이 없음을 나타내는 방법을 배웠습니다!
+그래서 우리의 새로운 문맥 유형은 `Maybe Structure` 이 될 수 있습니다.
 
-Let's rewrite our code above with our new context type:
+위 코드를 새로운 문맥 타입으로 수정해보겠습니다:
 
 ```haskell
 parse :: String -> Document
@@ -301,7 +300,7 @@ parseLines :: Maybe Structure -> [String] -> Document
 parseLines context txts =
   case txts of
     [] -> maybeToList context -- (2)
-    -- Paragraph case
+    -- 문단인 경우
     currentLine : rest ->
       let
         line = trim currentLine
@@ -320,21 +319,20 @@ trim :: String -> String
 trim = unwords . words
 ```
 
-1. We can now pass `Nothing` when we don't have a context
-2. Unsure what `maybeToList` does? [Hoogle](https://hoogle.haskell.org) it!
-3. We can split this line into two important parts:
+1. 아직 문맥이 없으므로 `Nothing`을 사용합니다.
+2. `maybeToList`가 무엇인지 모르겠다면 [Hoogle](https://hoogle.haskell.org)을 사용해보세요!
+3. 이 줄을 두 가지 중요한 부분으로 나눌 수 있습니다:
+ 
+   1. `maybe id (:) context` - 문맥을 문서의 나머지 부분에 앞에 붙입니다.
+   2. `parseLines Nothing rest` - 문서의 나머지 부분을 파싱합니다.
 
-   1. `maybe id (:) context` - prepending the context to the rest of the document
-   2. `parseLines Nothing rest` - parsing the rest of the document
+   먼저 첫 번째 부분을 살펴보겠습니다.
+   우리는 `context`를 문서의 나머지 요소 앞에 붙이고 싶지만, `context`가 `Maybe Structure` 타입을 가지고 있기 때문에 `context : parseLines Nothing rest`와 같이 작성할 수 없습니다.
+   또한 `Structure` 타입이 아니기 때문에 `context`가 `Structure`를 가지고 있을 수도 있고, 그렇지 않을 수도 있습니다.
+   만약 `Structure`를 가지고 있다면 그것을 앞에 붙여야 하고, 그렇지 않다면 `parseLines Nothing rest`의 결과를 그대로 반환해야 합니다.
+   이를 패턴 매칭을 사용해 작성해보세요!
 
-   Let's focus on the first part.
-   We want to prepend `context` to the rest of the document, but we can't write
-   `context : parseLines Nothing rest` because `context` has the type `Maybe Structure`
-   and not `Structure`, meaning that we _might_ have a `Structure` but maybe not.
-   If we do have a `Structure` to prepend, we wish to prepend it. If not, we want to return
-   the result of `parseLines Nothing rest` as is. Try writing this using pattern matching!
-
-   <details><summary>Solution</summary>
+   <details><summary>정답</summary>
 
    ```haskell
    case context of
@@ -344,17 +342,14 @@ trim = unwords . words
 
    </details>
 
-   The [maybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#v:maybe)
-   function let's us do the same thing in a more compact way. It is a function
-   that works similarly to pattern matching on a `Maybe`:
-   the third argument to `maybe` is the value on which we pattern match,
-   the second argument is a function to apply to the value found in a `Just` case,
-   and the first argument is the value to return in case the value
-   we pattern match on is `Nothing`. A more faithful translation of
-   `maybe id (:) context (parseLines Nothing rest)`
-   to pattern matching would look like this:
+   [maybe](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#v:maybe) 함수를 사용하면 위 작업을 더 간결하게 할 수 있습니다.
+   이 함수는 `Maybe`에 대해 패턴 매칭을 하는 것과 비슷하게 작동합니다:
+   `maybe`의 세 번째 인자는 패턴 매칭할 값이고,
+   두 번째 인자는 `Just`인 경우에 적용할 함수이며,
+   첫 번째 인자는 패턴 매칭한 결과가 `Nothing`인 경우 반환할 값입니다.
+   `maybe id (:) context (parseLines Nothing rest)`를 패턴 매칭을 사용한 코드로 바꿔보세요!
 
-   <details><summary>Solution</summary>
+   <details><summary>정답</summary>
 
    ```haskell
    ( case context of
@@ -363,22 +358,22 @@ trim = unwords . words
    ) (parseLines Nothing rest)
    ```
 
-   Note how the result of this case expression is a function of type `Document -> Document`,
-   how we partially apply `(:)` with `structure` to create a function that prepends `structure`,
-   and how we apply `parseLines Nothing rest` to the case expression.
+   case 표현식의 결과가 타입이 `Document -> Document`인 함수라는 것에 주목하세요.
+   `(:)`에 `structure`을 부분적으로 적용하여 `structure`을 앞에 붙이는 함수를 만들고,
+   `parseLines Nothing rest`를 case 표현식에 적용하는 방식을 살펴보세요.
 
    </details>
 
-   This way of encoding pattern matching using functions is fairly common.
+   함수를 사용하여 패턴 매칭을 인코딩하는 이러한 방식은 자주 사용됩니다.
 
-   Check out the types of `id`, `(:)` and `maybe id (:)` in GHCi!
+   `id`, `(:)` 그리고 `maybe id (:)`의 타입을 GHCi에서 확인해보세요!
 
-4. Hey! Didn't we say that appending `String`s/lists is slow (which is what `unwords` does)? Yes, it is.
-   Because in our `Structure` data type, a paragraph is defined as `Paragraph String` and not `Paragraph [String]`,
-   we can't use our trick of building a list of lines and then reverse it in the end.
+4. 앗! 전에 (`unwords` 함수가 하는) `String`이나 리스트 뒤에 요소를 추가하는 것은 느리다고 하지 않았나요?
+   맞습니다! 하지만 우리의 `Structure` 타입에서는 문단이 `Paragraph String`으로 정의되어 있고, 
+   `Paragraph [String]`이 아니기 때문에 리스트를 뒤집는 방법을 사용할 수 없습니다.
 
-   So what do we do?
-   There are many ways to handle that, one simple way is to create a different type with the right shape:
+   그럼 어떻게 해야 할까요?
+   이를 처리하는 방법에는 여러 가지가 있지만, 한 가지 간단한 방법은 올바른 모양으로 다른 타입을 만드는 것입니다:
 
    ```haskell
    data Context
@@ -389,13 +384,13 @@ trim = unwords . words
      | CtxCodeBlock [String]
    ```
 
-   Since creating new types in Haskell is cheap, this is a very viable solution.
+   하스켈에서 새로운 타입을 만드는 것은 비용이 저렴하기에, 이 방법은 매우 유용합니다.
 
-   In this case I'm going with the approach of not worrying about it too much,
-   because it's a very local piece of code that can easily be fixed later if needed.
+   하지만 이번에는 위와 같은 방법을 사용하지 않겠습니다.
+   왜냐하면 나중에 필요한 경우 쉽게 수정할 수 있는 로컬 코드 조각이기 때문입니다.
 
-Let's cover more parsing cases, we want to handle headings and lists as well.
-We can do that by examining the first characters of a line:
+다음 파싱 단계로 넘어가 이번에는 제목과 리스트를 처리해보겠습니다.
+줄의 첫 번째 문자를 검사하여 이를 처리할 수 있습니다:
 
 ```haskell
 parse :: String -> Document
@@ -404,14 +399,14 @@ parse = parseLines Nothing . lines
 parseLines :: Maybe Structure -> [String] -> Document
 parseLines context txts =
   case txts of
-    -- done case
+    -- 종료 조건
     [] -> maybeToList context
 
-    -- Heading 1 case
+    -- 제목 1 인 경우
     ('*' : ' ' : line) : rest ->
       maybe id (:) context (Heading 1 (trim line) : parseLines Nothing rest)
 
-    -- Unordered list case
+    -- 순서 없는 목록인 경우
     ('-' : ' ' : line) : rest ->
       case context of
         Just (UnorderedList list) ->
@@ -420,7 +415,7 @@ parseLines context txts =
         _ ->
           maybe id (:) context (parseLines (Just (UnorderedList [trim line])) rest)
 
-    -- Paragraph case
+    -- 문단인 경우
     currentLine : rest ->
       let
         line = trim currentLine
@@ -441,14 +436,12 @@ trim = unwords . words
 
 ---
 
-Exercise: Add the `CodeBlock` and `OrderedList` cases.
+연습문제: `코드 블록`과 `순서 있는 목록`의 경우도 처리해보세요!
 
 <details>
-  <summary>Final module</summary>
+  <summary>정답</summary>
 
-```haskell
--- Markup.hs
-
+```haskell title="Markup.hs"
 module Markup
   ( Document
   , Structure(..)
@@ -534,38 +527,35 @@ trim = unwords . words
 
 ---
 
-### How do we know our parser works correctly?
+### 우리의 파서가 제대로 동작하는지 어떻게 알 수 있을까요?
 
-In an earlier chapter, we parsed a few examples of our markup language [by hand](./01-data-type.md#exercises).
-Now, we can try to test our parser by comparing our solutions to our parser.
-By deriving `Eq` for our `Structure` data type
-(marked with (1) in "final module" above),
-we can compare solutions with the `==` (equals) operator.
+이전 장에서, 우리는 몇 가지 마크업 언어 예제를 직접 파싱해봤습니다. ([관련 연습문제](./01-data-type.md#exercises))
+`Structure` 데이터 타입의 `Eq` 인스턴스를 만들었으므로 (위 정답에서 (1) 표시된 부분)
+이제 `==` 연산자를 사용하여 두 결과가 같은지 비교할 수 있습니다.
 
-Try it in GHCi! You can read a text file in GHCi using the following syntax:
+GHCi를 사용해 확인해보세요! 다음과 같은 문법을 사용하여 텍스트 파일을 읽을 수 있습니다:
 
 ```haskell
 ghci> txt <- readFile "/tmp/sample.txt"
 ```
 
-And then compare with the hand written example values from the solutions
-(after adding them to the module and loading them in GHCi):
+그리고 이전 손으로 작성한 답안과 이번에 작성한 정답과 비교해보세요
+(모듈에 추가하고 GHCi에서 불러온 후 수행하세요):
 
 ```haskell
 ghci> parse txt == example4
 ```
 
-In a later chapter, we'll write automated tests for our parser using a testing framework.
-But before that, I'd like to glue things together
-so we'll be able to:
+이후 장에서, 테스트 프레임워크를 사용하여 자동화된 테스트를 작성할 것입니다.
+하지만 그 전에, 다음과 같은 작업들을 하나로 묶는 작업을 진행하고자 합니다.
 
-1. Read markup text from a file
-2. Parse the text
-3. Convert the result to our HTML EDSL
-4. Generate HTML code
+1. 파일에서 마크업 텍스트 읽기
+2. 텍스트 파싱하기
+3. HTML EDSL로 변환하기
+4. HTML 코드 생성하기
 
-And also discuss how to work with IO in Haskell while we're at it.
+또한 하스켈에서 IO 를 어떻게 다루는지도 함께 살펴보겠습니다.
 
-> You can view the git commit of
-> [the changes we've made](https://github.com/soupi/learn-haskell-blog-generator/commit/9f951a05d4f78cf59190ee4f3cd8de85e1c33bd1)
-> and the [code up until now](https://github.com/soupi/learn-haskell-blog-generator/tree/9f951a05d4f78cf59190ee4f3cd8de85e1c33bd1).
+> Git 커밋을 통해
+> [이번에 수정한 내역](https://github.com/soupi/learn-haskell-blog-generator/commit/9f951a05d4f78cf59190ee4f3cd8de85e1c33bd1)
+> 과 [현재까지 코드](https://github.com/soupi/learn-haskell-blog-generator/tree/9f951a05d4f78cf59190ee4f3cd8de85e1c33bd1) 를 확인할 수 있습니다.
