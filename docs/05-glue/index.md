@@ -1,15 +1,15 @@
-# Gluing things together
+# 통합하기
 
-In this chapter we are going to glue the pieces that we built together
-and build an actual blog generator. We will:
+이번 장에서는 우리가 만든 조각들을 서로 붙여서 실제 블로그 생성기를 만들어 보겠습니다.
+다음과 같은 작업을 할 것입니다:
 
-1. Read markup text from a file
-2. Parse the text to a `Document`
-3. Convert the result to our `Html` EDSL
-4. Generate HTML code
-5. Write it to file
+1. 파일에서 마크업 텍스트 읽어오기
+2. 텍스트를 `Document`로 파싱하기
+3. 결과를 `Html` EDSL로 변환하기
+4. HTML 코드 생성하기
+5. 파일에 쓰기
 
-While doing so, we will learn:
+이를 수행하면서 다음과 같은 내용을 배우게 될 것입니다:
 
-- How to work with IO
-- How to import external libraries to process whole directories and create a simple command-line interface
+- IO 작업을 수행하는 방법
+- 외부 라이브러리를 가져와서 디렉토리 전체를 처리하고 간단한 명령줄 인터페이스를 만드는 방법
