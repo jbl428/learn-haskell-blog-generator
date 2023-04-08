@@ -1,9 +1,9 @@
-# Converting Markup to HTML
+# 마크업을 HTML로 변환하기
 
-One key part is missing before we can glue everything together, and that is
-to convert our `Markup` data types to `Html`.
+통합 작업을 수행하기 전에 한 가지 중요한 작업이 남아 있습니다.
+바로 `Markup` 데이터 타입을 `Html` 데이터 타입으로 변환하는 것입니다.
 
-We'll start by creating a new module and import both the `Markup` and the `Html` modules.
+먼저 새로운 모듈을 만들고 `Markup`과 `Html` 모듈을 가져옵니다.
 
 ```haskell
 module Convert where
@@ -12,44 +12,41 @@ import qualified Markup
 import qualified Html
 ```
 
-## Qualified Imports
+## 한정된 가져오기 (Qualified Imports)
 
-This time, we've imported the modules qualified. Qualified imports means that
-instead of exposing the names that we've defined in the imported module to
-the general module name space, they now have to be prefixed with the module name.
+이번에는 모듈을 가져올 때 한정된 가져오기(qualified imports)를 사용했습니다.
+한정된 가져오기는 가져온 모듈의 이름을 일반 모듈 이름 공간에 노출하지 않으며,
+모듈을 사용하려면 모듈 이름으로 접두사를 붙여야 합니다.
 
-For example, `parse` becomes `Markup.parse`.
-If we would've imported `Html.Internal` qualified, we'd have to write
-`Html.Internal.el` which is a bit long.
+예를 들어 `parse`를 사용하려면 `Markup.parse`로 작성해야 합니다.
+만약 `Html.Internal`을 한정된 가져오기로 가져왔다면 `Html.Internal.el`로 작성해야 합니다.
+이는 약간 길어 보입니다.
 
-We can also give the module a new name with the `as` keyword:
+`as` 키워드를 사용하여 모듈에 새 이름을 지정할 수도 있습니다:
 
 ```haskell
 import qualified Html.Internal as HI
 ```
 
-And write `HI.el` instead.
+그러면 `HI.el`로 작성할 수 있습니다.
 
-I like using qualified imports because readers do not have to guess where a
-name comes from. Some modules are even designed to be imported qualified.
-For example, the APIs of many container types such as maps, sets, and vectors, are very similar.
-If we want to use multiple containers in a single module we pretty much have
-to use qualified imports so that when we write a function such as `singleton`,
-which creates a container with a single value, GHC will know which `singleton`
-function we are referring to.
+개인적으로 한정된 가져오기를 사용하는 것을 선호합니다.
+왜냐하면 코드를 읽는 사람이 어디에서 가져온 이름인지 추측할 필요가 없기 때문입니다.
+또한 한정된 가져오기를 사용하도록 설계된 모듈들도 있습니다.
+예를 들어 `map`, `set`, `vector`와 같은 컨테이너 타입의 API는 매우 유사합니다.
+만약 하나의 모듈에서 여러 컨테이너를 사용하려면 `singleton`과 같은 함수를 작성할 때,
+한정된 가져오기를 사용해야 GHC가 어떤 `singleton` 함수를 참조하는지 알 수 있습니다.
 
-Some people prefer to use import lists instead of qualified imports,
-because qualified names can be a bit verbose and noisy.
-I will often prefer qualified imports to import lists, but feel free to
-try both solutions and see which fits you better.
-For more information about imports,
-see this [wiki article](https://wiki.haskell.org/Import).
+일부 사람들은 한정된 가져오기 대신 가져오기 목록(import list)을 선호합니다.
+한정된 이름들이 약간 지저분하고 장황하기 때문입니다.
+저는 종종 가져오기 목록 대신 한정된 가져오기를 선호하지만,
+두 가지 방법 모두 사용해 보고 어떤 것이 더 좋은지 확인해 보세요.
+가져오기에 대한 더 많은 정보는 [위키 문서](https://wiki.haskell.org/Import)를 참고하세요.
 
-## Converting `Markup.Structure` to `Html.Structure`
+## `Markup.Structure`를 `Html.Structure`로 변환하기
 
-Converting a markup structure to an HTML structure is mostly straightforward
-at this point, we need to pattern match on the markup structure and use
-the relevant HTML API.
+마크업 구조를 HTML 구조로 변환하는 과정은 직관적입니다.
+마크업 구조를 패턴 매칭하고 연관된 HTML API를 사용하면 됩니다.
 
 ```haskell
 convertStructure :: Markup.Structure -> Html.Structure
@@ -71,28 +68,22 @@ convertStructure structure =
       Html.code_ (unlines list)
 ```
 
-Notice that running this code with `-Wall` will reveal that the pattern matching
-is _non-exhaustive_. This is because we don't currently have a way to build
-headings that are not `h1`. There are a few ways to handle this:
+위 코드를 `-Wall` 플래그와 함께 컴파일하면 패턴 매칭이 완전하지 않다(non-exhaustive)는 경고가 나옵니다.
+이는 현재 `h1`이 아닌 제목을 처리할 방법이 없기 때문입니다.
+이 문제를 해결하는 몇 가지 방법이 있습니다:
 
-- Ignore the warning - this will likely fail at runtime one day and the user will be sad
-- Pattern match other cases and add a nice error with the `error` function - it has
-  the same disadvantage above, but will also no longer notify of the unhandled
-  cases at compile time
-- Pattern match and do the wrong thing - user is still sad
-- Encode errors in the type system using `Either`, we'll see how to do this in later
-  chapters
-- Restrict the input - change `Markup.Heading` to not include a number but rather
-  specific supported headings. This is a reasonable approach
-- Implement an HTML function supporting arbitrary headings. Should be straightforward
-  to do
+- 경고 무시하기- 이 방법은 언젠가 런타임에서 문제가 발생하고 사용자가 슬퍼할 것입니다.
+- 다른 경우를 패턴 매칭하고 `error` 함수를 사용하여 사용자에게 적절한 오류 메시지를 표시합니다. - 위와 동일한 단점이 있지만, 컴파일 시 경고가 발생하지 않습니다.
+- 패턴을 매칭하고 잘못된 작업을 수행합니다. - 사용자는 여전히 슬퍼할 것입니다.
+- `Either`를 사용하여 타입 시스템에 오류를 인코딩합니다. 이후 장에서 이 방법을 살펴보겠습니다.
+- 입력을 제한하기 - `Markup.Heading`을 숫자 대신 지원하는 특정 제목으로 변경합니다. 이것은 합리적인 접근 방식입니다.
+- 임의의 제목을 지원하는 함수를 구현하기 - 간단하게 구현할 수 있습니다.
 
 ---
 
-Exercise: Implement `h_ :: Natural -> String -> Structure`
-which we'll use to define arbitrary headings (such as `<h1>`, `<h2>`, and so on).
+연습문제: 임의의 제목(예: `<h1>`, `<h2>` 등)을 지원하는 함수 `h_ :: Natural -> String -> Structure`를 구현하세요.
 
-<details><summary>Solution</summary>
+<details><summary>정답</summary>
 
 ```haskell
 import Numeric.Natural
@@ -101,13 +92,13 @@ h_ :: Natural -> String -> Structure
 h_ n = Structure . el ("h" <> show n) . escape
 ```
 
-Don't forget to export it from `Html.hs`!
+`Html.hs`에서 함수를 내보내는 것을 잊지 마세요!
 
 </details>
 
-Exercise: Fix `convertStructure` using `h_`.
+연습문제: `convertStructure`를 `h_`를 사용하도록 수정하세요.
 
-<details><summary>Solution</summary>
+<details><summary>정답</summary>
 
 ```haskell
 convertStructure :: Markup.Structure -> Html.Structure
@@ -135,31 +126,26 @@ convertStructure structure =
 
 ## Document -> Html
 
-In order to create an `Html` document, we need to use the `html_` function.
-This function expects two things: a `Title`, and a `Structure`.
+`Html` 문서를 생성하기 위해서는 `html_` 함수를 사용해야 합니다.
+이 함수는 `Title`과 `Structure` 두 인자를 받습니다.
 
-For a title we could just supply it from outside using the file name.
+제목의 경우, 단순하게 파일의 이름을 사용할 수 있습니다.
 
-In order to convert our markup `Document` (which is a list of markup `Structure`)
-to an HTML `Structure`, we need to convert each markup `Structure` and then
-concatenate them together.
+마크업 `Document`(마크업 `Structure`의 리스트)를 HTML `Structure`로 변환하려면 각 마크업 `Structure`를 변환하고 이를 하나로 합쳐야 합니다.
 
-We already know how to convert each markup `Structure`, we can use the
-`convertStructure` function we wrote and `map`. This will provide
-us with the following function:
+각 마크업 `Structure`를 변환하는 함수 `convertStructure`를 이미 구현했기에, `map`을 활용하여 다음과 같은 함수를 얻을 수 있습니다.
 
 ```
 map convertStructure :: Markup.Document -> [Html.Structure]
 ```
 
-To concatenate all of the `Html.Structure`, we could try to write a recursive
-function. However we will quickly run into an issue
-with the base case, what to do when the list is empty?
+`Html.Structure`의 리스트를 하나로 합치기 위해 재귀 함수를 사용할 수 있습니다.
+하지만 리스트가 비어있는 경우를 처리하는 기본 사례에서 문제가 발생합니다.
+이를 어떻게 처리할 수 있을까요?
 
-We could just provide dummy `Html.Structure` that represents an empty
-HTML structure.
+단순히 빈 HTML 구조를 표현하는 더미 `Html.Structure`를 만들어서 사용할 수 있습니다.
 
-Let's add this to `Html.Internal`:
+`Html.Internal` 모듈에 추가해 보겠습니다:
 
 ```haskell
 empty_ :: Structure
@@ -168,9 +154,9 @@ empty_ = Structure ""
 
 ---
 
-Now we can write our recursive function. Try it!
+이를 활용해 재귀 함수를 작성해 보세요!
 
-<details><summary>Solution</summary>
+<details><summary>정답</summary>
 
 ```haskell
 concatStructure :: [Structure] -> Structure
@@ -184,83 +170,75 @@ concatStructure list =
 
 ---
 
-Remember the `<>` function we implemented as an instance of the `Semigroup`
-type class? We mentioned that `Semigroup` is an **abstraction** for things
-that implements `(<>) :: a -> a -> a`, where `<>` is associative
-(`a <> (b <> c) = (a <> b) <> c`).
+이전에 `<>` 함수를 `Semigroup`의 인스턴스로 구현한 것을 기억하시나요?
+`Semigroup`는 `(<>) :: a -> a -> a`를 구현하는 것을 추상화한 것이었고,
+`<>`는 결합법칙을 만족해야 했습니다(`a <> (b <> c) = (a <> b) <> c`).
 
-It turns out that having an instance of `Semigroup` and also having a value that represents
-an "empty" value is a fairly common pattern. For example a string can be concatenated,
-and the empty string can serve as an "empty" value.
-And this is actually a well known **abstraction** called **monoid**.
+`Semigroup` 인스턴스가 있고 또한 "빈" 값을 가지는 값도 가지는 상황이 자주 발생합니다.
+예를 들어 문자열은 결합할 수 있고, 빈 문자열은 "빈" 값을 나타냅니다.
+이는 실제로 **monoid**라는 **추상화**로 알려진 패턴입니다.
 
 ## Monoids
 
-Actually, "empty" isn't a very good description of what we want,
-and isn't very useful as an abstraction. Instead, we can describe it as
-an "identity" element, which satisfies the following laws:
+사실 "빈 값"이라는 의미는 모든 것을 잘 설명하지 못하며 추상화에 그렇게 유용하지도 않습니다.
+대신 "항등원(identity element)"이라는 설명을 사용할 수 있으며 이는 다음 법칙을 만족해야 합니다:
 
 - `x <> <identity> = x`
 - `<identity> <> x = x`
 
-In other words, if we try to use this "empty" - this identity value,
-as one argument to `<>`, we will always get the other argument back.
+다르게 말하면, 이 "빈" 값을 이용하여 `<>`에 다른 하나의 인자를 전달하면 다른 인자를 그대로 얻을 수 있습니다.
 
-For `String`, the empty string, `""`, satisfies this:
+`String`의 경우, 빈 문자열 `""`이 이를 만족합니다:
 
 ```haskell
 "" <> "world" = "world"
 "hello" <> "" = "hello"
 ```
 
-This is of course true for any value we'd write and not just "world" and "hello".
+"world"와 "hello" 뿐만 아니라 어떤 문자열에 대해서도 이 법칙이 성립합니다.
 
-Actually, if we move out of the Haskell world for a second, even integers
-with `+` as the associative binary operations `+` (in place of `<>`)
-and `0` in place of the identity member form a monoid:
+잠시 하스켈 세계에서 벗어나 생각해봅시다.
+정수집합과 `+` 연산의 경우, `+`를 결합법칙을 만족하는 이항 연산자로(`<>` 대신), `0`을 항등원으로 보면 monoid를 만족하는 것을 알 수 있습니다:
 
 ```haskell
 17 + 0 = 17
 0 + 99 = 99
 ```
 
-So integers together with the `+` operation form a semigroup, and
-together with `0` form a monoid.
+따라서 정수집합과 `+` 연산 semigroup을 만족하며 `0`과 함께 monoid를 만족합니다.
 
-We learn new things from this:
+이를 통해 다음과 같은 사실을 알 수 있습니다:
 
-1. A monoid is a more specific abstraction over semigroup, it builds on it
-   by adding a new condition (the existence of an identity member)
-2. This abstraction can be useful! We can write a general `concatStructure`
-   that could work for any monoid
+1. monoid는 semigroup보다 더 구체적인 추상화입니다. semigroup에 항등원이라는 새로운 조건을 추가했습니다.
+2. 이 추상화는 유용할 수 있습니다! `concatStructure`라는 일반적인 함수를 작성할 수 있습니다. 이 함수는 monoid에 대해서만 작동합니다.
 
-And indeed, there exists a type class in `base` called `Monoid` which has
-`Semigroup` as a **super class**.
+실제로, `base` 패키지에는 `Monoid`라는 타입 클래스가 있으며 `Semigroup`를 **슈퍼 클래스(super class)**로 가집니다.
 
 ```haskell
 class Semigroup a => Monoid a where
   mempty :: a
 ```
 
-> Note: this is actually a simplified version. The
-> [actual](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#t:Monoid)
-> is a bit more complicated because of backwards compatibility and performance reasons.
-> `Semigroup` was actually introduced in Haskell after `Monoid`!
+:::note
+사실 위 정의는 간략하게 표현한 버전입니다.
+[실제 정의](https://hackage.haskell.org/package/base-4.16.4.0/docs/Prelude.html#t:Monoid)는 하위 호환성 및 성능을 고려하기에 조금 더 복잡합니다.
+하스켈에서 `Semigroup`은 `Monoid`가 나온 이후에 도입되었습니다!
+:::
 
-We could add an instance of `Monoid` for our HTML `Structure` data type:
+이제 HTML `Structure` 데이터 타입에 `Monoid` 인스턴스를 추가할 수 있습니다:
 
 ```haskell
 instance Monoid Structure where
   mempty = empty_
 ```
 
-And now, instead of using our own `concatStructure`, we can use the library function:
+이제 `concatStructure` 함수대신 다음과 같은 라이브러리 함수를 사용할 수 있습니다:
 
 ```haskell
 mconcat :: Monoid a => [a] -> a
 ```
 
-Which could theoretically be implemented as:
+이 함수는 이론적으로 다음과 같이 구현되어 있습니다:
 
 ```haskell
 mconcat :: Monoid a => [a] -> a
@@ -270,66 +248,60 @@ mconcat list =
     x : xs -> x <> mconcat xs
 ```
 
-Notice that because `Semigroup` is a _super class_ of `Monoid`,
-we can still use the `<>` function from the `Semigroup` class
-without adding the `Semigroup a` constraint to the left side of `=>`.
-By adding the `Monoid a` constraint we implicitly add a `Semigroup a`
-constraint as well!
+`Semigroup`은 `Monoid`의 *슈퍼 클래스*이므로, `=>` 왼쪽에 `Semigroup a`를 추가하지 않아도 `<>` 함수를 사용할 수 있습니다.
+`Monoid a` 제약을 추가하면 `Semigroup a` 제약도 자동으로 추가됩니다!
 
-This `mconcat` function is very similar to the `concatStructure` function,
-but this one works for any `Monoid`, including `Structure`!
-Abstractions help us identify common patterns and **reuse** code!
+`mconcat` 함수는 `concatStructure` 함수와 매우 유사하지만, `Structure` 이외의 모든 `Monoid`에 대해서도 작동합니다!
+추상화를 통해 공통 패턴을 식별하고 코드를 **재사용**할 수 있습니다!
 
-> Side note: integers with `+` and `0` aren't actually an instance of `Monoid` in Haskell.
-> This is because integers can also form a monoid with `*` and `1`! But **there can only
-> be one instance per type**. Instead, two other `newtype`s exist that provide that
-> functionality, [Sum](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Monoid.html#t:Sum)
-> and [Product](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Monoid.html#t:Product).
-> See how they can be used in `ghci`:
->
-> ```haskell
-> ghci> import Data.Monoid
-> ghci> Product 2 <> Product 3 -- note, Product is a data constructor
-> Product {getProduct = 6}
-> ghci> getProduct (Product 2 <> Product 3)
-> 6
-> ghci> getProduct $ mconcat $ map Product [1..5]
-> 120
-> ```
+:::note
+사실 하스켈에서 정수, `+` 연산, `0`은 `Monoid`의 인스턴스가 아닙니다.
+왜냐하면 정수는 `*` 연산과 `1`과도 monoid를 이룰 수 있기 때문입니다!
+하스켈에서 **하나의 타입에는 하나의 인스턴스만 존재**할 수 있습니다.
+대신, [Sum](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Monoid.html#t:Sum)과 [Product](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Monoid.html#t:Product)
+라는 두 개의 `newtype`이 존재하며 이들은 `Monoid`의 인스턴스입니다.
+`ghci`에서 이들을 사용하는 방법은 다음과 같습니다:
 
-## Another abstraction?
+```haskell
+ghci> import Data.Monoid
+ghci> Product 2 <> Product 3 -- 여기서 Product는 데이터 생성자입니다
+Product {getProduct = 6}
+ghci> getProduct (Product 2 <> Product 3)
+6
+ghci> getProduct $ mconcat $ map Product [1..5]
+120
+```
+:::
 
-We've used `map` and then `mconcat` twice now. Surely there has to be a function
-that unifies this pattern. And indeed, it is called
-[`foldMap`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Foldable.html#v:foldMap),
-and it works not only for lists, but also for any data structure that can be "folded",
-or "reduced", into a summary value. This abstraction and type class is called **Foldable**.
+## 또 다른 추상화?
 
-For a simpler understanding of `Foldable`, we can look at `fold`:
+지금까지 계속 `map`과 `mconcat`을 연속해서 사용했습니다.
+이와 같은 패턴을 통합할 수 있는 함수가 있을까요?
+실제로 [`foldMap`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Foldable.html#v:foldMap)
+과 같은 함수가 있으며, 리스트뿐만 아니라 "접거나(folded)" "축소(reduced)"할 수 있는 모든 데이터 구조에 대해서 작동합니다.
+이러한 추상화와 타입 클래스를 **Foldable**이라고 합니다.
+
+더 간단한 `Foldable`의 이해를 위해 `fold`를 살펴보겠습니다:
 
 ```haskell
 fold :: (Foldable t, Monoid m) => t m -> m
 
--- compare with
+-- 다음 함수와 비교해보세요
 mconcat :: Monoid m            => [m] -> m
 ```
 
-`mconcat` is just a specialized version of `fold` for lists.
-And `fold` can be a used for any pair of a data structure that implements
-`Foldable` and a payload type that implements `Monoid`. This
-could be `[]` with `Structure`, or `Maybe` with `Product Int`, or
-your new shiny binary tree with `String` as the payload type. But note that
-the `Foldable` type must be of _kind_ `* -> *`. So for example `Html`
-cannot be a `Foldable`.
+`mconcat`은 단지 리스트에 대한 `fold`의 특수한 경우입니다.
+또한 `fold`는 `Foldable`과 `Monoid`를 구현한 어떠한 쌍에 대해서도 사용할 수 있습니다. 
+예를 들어 `[]`와 `Structure` 또는 `Maybe`와 `Product Int` 또는 특별한 이진 트리와 `String`을 사용할 수 있습니다.
+하지만 `Foldable`의 *kind*는 `* -> *`이어야 합니다.
+따라서 `Html`은 `Foldable`이 될 수 없습니다.
 
-`foldMap` is a function that allows us to apply a function to the
-payload type of the `Foldable` type right before combining them
-with the `<>` function.
+`foldMap` 함수는 `<>` 함수를 사용하여 요소를 결합하기 전에, `Foldable`의 인자(payload)타입에 원하는 함수를 적용할 수 있도록 해줍니다:
 
 ```haskell
 foldMap :: (Foldable t, Monoid m) => (a -> m) -> t a -> m
 
--- compare to a specialized version with:
+-- 다음 특수한 경우와 비교해보세요
 -- - t ~ []
 -- - m ~ Html.Structure
 -- - a ~ Markup.Structure
@@ -339,27 +311,23 @@ foldMap
   -> Html.Structure
 ```
 
-True to its name, it really "maps" before it "folds". You might pause here
-and think "this 'map' we are talking about isn't specific for lists, maybe
-that's another abstraction?", yes. It is actually a very important and
-fundamental abstraction called `Functor`.
-But I think we had enough abstractions for this chapter.
-We'll cover it in a later chapter!
+이름에서 알 수 있듯이, `foldMap`은 "접기(fold)" 전에 "매핑(map)"을 수행합니다.
+여기서 잠시 멈추고 고민해보면 "이 '매핑(map)'은 리스트 뿐만 아니라 다른 추상화에도 적용할 수 있지 않을까?"라고 생각할 수 있습니다.
+네 맞습니다! 매우 중요하고 기본적인 추상화인 `Functor`가 존재합니다.
+하지만 이번 장에서는 충분히 많은 추상화를 다루었으므로, 이에 대해서는 다음 장에서 다루도록 하겠습니다!
 
-## Finishing our conversion module
+## 변환 모듈 마무리하기
 
-Let's finish our code by writing `convert`:
+`convert` 함수를 구현하면서 이번 장을 마무리하겠습니다:
 
 ```haskell
 convert :: Html.Title -> Markup.Document -> Html.Html
 convert title = Html.html_ title . foldMap convertStructure
 ```
 
-Now we have a full implementation and are able to convert markup documents
-to HTML:
+이제 모든 구현을 완료했으며 마크업 문서를 HTML로 변환할 수 있습니다:
 
-```haskell
--- Convert.hs
+```haskell title="Convert.hs"
 module Convert where
 
 import qualified Markup
@@ -387,18 +355,16 @@ convertStructure structure =
       Html.code_ (unlines list)
 ```
 
-## Summary
+## 요약
 
-We learned about:
+이번 장에서는 다음과 같은 내용을 배웠습니다:
 
-- Qualified imports
-- Ways to handle errors
-- The `Monoid` type class and abstraction
-- The `Foldable` type class and abstraction
+- 한정된 가져오기
+- 오류 처리 방법
+- `Monoid` 타입 클래스와 추상화
+- `Foldable` 타입 클래스와 추상화
 
-Next, we are going to glue our functionality together and learn about
-I/O in Haskell!
+다음에는 하스켈에서 IO를 다루는 방법을 다루겠습니다!
 
-> You can view the git commit of
-> [the changes we've made](https://github.com/soupi/learn-haskell-blog-generator/commit/ad34f2264e9114f2d7436ff472c78da47055fcfe)
-> and the [code up until now](https://github.com/soupi/learn-haskell-blog-generator/tree/ad34f2264e9114f2d7436ff472c78da47055fcfe).
+> [이곳](https://github.com/soupi/learn-haskell-blog-generator/commit/ad34f2264e9114f2d7436ff472c78da47055fcfe)에서 Git 커밋을 확인할 수 있고,
+> [지금까지 코드](https://github.com/soupi/learn-haskell-blog-generator/tree/ad34f2264e9114f2d7436ff472c78da47055fcfe)를 확인할 수 있습니다.
