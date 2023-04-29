@@ -271,6 +271,7 @@ ghci> getProduct (Product 2 <> Product 3)
 ghci> getProduct $ mconcat $ map Product [1..5]
 120
 ```
+
 :::
 
 ## 또 다른 추상화?
@@ -291,7 +292,7 @@ mconcat :: Monoid m            => [m] -> m
 ```
 
 `mconcat`은 단지 리스트에 대한 `fold`의 특수한 경우입니다.
-또한 `fold`는 `Foldable`과 `Monoid`를 구현한 어떠한 쌍에 대해서도 사용할 수 있습니다. 
+또한 `fold`는 `Foldable`과 `Monoid`를 구현한 어떠한 쌍에 대해서도 사용할 수 있습니다.
 예를 들어 `[]`와 `Structure` 또는 `Maybe`와 `Product Int` 또는 특별한 이진 트리와 `String`을 사용할 수 있습니다.
 하지만 `Foldable`의 *kind*는 `* -> *`이어야 합니다.
 따라서 `Html`은 `Foldable`이 될 수 없습니다.

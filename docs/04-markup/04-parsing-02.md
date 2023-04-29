@@ -322,7 +322,7 @@ trim = unwords . words
 1. 아직 문맥이 없으므로 `Nothing`을 사용합니다.
 2. `maybeToList`가 무엇인지 모르겠다면 [Hoogle](https://hoogle.haskell.org)을 사용해보세요!
 3. 이 줄을 두 가지 중요한 부분으로 나눌 수 있습니다:
- 
+
    1. `maybe id (:) context` - 문맥을 문서의 나머지 부분에 앞에 붙입니다.
    2. `parseLines Nothing rest` - 문서의 나머지 부분을 파싱합니다.
 
@@ -369,7 +369,7 @@ trim = unwords . words
    `id`, `(:)` 그리고 `maybe id (:)`의 타입을 GHCi에서 확인해보세요!
 
 4. 앗! 전에 (`unwords` 함수가 하는) `String`이나 리스트 뒤에 요소를 추가하는 것은 느리다고 하지 않았나요?
-   맞습니다! 하지만 우리의 `Structure` 타입에서는 문단이 `Paragraph String`으로 정의되어 있고, 
+   맞습니다! 하지만 우리의 `Structure` 타입에서는 문단이 `Paragraph String`으로 정의되어 있고,
    `Paragraph [String]`이 아니기 때문에 리스트를 뒤집는 방법을 사용할 수 없습니다.
 
    그럼 어떻게 해야 할까요?
