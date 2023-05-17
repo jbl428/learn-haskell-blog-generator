@@ -1,59 +1,45 @@
-# Defining a project description
+# 프로젝트의 명세를 정의하기
 
-Up until now we've only used `base` and the libraries
-[included](https://downloads.haskell.org/ghc/9.2.5/docs/html/users_guide/9.2.5-notes.html#included-libraries)
-with GHC. Because of that we didn't really need to do anything fancier
-than `runghc` to run our program. However, we want to start using
-external libraries which are not included with GHC in our programs.
+지금까지 우리는 `base`와 GHC와 함께 제공되는 [라이브러리](https://downloads.haskell.org/ghc/9.2.5/docs/html/users_guide/9.2.5-notes.html#included-libraries)만 사용했습니다.
+그래서 프로그램을 실행하기 위해 `runghc`보다 더 복잡한 것을 할 필요가 없었습니다.
+하지만 이번에는 GHC에 포함되지 않은 외부 라이브러리를 사용할 것입니다.
 
-External packages can be downloaded from [Hackage](https://hackage.haskell.org/) -
-Haskell's central package archive, [Stackage](https://www.stackage.org/) -
-a subset of Hackage packages that are known to work together, or even
-from remote git repositories. Usually Haskellers use a **package manager** to
-download and manage packages for different projects. The most popular package
-managers for Haskell are [cabal](https://cabal.readthedocs.io) and
-[stack](https://haskellstack.org).
+외부 패키지는 [Hackage](https://hackage.haskell.org/) - 하스켈의 중앙 패키지 저장소, [Stackage](https://www.stackage.org/) - 함께 작동하는 것으로 알려진 Hackage 패키지의 하위 집합, 또는 원격 git 저장소에서 다운로드할 수 있습니다.
+보통 하스켈러들은 여러 프로젝트를 위해 패키지를 다운로드하고 관리하기 위해 **패키지 관리자**를 사용합니다. 
+하스켈에서 가장 인기있는 패키지 관리자는 [cabal](https://cabal.readthedocs.io)과 [stack](https://haskellstack.org)입니다.
 
-A major difference between the two is their philosophy.
-`cabal` tries to be a more minimalist tool that handles building Haskell projects,
-doing package management using the whole of Hackage, and uses complicated algorithms
-to make sure packages work together.
-`stack` tries to be a more maximalistic tool that handles installing the right GHC
-for each project, provides integration with external tools like hoogle,
-and lets the user choose which 'set' of packages (including their versions) they want to use.
+두 패키지 관리자 간의 주요 차이점은 철학입니다.
+`cabal`은 하스켈 프로젝트를 빌드하고, Hackage 전체를 사용하여 패키지 관리를 수행하며, 패키지가 함께 작동하도록 복잡한 알고리즘을 사용하려고 노력하는 최소한의 도구를 만들려고 노력합니다.
+`stack`은 각 프로젝트에 맞는 올바른 GHC를 설치하고, hoogle과 같은 외부 도구와 통합을 제공하며, 사용자가 사용할 패키지의 '집합'을(버전을 포함해서) 선택할 수 있도록 하는 등 최대한의 도구를 만들려고 노력합니다.
 
-If you've installed Haskell using GHCup, you most likely have `cabal` installed.
-If you've installed Haskell using stack, well, you have `stack` installed.
-Check the [haskell.org downloads page](https://www.haskell.org/downloads/) if that's not the case.
+만약 GHCup을 사용해 하스켈을 설치했다면, `cabal`이 이미 설치되어 있을 것입니다.
+만약 stack을 사용해 하스켈을 설치했다면, `stack`이 이미 설치되어 있을 것입니다.
+만약 그렇지 않다면, [haskell.org downloads page](https://www.haskell.org/downloads/)를 확인해 보세요.
 
-## Creating a project
+## 프로젝트 만들기
 
-Using external packages can be done in multiple ways.
-For quick experimentation, we can just
-[ask stack or cabal](https://gilmi.me/blog/post/2021/08/14/hs-core-tools#using-external-packages-in-ghci)
-to build or even run our program with external packages.
-But as programs get larger, use more dependencies, and require more functionality,
-it is better to **create a project description** for our programs and libraries.
+외부 패키지를 사용하는 방법은 여러 가지가 있습니다.
+빠른 실험을 위해, 외부 패키지를 사용하여 프로그램을 빌드하거나 실행할 수 있도록 [stack이나 cabal에게 요청](https://gilmi.me/blog/post/2021/08/14/hs-core-tools#using-external-packages-in-ghci)할 수 있습니다.
+하지만 프로그램이 커지고, 더 많은 의존성을 사용하고, 더 많은 기능이 필요할수록, 프로그램과 라이브러리를 위한 **프로젝트 명세**를 만드는 것이 좋습니다.
 
-Project description is done in a **cabal file**. We can ask cabal or stack
-to generate one for us using `cabal init --libandexe` or `stack new`,
-along with many other files, but we will likely need to edit the file by hand
-later. For now let's just paste an initial example in `hs-blog.cabal` and edit it.
+프로젝트 명세는 **cabal 파일**에 작성됩니다.
+`cabal init --libandexe`나 `stack new`를 사용하여 cabal이나 stack에게 명세를 생성하도록 요청할 수 있지만, 나중에 파일을 직접 편집해야 할 수도 있습니다.
+지금은 단순히 `hs-blog.cabal`에 다음 예제를 붙여넣고 편집합시다.
 
 ```cabal
 cabal-version:       2.4
 
-name:                name should match with <name>.cabal
-version:             version should use PvP
-synopsis:            Synopsis will appear in the hackage package listing and search
-description:         The description will appear at the top of a library
-homepage:            Homepage url
-bug-reports:         issue-tracker url
-license:             License name
-license-file:        License file
-author:              Author name
-maintainer:          Maintainer email
-category:            Hackage categories, separated by commas
+name:                이름은 <name>.cabal과 일치해야 합니다.
+version:             버전은 PvP를 사용해야 합니다.
+synopsis:            시놉시스는 hackage 패키지 목록과 검색에 표시됩니다.
+description:         설명은 라이브러리의 상단에 표시됩니다.
+homepage:            홈페이지 url
+bug-reports:         이슈 추적기 url
+license:             라이선스 이름
+license-file:        라이선스 파일
+author:              작성자 이름
+maintainer:          메인테이너 이메일
+category:            쉼표로 구분된 Hackage 카테고리
 extra-doc-files:
   README.md
 
@@ -87,39 +73,43 @@ executable hs-blog-gen
     -O
 ```
 
-Let's break it down to a few parts, the
-[package metadata](#package-metadata),
-[common settings](#common-settings),
-[library](#library) and
-[executable](#executable).
+각 항목에 대한 자세한 내용을 하나씩 살펴보겠습니다.
+
+- [package metadata](#package-metadata)
+- [common settings](#common-settings)
+- [library](#library)
+- [executable](#executable).
 
 ### Package metadata
 
-The first part should be fairly straightforward from the comments, maybe except for:
+패키지 메타데이터 항목들은 주석 내용만 보고도 어떤 내용인지 직관적으로 알 수 있습니다.
+다만 다음 항목들에 대해서는 좀 더 살펴볼 필요가 있습니다.
 
-- `cabal-version`: Defines which cabal versions can build this project. We've specified 2.4 and above.
-  [More info on different versions](https://cabal.readthedocs.io/en/stable/file-format-changelog.html).
-- `name`: The name of your library and package. Must match with the `.cabal` filename. Usually starts with a lowercase. [Check if your package name is already taken on Hackage](https://hackage.haskell.org/packages/search?terms=name).
-- `version`: Some Haskell packages use [semver](https://semver.org/), most use [PvP](https://pvp.haskell.org/).
+- `cabal-version`: 어떤 cabal 버전으로 이 프로젝트를 빌드할 수 있는지 정의합니다. 예제에서는 2.4 이상을 지정했습니다.
+  각 버전에 대한 정보는 [문서](https://cabal.readthedocs.io/en/stable/file-format-changelog.html)를 참고하세요.
+- `name`: 라이브러리와 패키지의 이름을 정의합니다. `.cabal` 파일의 이름과 일치해야 합니다. 보통 소문자로 시작합니다.
+  [Hackage에서 패키지 이름이 이미 사용중인지 확인하세요](https://hackage.haskell.org/packages/search?terms=name).
+- `version`: 일부 하스켈 패키지는 [semver](https://semver.org/)을 사용하지만, 대부분 [PvP](https://pvp.haskell.org/)를 사용합니다.
 - `license`: Most Haskell packages use [BSD-3-Clause](https://choosealicense.com/licenses/bsd-3-clause/). [Neil Mitchell blogged about this](https://neilmitchell.blogspot.com/2018/08/licensing-my-haskell-packages.html). You can find more licenses if you'd like at [choosealicense.com](https://choosealicense.com).
-- `extra-doc-files`: Include extra doc files here, such as `README` or `CHANGELOG`.
+- `license`: 대부분의 하스켈 패키지는 [BSD-3-Clause](https://choosealicense.com/licenses/bsd-3-clause/)를 사용합니다.
+  이에 대한 [Neil Mitchell의 글](https://neilmitchell.blogspot.com/2018/08/licensing-my-haskell-packages.html)을 참고하세요.
+  더 많은 라이선스를 찾으려면 [choosealicense.com](https://choosealicense.com)을 참고하세요.
+- `extra-doc-files`: `README`나 `CHANGELOG`와 같은 추가 문서 파일을 포함합니다.
 
-Let's fill this with the metadata of our project:
+우리 프로젝트에 맞게 각 항목을 채워넣어봅시다.
 
 ```cabal
 cabal-version:       2.4
 
 name:                hs-blog
 version:             0.1.0.0
-synopsis:            A custom blog generator from markup files
-description:         This package provides a static blog generator
-                     from a custom markup format to HTML.
-                     It defines a parser for this custom markup format
-                     as well as an html pretty printer EDSL.
+synopsis:            마크업 파일을 통한 커스텀 블로그 생성기
+description:         이 패키지는 커스텀 마크업 형식의 파일을 HTML로 변환하는
+                     정적 블로그 생성기를 제공합니다.
+                     이 커스텀 마크업 형식의 파서와 HTML 프리티 프린터 EDSL을 정의합니다.
 
-                     It is used as the example project in the online book
-                     'Learn Haskell Blog Generator'. See the README for
-                     more details.
+                     이 패키지는 온라인 책 'Learn Haskell Blog Generator'의 예제 프로젝트로 사용됩니다.
+                     자세한 내용은 README를 참고하세요.
 homepage:            https://github.com/soupi/learn-haskell-blog-generator
 bug-reports:         https://github.com/soupi/learn-haskell-blog-generator/issues
 license:             BSD-3-Clause
