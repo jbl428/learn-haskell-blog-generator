@@ -5,7 +5,7 @@
 하지만 이번에는 GHC에 포함되지 않은 외부 라이브러리를 사용할 것입니다.
 
 외부 패키지는 [Hackage](https://hackage.haskell.org/) - 하스켈의 중앙 패키지 저장소, [Stackage](https://www.stackage.org/) - 함께 작동하는 것으로 알려진 Hackage 패키지의 하위 집합, 또는 원격 git 저장소에서 다운로드할 수 있습니다.
-보통 하스켈러들은 여러 프로젝트를 위해 패키지를 다운로드하고 관리하기 위해 **패키지 관리자**를 사용합니다. 
+보통 하스켈러들은 여러 프로젝트를 위해 패키지를 다운로드하고 관리하기 위해 **패키지 관리자**를 사용합니다.
 하스켈에서 가장 인기있는 패키지 관리자는 [cabal](https://cabal.readthedocs.io)과 [stack](https://haskellstack.org)입니다.
 
 두 패키지 관리자 간의 주요 차이점은 철학입니다.
@@ -123,7 +123,6 @@ extra-doc-files:
 
 ### Common settings
 
-
 Cabal 패키지 설명에는 라이브러리, 실행 파일, 테스트 스위트 등 여러 "타겟"을 포함할 수 있습니다.
 Cabal 2.2 이후로는 [공통 stanza](https://cabal.readthedocs.io/en/stable/cabal-package.html#common-stanzas)를 사용하여
 다른 타겟들 사이에서 공유할 설정을 그룹화할 수 있습니다. 이렇게 하면 각 타겟마다 설정을 반복할 필요가 없습니다.
@@ -153,7 +152,7 @@ common common-settings
   예제에서는 내부 유틸리티 함수 모듈이 없으므로 `other-modules` 라벨을 주석 처리했습니다.
 
 보통 패키지의 **버전 범위(version bounds)**를 지정하는 것이 일반적입니다.
-버전 범위는 _이 라이브러리가 동작하는 패키지 버전_을 지정합니다.
+버전 범위는 *이 라이브러리가 동작하는 패키지 버전*을 지정합니다.
 이는 `cabal gen-bounds` 명령으로 생성할 수도 있습니다.
 
 ```cabal
@@ -172,7 +171,7 @@ library
   -- other-modules:
 ```
 
-모듈을 위한 추가적인 _계층_을 정의했으며, 기존과 다른 소스 디렉토리를 지정했음을 주목하세요.
+모듈을 위한 추가적인 *계층*을 정의했으며, 기존과 다른 소스 디렉토리를 지정했음을 주목하세요.
 따라서 파일들을 약간 옮겨야 하고 각 파일의 `module` 이름과 `import` 문을 변경해야 합니다.
 이는 사용자가 import할 다른 패키지와 충돌을 피하기 위함입니다.
 
@@ -397,7 +396,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [cabal.project](https://cabal.readthedocs.io/en/stable/cabal-project.html)와
 [stack.yaml](https://docs.haskellstack.org/en/stable/yaml_configuration/#project-specific-config)
-파일은 각각 `cabal`과 `stack`에서 사용합니다. 이는 _패키지를 빌드하는 방법_에 대한 추가적인 정보를 제공합니다.
+파일은 각각 `cabal`과 `stack`에서 사용합니다. 이는 *패키지를 빌드하는 방법*에 대한 추가적인 정보를 제공합니다.
 `cabal.project`파일은 `cabal`을 사용하기 위해 반드시 필요하지는 않지만, `stack.yaml`파일은 `stack`을 사용하기 위해 반드시 필요합니다.
 
 `stack.yaml`파일에는 다음 두 중요한 필드가 있습니다:
@@ -591,7 +590,6 @@ dist-newstyle
 ```
 
 이 패키지 포맷은 다른 하스켈 개발자들이 사용할 수 있도록 [Hackage](https://hackage.haskell.org/)에 배포될 수 있습니다!
-
 
 > Git 커밋을 통해
 > [이번에 수정한 내역](https://github.com/soupi/learn-haskell-blog-generator/commit/8ca58aef80930db82cd20e85f44f5e34e1d74214)
