@@ -1,21 +1,17 @@
-# Fancy options parsing
+# 멋진 옵션 파싱
 
-We'd like to define a nicer interface for our program. While we could manage something
-ourselves with `getArgs` and pattern matching, it is easier to get good results using a library.
-We are going to use a package called
-[optparse-applicative](https://hackage.haskell.org/package/optparse-applicative).
+이번에는 프로그램을 위한 더 멋진 인터페이스를 정의해보려고 합니다.
+`getArgs`와 패턴 매칭으로도 무언가를 만들 수 있지만, 라이브러리를 사용하면 더 좋은 결과를 얻을 수 있습니다.
+이번 장에서는 [optparse-applicative](https://hackage.haskell.org/package/optparse-applicative)라는 패키지를 사용할 것입니다.
 
-`optparse-applicative` provides us with an EDSL (yes, another one) to build
-command arguments parsers. Things like commands, switches, and flags can be built
-and composed together to make a parser for command-line arguments without actually
-writing operations on strings as we did when we wrote our Markup parser, and will
-provide other benefits such as automatic generation of usage lines, help screens,
-error reporting, and more.
+`optparse-applicative`는 명령행 인자 파서를 만들기 위한 EDSL을 제공합니다.
+명령, 스위치, 플래그 등을 만들고 조합하여 실제로 문자열에 대한 연산을 작성하지 않고도
+명령행 인자를 파싱하는 파서를 만들 수 있습니다.
+또한 사용법, 도움말, 에러 메시지 등을 자동으로 생성해주는 등의 기능도 제공합니다.
 
-While `optparse-applicative`'s dependency footprint isn't very large,
-it is likely that a user of our library wouldn't need command-line parsing
-in this particular case, so it makes sense to add this dependency to the `executable` section
-(rather than the `library` section) in the `.cabal` file:
+`optparse-applicative`의 의존성 풋프린트는 크지 않지만, 우리 라이브러리를 사용하는 사용자가
+명령행 파싱이 필요하지 않을 가능성이 높기 때문에 `.cabal` 파일의 (`libray` 섹션이 아닌) `executable` 섹션에
+의존성을 추가하는게 바람직합니다:
 
 ```diff
  executable hs-blog-gen
@@ -30,31 +26,26 @@ in this particular case, so it makes sense to add this dependency to the `execut
      -O
 ```
 
-## Building a command-line parser
+## 명령줄 파서 만들기
 
-The optparse-applicative package has pretty decent
-[documentation](https://hackage.haskell.org/package/optparse-applicative-0.16.1.0#optparse-applicative),
-but we will cover a few important things to pay attention to in this chapter.
+optparse-applicative 패키지는 꽤 괜찮은
+[문서](https://hackage.haskell.org/package/optparse-applicative-0.16.1.0#optparse-applicative),
+를 가지고 있습니다. 하지만 이 장에서 중요한 몇 가지 사항을 다룰 것입니다.
 
-In general, there are four important things we need to do:
+일반적으로, 우리가 해야 할 일은 네 가지가 있습니다:
 
-1. Define our model - we want to define an ADT that describes the various options
-   and commands for our program
+1. 모델을 정의합니다 - 프로그램의 다양한 옵션과 명령을 설명하는 ADT를 정의합니다.
+2. 실행할 때 모델 타입의 값을 생성하는 파서를 정의합니다.
+3. 파서를 프로그램 인자 입력에 실행합니다.
+4. 모델을 패턴 매칭하고 옵션에 따라 올바른 작업을 호출합니다.
 
-2. Define a parser that will produce a value of our model type when run
+### 모델 정의하기
 
-3. Run the parser on our program arguments input
+먼저 우리의 명령줄 인터페이스를 상상해봅시다. 어떤 기능이 있을까요?
 
-4. Pattern match on the model and call the right operations according to the options
-
-### Define a model
-
-Let's envision our command-line interface for a second, what should it
-look like?
-
-We want to be able to convert a single file or input stream to either a file
-or an output stream, or we want to process a whole directory and create a new directory.
-We can model it in an ADT like this:
+단일 파일이나 입력 스트림을 파일이나 출력 스트림으로 변환해거나,
+디렉토리 전체를 처리하고 새 디렉토리를 생성할 수 있어야 합니다.
+우리는 이를 ADT로 모델링 할 수 있습니다:
 
 ```haskell
 data Options
@@ -73,49 +64,35 @@ data SingleOutput
   deriving Show
 ```
 
-> Note that we could technically also use `Maybe FilePath` to encode both `SingleInput`
-> and `SingleOutput`, but then we would have to remember what `Nothing` means
-> in each context. By creating a new type with properly named constructors
-> for each option we make it easier for readers of the code to understand
-> the meaning of our code.
+> `SingleInput`과 `SingleOutput`을 `Maybe FilePath`로 표현하는 것도 하나의 방법입니다.
+> 하지만 이 경우 각 문맥에서 `Nothing`이 무엇을 의미하는지 기억해야 합니다.
+> 각 옵션에 대한 적절한 이름을 가진 새로운 타입을 만드는 것이 코드의 의미를 이해하는데 도움이 됩니다.
 
-In terms of interface, we could decide that when a user would like to convert
-a single input source, they would use the `convert` command, and supply the optional flags
-`--input FILEPATH` and `--output FILEPATH` to read or write from a file.
-When the user does not supply one or both flags, we will read or write from
-the standard input/output accordingly.
+인터페이스 관점에서, 사용자가 단일 입력 소스를 변환하려면 `convert` 명령어를 사용하고
+옵션으로 `--input FILEPATH`와 `--output FILEPATH`를 제공하여 파일에서 읽거나 쓰게할 수 있습니다.
+만약 사용자가 하나 이상의 옵션을 제공하지 않으면 표준 입력/출력에서 읽거나 쓸 것입니다.
 
-If the user would like to convert a directory, they can use the `convert-dir`
-command and supply the two mandatory flags `--input FILEPATH` and
-`--output FILEPATH`.
+만약 사용자가 디렉토리를 변환하려면 `convert-dir` 명령어를 사용하고
+`--input FILEPATH`와 `--output FILEPATH`를 필수로 입력해야 합니다.
 
-### Build a parser
+### 파서 만들기
 
-This is the most interesting part of the process. How do we build a parser
-that fits our model?
+이 과정에서 가장 흥미로운 부분입니다. 어떻게 모델에 맞는 파서를 만들 수 있을까요?
 
-The `optparse-applicative` library introduces a new type called `Parser`.
-`Parser`, similar to `Maybe` and `IO`, has the kind `* -> *` - when it
-is supplied with a saturated (or concrete) type such as `Int`, `Bool` or
-`Options`, it can become a saturated type (one that has values).
+`optparse-applicative` 라이브러리는 `Parser`라는 새로운 타입을 제공합니다.
+`Parser`는 `Maybe`나 `IO`와 같이 kind가 `* -> *`인 타입입니다.
+`Int`, `Bool` 또는 `Options`와 같은 구체적인 타입을 제공해야 `Parser`는 (값을 가지는) 구체적인 타입이 될 수 있습니다.
 
-A `Parser a` represents a specification of a command-line options parser
-that produces a value of type `a` when the command-line arguments are
-successfully parsed.
-This is similar to how `IO a` represents a description of a program
-that can produce a value of type `a`. The main difference between these
-two types is that while we can't convert an `IO a` to an `a`
-(we just chain IO operations and have the Haskell runtime execute them),
-we _can_ convert a `Parser a` to a function that takes a list of strings
-representing the program arguments and produces an `a` if it manages
-to parse the arguments.
+`Parser a`는 명령줄 인자가 성공적으로 파싱된 경우 타입 `a`의 값을 생성하는 명령줄 파서의 명세를 의미합니다.
+이는 `IO a`가 `a`의 값을 생성하는 프로그램의 명세를 의미하는 것과 유사합니다.
+이 두 타입의 주요 차이점은 `IO a`를 `a`로 변환할 수 없지만
+(우리는 단지 IO 연산을 연결하고 Haskell 런타임이 그것들을 실행하게 합니다),
+`Parser a`를 프로그램 인자를 의미하는 문자열 목록을 받고 인자를 파싱할 수 있으면 `a`를 생성하는 함수로 변환할 수 있다는 것입니다.
 
-As we've seen with the previous EDSLs, this library uses the _combinator pattern_
-as well. We need to consider the basic primitives for building
-a parser, and the methods of composing small parsers into bigger
-parsers.
+이전 EDSL과 마찬가지로, 이 라이브러리는 *조합자 패턴*을 사용합니다.
+우리는 파서를 만들기 위한 원시값들과 작은 파서를 큰 파서로 조합하는 방법을 익혀야 합니다.
 
-Let's see an example for a small parser:
+작은 파서의 예제를 살펴봅시다:
 
 ```haskell
 inp :: Parser FilePath
@@ -137,68 +114,58 @@ out =
     )
 ```
 
-`strOption` is a parser builder. It is a function that takes a combined
-_option modifiers_ as an argument, and returns a parser that will parse a string.
-We can specify the type to be `FilePath` because `FilePath` is an
-alias to `String`. The parser builder describes how to parse the value,
-and the modifiers describe its properties, such as the flag name,
-the shorthand of the flag name, and how it would be described in the usage
-and help messages.
+`strOption`는 파서를 만드는 함수입니다. 이 함수는 인자로 조합된 *옵션 수정자*를 받아 문자열을 파싱하는 파서를 반환합니다.
+타입을 `FilePath`로 지정할 수도 있는데, `FilePath`가 `String`의 별칭이기 때문입니다.
+파서 빌더는 값을 파싱하는 방법을 설명하고, 수정자는 플래그 이름, 플래그 이름의 약어, 사용법 및 도움말 메시지에 대한 내용과 같은 속성을 설명합니다.
 
-> Actually `strOption` can return any string type
-> that implements the interface `IsString`. There are a few such types,
-> for example `Text`, a much more efficient Unicode text type from the `text` package.
-> It is more efficient than `String` because while `String` is implemented as a
-> linked list of `Char`, `Text` is implemented as an array of bytes.
-> `Text` is usually what we should use for text values instead of `String`. We haven't
-> been using it up until now because it is slightly less ergonomic to use
-> than `String`. But it is often the preferred type to use for text!
+> 사실 `strOption`는 `IsString` 인터페이스를 구현하는 어떤 문자열 타입이라도 반환할 수 있습니다.
+> 그 예로 `text` 패키지에서 가져온 훨씬 효율적인 유니코드 텍스트 타입인 `Text`가 있습니다.
+> `String`은 `Char`의 링크드 리스트로 구현되지만, `Text`는 바이트 배열로 구현되기 때문에 `Text`가 더 효율적입니다.
+> 텍스트 값을 위해 `String` 대신 `Text`를 사용하는게 좋습니다.
+> 지금까지는 사용하지 않았는데 이는 `String`보다 약간 사용하기 불편하기 때문입니다.
+> 하지만 텍스트를 표현할때 많이 사용하는 타입입니다!
 
-As you can see, modifiers can be composed using the `<>` function,
-which means modifiers implement an instance of the `Semigroup` type class!
+보시다시피, 수정자는 `<>` 함수를 사용하여 합성할 수 있습니다.
+즉, 수정자는 `Semigroup` 타입클래스의 인스턴스를 구현했다는 것을 의미합니다!
 
-With such an interface we don't have to supply all the modifier
-options, but only the relevant ones. So if we don't want to
-have a shortened flag name, we don't have to add it.
+이러한 인터페이스로 인해, 우리는 모든 수정자 옵션을 제공할 필요가 없이 필요한 항목만 제공하면 됩니다.
+따라서 우리가 짧은 플래그 이름을 가지고 싶지 않다면, 추가할 필요가 없습니다.
 
 #### Functor
 
-For the data type we've defined, having `Parser FilePath` takes us
-a good step in the right direction, but it is not exactly what we need
-for a `ConvertSingle`. We need a `Parser SingleInput` and a
-`Parser SingleOutput`. If we had a `FilePath`, we could convert
-it into `SingleInput` by using the `InputFile` constructor.
-Remember, `InputFile` is also a function:
+우리가 정의한 데이터 타입을 위해, `Parser FilePath`를 정의했다는 것은
+우리가 원하는 방향으로 큰 파서를 만들 수 있는 좋은 시작이지만, `ConvertSingle`에 필요한 것은 아닙니다.
+`SingleInput`과 `SingleOutput`을 위한 `Parser`가 필요합니다.
+만약 `FilePath`가 있다면, `InputFile` 생성자를 사용하여 `SingleInput`으로 변환할 수 있습니다.
+`InputFile`도 함수라는 것을 기억하세요:
 
 ```haskell
 InputFile :: FilePath -> SingleInput
 OutputFile :: FilePath -> SingleOutput
 ```
 
-However, to convert a parser, we need functions with these types:
+그러나 파서를 변환하려면 다음과 같은 타입의 함수가 필요합니다:
 
 ```haskell
 f :: Parser FilePath -> Parser SingleInput
 g :: Parser FilePath -> Parser SingleOutput
 ```
 
-Fortunately, the `Parser` interface provides us with a function to "lift"
-a function like `FilePath -> SingleInput` to work on parsers, making
-it a function with the type `Parser FilePath -> Parser SingleInput`.
-Of course, this function will work for any input and output,
-so if we have a function with the type `a -> b`, we can pass it to
-that function and get a new function of the type `Parser a -> Parser b`.
+다행히도, `Parser` 인터페이스는 `FilePath -> SingleInput`와 같은 함수를 "lift"하는 함수를 제공합니다.
+즉 `Parser FilePath -> Parser SingleInput`와 같은 타입의 함수를 만들어줍니다.
+이 함수는 어떠한 입력과 출력 모두에 대해 작동하기에 `a -> b` 타입의 함수가 있다면
+인자로 전달해 `Parser a -> Parser b` 타입의 새 함수를 얻을 수 있습니다.
 
-This function is called `fmap`:
+이러한 함수를 `fmap`이라고 부릅니다:
 
 ```haskell
 fmap :: (a -> b) -> Parser a -> Parser b
 
--- Or with its infix version
+-- 또는 중위 표기법으로
 (<$>)  :: (a -> b) -> Parser a -> Parser b
 ```
 
-We've seen `fmap` before in the interface of other types:
+우리는 이전에 다른 타입의 인터페이스에서 `fmap`을 보았습니다:
 
 ```haskell
 fmap :: (a -> b) -> [a] -> [b]
@@ -206,57 +173,52 @@ fmap :: (a -> b) -> [a] -> [b]
 fmap :: (a -> b) -> IO a -> IO b
 ```
 
-`fmap` is a type class function like `<>` and `show`. It belongs
-to the type class [`Functor`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Functor.html#t:Functor):
+`fmap`은 `<>`, `show`와 같은 타입클래스 함수입니다.
+이는 [`Functor`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Functor.html#t:Functor)라는 타입클래스에 속합니다:
 
 ```haskell
 class Functor f where
   fmap :: (a -> b) -> f a -> f b
 ```
 
-And it has the following laws:
+그리고 다음과 같은 법칙이 있습니다:
 
 ```haskell
--- 1. Identity law:
---    if we don't change the values, nothing should change
+-- 1. 항등 법칙:
+--    값들을 변경하지 않으면 아무것도 변경되지 않아야 합니다.
 fmap id = id
 
--- 2. Composition law:
---    Composing the lifted functions is the same a composing
---    them after fmap
+-- 2. 합성 법칙:
+--    lift한 함수를 합성하는 것은 fmap으로 lift한 함수를 합성하는 것과 같습니다.
 fmap (f . g) == fmap f . fmap g
 ```
 
-Any type `f` that can implement `fmap` and follow these laws can be a valid
-instance of `Functor`.
+`fmap`을 구현하고 위 법칙을 따르는 타입은 `Functor`의 인스턴스가 될 수 있습니다.
 
-> Notice how `f` has a kind `* -> *`, we can infer the kind of `f`
-> by looking at the other types in the type signature of `fmap`:
+> `f`의 kind가 `* -> *`라는 것을 기억하세요.
+> `fmap`의 타입 시그니처를 통해 `f`의 kind를 추론할 수 있습니다:
 >
-> 1. `a` and `b` have the kind `*` because they are used as arguments/return
->    types of functions
-> 2. `f a` has the kind `*` because it is used as an argument to a function, therefore
-> 3. `f` has the kind `* -> *`
+> 1. `a`와 `b`의 kind는 `*`입니다. 왜냐하면 함수의 인자/반환 타입으로 사용되기 때문입니다.
+> 2. `f a`의 kind는 `*`입니다. 왜냐하면 함수의 인자로 사용되기 때문입니다.
+> 3. 그러므로 `f`의 kind는 `* -> *`입니다.
 
-Let's choose a data type and see if we can implement a `Functor` instance.
-We need to choose a data type that has the kind `* -> *`. `Maybe` fits the bill.
-We need to implement a function `fmap :: (a -> b) -> Maybe a -> Maybe b`.
-Here's one very simple (and wrong) implementation:
+데이터 타입 하나를 선택해 `Functor` 인스턴스를 구현해봅시다.
+먼저 `* -> *` kind를 가진 데이터 타입을 선택해야 합니다. `Maybe`가 적합합니다.
+이제 `fmap :: (a -> b) -> Maybe a -> Maybe b` 함수를 구현해야 합니다.
+다음은 매우 간단하고 (그리고 잘못된) 구현입니다:
 
 ```haskell
 mapMaybe :: (a -> b) -> Maybe a -> Maybe b
 mapMaybe func maybeX = Nothing
 ```
 
-Check it yourself! It compiles successfully! But unfortunately it does not
-satisfy the first law. `fmap id = id` means that
-`mapMaybe id (Just x) == Just x`, however from the definition we can
-clearly see that `mapMaybe id (Just x) == Nothing`.
+한 번 컴파일해보세요! 성공적으로 컴파일됩니다! 하지만 불행하게도 첫 번째 법칙을 만족하지 않습니다.
+`fmap id = id`는 `mapMaybe id (Just x) == Just x`를 의미합니다.
+그러나 정의에서 `mapMaybe id (Just x) == Nothing`이라는 것을 명확히 알 수 있습니다.
 
-This is a good example of how Haskell doesn't help us make sure the laws
-are satisfied, and why they are important. Unlawful `Functor` instances
-will behave differently from what we'd expect a `Functor` to behave.
-Let's try again!
+이는 하스켈이 법칙을 만족할 수 있게 보장해주지 않는다는 것과 이러한 법칙이 중요하다는 것을 보여줍니다.
+법칙을 만족하지 않는 `Functor` 인스턴스는 우리가 기대하는 것과 다르게 동작할 것입니다.
+다시 한 번 시도해봅시다!
 
 ```haskell
 mapMaybe :: (a -> b) -> Maybe a -> Maybe b
@@ -266,21 +228,18 @@ mapMaybe func maybeX =
     Just x -> Just (func x)
 ```
 
-This `mapMaybe` will satisfy the functor laws. This can be proved
-by doing algebra - if we can do substitution and reach the other side of the
-equation in each law, then the law holds.
+이 `mapMaybe`는 법칙을 만족합니다. 이는 대수학을 통해 증명할 수 있습니다.
+- 만약 치환을 통해 등식의 한쪽에서 다른 쪽으로 도달할 수 있다면, 법칙은 성립합니다.
 
-Functor is a very important type class, and many types implement this interface.
-As we know, `IO`, `Maybe`, `[]` and `Parser` all have the kind `* -> *`,
-and all allows us to map over their "payload" type.
+Functor는 매우 중요한 타입클래스이며, 많은 타입이 이 인터페이스를 구현합니다.
+우리가 알고 있는 것처럼, `IO`, `Maybe`, `[]`, `Parser` 모두 `* -> *` kind를 가지며
+그들의 "payload" 타입에 대해 `fmap`을 사용할 수 있습니다.
 
-> Often people try to look for analogies and metaphors to what a type class mean,
-> but type classes with funny names like `Functor` don't usually have an
-> analogy or a metaphor that fits them in all cases. It is easier to give up
-> on the metaphor and think about it as it is - an interface with laws.
+> 종종 사람들은 타입클래스가 무엇을 의미하는지에 대한 비유나 은유를 찾으려고 합니다.
+> 하지만 Functor`와 같은 재미있는 이름의 타입클래스는 일반적으로 모든 경우에 적합한
+> 비유나 은유를 가지고 있지 않습니다. 은유를 포기하고 법칙을 가진 인터페이스로 그 자체로 생각하는 것이 더 쉽습니다.
 
-We can use `fmap` on `Parser` to make a parser that returns `FilePath` to
-return a `SingleInput` or `SingleOutput` instead:
+`Parser`에 대해 `fmap`을 사용해, `FilePath`를 반환하는 파서를 `SingleInput` 또는 `SingleOutput`을 반환하는 파서로 변환할 수 있습니다:
 
 ```haskell
 pInputFile :: Parser SingleInput
@@ -295,7 +254,7 @@ pInputFile = fmap InputFile parser
         )
 
 pOutputFile :: Parser SingleOutput
-pOutputFile = OutputFile <$> parser -- fmap and <$> are the same
+pOutputFile = OutputFile <$> parser -- fmap 과 <$> 는 같은 의미입니다.
   where
     parser =
       strOption
