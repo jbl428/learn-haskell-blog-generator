@@ -267,19 +267,17 @@ pOutputFile = OutputFile <$> parser -- fmap 과 <$> 는 같은 의미입니다.
 
 #### Applicative
 
-Now that we have two parsers,
-`pInputFile :: Parser SingleInput`
-and `pOutputFile :: Parser SingleOutput`,
-we want to _combine_ them as `Options`. Again, if we only had
-`SingleInput` and `SingleOutput`, we could use the constructor `ConvertSingle`:
+이제 `pInputFile :: Parser SingleInput`과 `pOutputFile :: Parser SingleOutput` 두 개의 파서를 가지고 있습니다.
+우리는 이 두 파서를 *결합*해 `Options`를 만들려고 합니다.
+`SingleInput`과 `SingleOutput`이 있다면 `ConvertSingle` 생성자를 사용해볼 수 있습니다:
 
 ```haskell
 ConvertSingle :: SingleInput -> SingleOutput -> Options
 ```
 
-Can we do a similar trick to the one we saw before with `fmap`?
-Does a function exist that can lift a binary function to work
-on `Parser`s instead? One with this type signature:
+혹시 이전에 `fmap`을 활용해 본 것처럼 비슷한 트릭을 사용할 수 있을까요?
+이진 함수(binary function)를 *리프트*해 `Parser`에서도 동작하게 하는 함수가 존재할까요?
+존재한다면 아마 이런 타입 시그니처를 가지고 있을 것입니다:
 
 ```
 ???
@@ -287,9 +285,8 @@ on `Parser`s instead? One with this type signature:
   -> (Parser SingleInput -> Parser SingleOutput -> Parser Options)
 ```
 
-Yes. This function is called `liftA2` and it is from the `Applicative`
-type class. `Applicative` (also known as applicative functor) has three
-primary functions:
+네. 이런 함수가 존재합니다. 이 함수는 `liftA2`라고 불리며 `Applicative` 타입클래스에 정의되어 있습니다.
+`Applicative` (또는 applicative functor)는 세 개의 주요 함수를 가지고 있습니다:
 
 ```haskell
 class Functor f => Applicative f where
@@ -299,29 +296,23 @@ class Functor f => Applicative f where
 ```
 
 [`Applicative`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Applicative.html#t:Applicative)
-is another very popular type class with many instances.
+는 많은 인스턴스가 존재하는 또 다른 매우 인기있는 타입클래스입니다.
 
-Just like any `Monoid` is a `Semigroup`, any `Applicative`
-is a `Functor`. This means that any type that wants to implement
-the `Applicative` interface should also implement the `Functor` interface.
+모든 `Monoid`는 `Semigroup`인 것처럼, 모든 `Applicative`은 `Functor`입니다.
+이는 `Applicative` 인터페이스를 구현하고자 하는 타입은 `Functor` 인터페이스도 구현해야 한다는 것을 의미합니다.
 
-Beyond what a regular functor can do, which is to lift a function over
-a certain `f`, applicative functors allow us to apply a function to
-_multiple instances_ of a certain `f`, as well as "lift" any value of type `a` into an `f a`.
+특정 함수 `f`를 리프트 하는 일반적인 functor의 기능을 넘어, applicative functor는
+타입 `a`를 `f a`로 "리프트"하는 것 외에도, 특정 `f`의 *여러 인스턴스*에 함수를 적용할 수 있습니다.
 
-You should already be familiar with `pure`, we've seen it when we
-talked about `IO`. For `IO`, `pure` lets us create an `IO` action
-with a specific return value without doing IO.
-With `pure` for `Parser`, we can create a `Parser` that when run
-will return a specific value as output without doing any parsing.
+아마 `pure`는 이미 익숙할 것입니다. 예전에 `IO`에 대해 이야기할 때 보았을 것입니다.
+`IO`에 대해, `pure`는 IO를 수행하지 않고도 특정 반환 값을 가지는 `IO` 액션을 만들어줍니다.
+`Parser`에 대해 `pure`를 사용하면, 파싱을 하지 않고도 특정 값을 반환하는 `Parser`를 만들 수 있습니다.
 
-`liftA2` and `<*>` are two functions that can be implemented in
-terms of one another. `<*>` is actually the more useful one between
-the two. Because when combined with `fmap` (or rather the infix version `<$>`),
-it can be used to apply a function with many arguments, instead of just two.
+`liftA2`와 `<*>`는 둘 다 서로를 활용해 구현할 수 있는 함수입니다.
+사실 `<*>`가 두 함수 중 더 유용합니다. 
+왜냐하면 `fmap` (또는 중위 연산자 `<$>`)과 함께 사용하면 두 개 이상의 많은 인자를 가진 함수에도 적용할 수 있기 때문입니다.
 
-To combine our two parsers to one, we can use either `liftA2` or
-a combination of `<$>` and `<*>`:
+두 파서를 하나로 결합하기위해, `liftA2` 또는 `<$>`와 `<*>`의 조합을 사용할 수 있습니다:
 
 ```haskell
 -- with liftA2
@@ -335,8 +326,7 @@ pConvertSingle =
   ConvertSingle <$> pInputFile <*> pOutputFile
 ```
 
-Note that both `<$>` and `<*>` associate to the left,
-so we have invisible parenthesis that look like this:
+`<$>`와 `<*>`는 모두 왼쪽으로 결합되므로, 다음과 같은 보이지 않는 괄호가 있습니다:
 
 ```haskell
 pConvertSingle :: Parser Options
@@ -344,8 +334,7 @@ pConvertSingle =
   (ConvertSingle <$> pInputFile) <*> pOutputFile
 ```
 
-Let's take a deeper look at the types of the sub-expressions
-we have here, to prove that this type-checks:
+위 코드가 타입체크에 성공하는지 증명하기 위해, 각 하위 표현식의 타입을 살펴봅시다:
 
 ```haskell
 pConvertSingle :: Parser Options
@@ -356,40 +345,33 @@ pOutputFile :: Parser SingleOutput
 ConvertSingle :: SingleInput -> SingleOutput -> Options
 
 (<$>) :: (a -> b) -> Parser a -> Parser b
-  -- Specifically, here `a` is `SingleInput`
-  -- and `b` is `SingleOutput -> Options`,
+  -- 여기서 `a`는 `SingleInput`이고 `b`는 `SingleOutput -> Options`입니다.
 
 ConvertSingle <$> pInputFile :: Parser (SingleOutput -> Options)
 
 (<*>) :: Parser (a -> b) -> Parser a -> Parser b
-  -- Specifically, here `a -> b` is `SingleOutput -> Options`
-  -- so `a` is `SingleOutput` and `b` is `Options`
+  -- 여기서 `a -> b`는 `SingleOutput -> Options`이며, `a`는 `SingleOutput`이고 `b`는 `Options`입니다.
 
--- So we get:
+-- 따라서
 (ConvertSingle <$> pInputFile) <*> pOutputFile :: Parser Options
 ```
 
-With `<$>` and `<*>` we can chain as many parsers (or any applicative really)
-as we want. This is because of two things: currying and parametric polymorphism.
-Because functions in Haskell take exactly one argument and return exactly one,
-any multiple argument function can be represented as `a -> b`.
+`<$>`과 `<*>`를 사용하면 원하는 만큼 많은 파서를 연결할 수 있습니다.
+이는 커링(currying)과 매개변수 다형성(parametric polymorphism) 두 가지 이유 때문입니다.
+Haskell에서 함수는 정확히 하나의 인자를 받고 정확히 하나의 값을 반환하기 때문에,
+여러 인자를 가진 함수는 `a -> b`와 같이 표현할 수 있습니다.
 
-> You can find the laws for the applicative functors in this article called
-> [Typeclassopedia](https://wiki.haskell.org/Typeclassopedia#Laws_2), which
-> talks about various useful type classes and their laws.
+> applicative functor의 법칙에 대한 내용은 [Typeclassopedia](https://wiki.haskell.org/Typeclassopedia#Laws_2)글을 참고하세요.
+> 이 글은 다양한 유용한 타입클래스와 그들의 법칙에 대해 이야기합니다.
 
-Applicative functor is a very important concept and will appear in various
-parser interfaces (not just for command-line arguments, but also JSON
-parsers and general parsers), I/O, concurrency, non-determinism, and more.
-The reason this library is called optparse-applicative is because
-it uses the `Applicative` interface as the main API for
-constructing parsers.
+Applicative functor는 매우 중요한 개념이며 다양한 파서 인터페이스 (명령줄 뿐만아니라 JSON이나 일반적인 파서), I/O, 동시성, 비결정성 등에서 사용됩니다.
+이 라이브러리의 이름이 optparse-applicative인 이유도 파서를 만들기 위해 `Applicative` 인터페이스를 주요 API로 사용하기 때문입니다.
 
 ---
 
-**Exercise**: create a similar interface for the `ConvertDir` constructor of `Options`.
+**연습문제**: `Options`의 생성자 `ConvertDir`에 대해서도 유사한 인터페이스를 만드세요.
 
-<details><summary>Solution</summary>
+<details><summary>정답</summary>
 
 ```haskell
 pInputDir :: Parser FilePath
