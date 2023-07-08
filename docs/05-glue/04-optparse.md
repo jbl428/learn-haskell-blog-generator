@@ -403,20 +403,16 @@ pConvertDir =
 
 #### Alternative
 
-One thing we forgot about is that each input and output for
-`ConvertSingle` could also potentially use the standard input and output instead.
-Up until now we only offered one option: reading from or writing to a file
-by specifying the flags `--input` and `--output`.
-However, we'd like to make these flags optional, and when they are
-not specified, use the alternative standard i/o. We can do that by using
-the function `optional` from `Control.Applicative`:
+사실 `ConvertSingle`는 입출력으로 표준 입력과 출력을 사용할 수도 있습니다.
+지금까지 `--input`과 `--output` 플래그를 사용하여 파일을 읽거나 쓰는 하나의 옵션만 제공했습니다.
+이제 우리는 이 플래그를 선택적으로 사용할 수 있게해, 지정하지 않았다면 표준 입출력을 사용하도록 만들려고 합니다.
+`Control.Applicative`의 `optional` 함수를 사용하여 이를 수행할 수 있습니다:
 
 ```haskell
 optional :: Alternative f => f a -> f (Maybe a)
 ```
 
-`optional` works on types which implement instances of the
-[`Alternative`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Applicative.html#t:Alternative) type class:
+`optional`은 [`Alternative`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Applicative.html#t:Alternative) 타입 클래스의 인스턴스인 타입에 대해 작동합니다:
 
 ```haskell
 class Applicative f => Alternative f where
@@ -424,13 +420,10 @@ class Applicative f => Alternative f where
   empty :: f a
 ```
 
-`Alternative` looks very similar to the `Monoid` type class,
-but it works on applicative functors. This type class isn't
-very common and is mostly used for parsing libraries as far as I know.
-It provides us with an interface to combine two `Parser`s -
-if the first one fails to parse, try the other.
-It also provides other useful functions such as `optional`,
-which will help us with our case:
+`Alternative`는 `Monoid` 타입 클래스와 매우 유사하지만, applicative functor에서 작동합니다.
+이 타입 클래스는 자주 사용되지 않으며, 주로 파싱 라이브러리에서만 사용됩니다.
+이는 두 개의 `Parser`를 결합할 수 있는 인터페이스를 제공합니다 - 첫 번째 파서가 파싱에 실패하면 다른 파서를 시도합니다.
+또한 현재 우리에게 도움이 되는 `optional`과 같은 유용한 함수를 제공합니다.
 
 ```haskell
 pSingleInput :: Parser SingleInput
@@ -442,10 +435,11 @@ pSingleOutput =
   fromMaybe Stdout <$> optional pOutputFile
 ```
 
-Note that with `fromMaybe :: a -> Maybe a -> a` we can extract
-the `a` out of the `Maybe` by supplying a value for the `Nothing` case.
+`fromMaybe :: a -> Maybe a -> a`를 사용하여 `Maybe` 값을 `a`로 추출할 수 있습니다.
+이는 `Nothing`이 아닌 경우에는 `a`를 반환하고, `Nothing`인 경우에는 기본값을 반환합니다.
 
-Now we can use these more appropriate functions in `pConvertSingle` instead:
+
+이제 더 적절한 함수들을 사용해 `pConvertSingle`을 다시 작성할 수 있습니다:
 
 ```haskell
 pConvertSingle :: Parser Options
@@ -453,16 +447,14 @@ pConvertSingle =
   ConvertSingle <$> pSingleInput <*> pSingleOutput
 ```
 
-#### Commands and subparsers
+#### 명령과 서브파서
 
-We currently have two possible operations in our interface,
-convert a single source, or convert a directory. A nice interface for
-selecting the right operation would be via commands.
-If the user would like to convert a single source, they can use
-`convert`, for a directory, `convert-dir`.
+현재 인터페이스는 두 가지 가능한 동작을 가지고 있습니다.
+단일 소스를 변환하거나 디렉토리를 변환하는 것입니다.
+적절한 동작을 선택하기 위한 좋은 인터페이스는 명령을 통해 선택하는 것입니다.
+사용자가 단일 소스를 변환하려면 `convert`, 디렉토리를 변환하려면 `convert-dir`를 사용할 수 있습니다.
 
-We can create a parser with commands with the `subparser` and `command`
-functions:
+우리는 `subparser`와 `command` 함수를 사용하여 이를 수행할 수 있습니다:
 
 ```haskell
 subparser :: Mod CommandFields a -> Parser a
@@ -470,24 +462,19 @@ subparser :: Mod CommandFields a -> Parser a
 command :: String -> ParserInfo a -> Mod CommandFields a
 ```
 
-`subparser` takes _command modifiers_ (which can be constructed
-with the `command` function) as input, and produces a `Parser`.
-`command` takes the command name (in our case "convert" or "convert-dir")
-and a `ParserInfo a`, and produces a command modifier. As we've seen
-before these modifiers have a `Monoid` instance and they can be
-composed, meaning that we can append multiple commands to serve as alternatives.
+`subparser`는 *명령 수정자(command modifiers)* (이는 `command` 함수로 만들 수 있습니다)를 입력으로 받아 `Parser`를 생성합니다.
+`command`는 명령 이름("convert" 또는 "convert-dir")과 `ParserInfo a`를 입력으로 받아 명령 수정자를 생성합니다.
+이전에 보았던 것처럼 이러한 수정자들은 `Monoid` 인스턴스를 가지고 있으며, 여러 명령을 옵션으로 사용할 수 있도록 합칠 수 있습니다.
 
-A `ParserInfo a` can be constructed with the `info` function:
+`ParserInfo a`는 `info` 함수를 사용하여 생성할 수 있습니다:
 
 ```haskell
 info :: Parser a -> InfoMod a -> ParserInfo a
 ```
 
-This function wraps a `Parser` with some additional information
-such as a helper message, description, and more, so that the program
-itself and each sub command can print some additional information.
+이 함수는 주어진 `Parser`를 도움말, 설명과 같은 추가정보를 감싸, 프로그램과 각 서브 명령이 추가정보를 출력할 수 있도록 합니다.
 
-Let's see how to construct a `ParserInfo`:
+`ParserInfo`는 어떻게 만드는지 살펴보겠습니다:
 
 ```haskell
 pConvertSingleInfo :: ParserInfo Options
@@ -497,9 +484,9 @@ pConvertSingleInfo =
     (progDesc "Convert a single markup source to html")
 ```
 
-Note that `helper` adds a helper output screen in case the parser fails.
+`helper`는 파서가 실패할 때 출력할 도움말을 추가합니다.
 
-Let's also build a command:
+명령도 생성해봅시다:
 
 ```haskell
 pConvertSingleCommand :: Mod CommandFields Options
@@ -507,9 +494,9 @@ pConvertSingleCommand =
   command "convert" pConvertSingleInfo
 ```
 
-Try creating a `Parser Options` combining the two options with `subparser`.
+`subparser`를 사용하여 두 옵션을 결합해 `Parser Options`를 만들어보세요.
 
-<details><summary>Solution</summary>
+<details><summary>정답</summary>
 
 ```haskell
 pOptions :: Parser Options
@@ -534,8 +521,7 @@ pOptions =
 
 #### ParserInfo
 
-Since we finished building a parser, we should wrap it up in a `ParserInfo`
-and add some information to it to make it ready to run:
+이제 파서를 완성했으므로, `ParserInfo`로 감싸고 몇 가지 정보를 추가하여 실행할 준비가 되었습니다:
 
 ```haskell
 opts :: ParserInfo Options
@@ -547,21 +533,19 @@ opts =
     )
 ```
 
-### Running a parser
+### 파서 실행하기
 
-`optparse-applicative` provides a non-`IO` interface to parse arguments,
-but the most convenient way to use it is to let it take care of fetching
-program arguments, try to parse them, and throw errors and help messages in case
-it fails. This can be done with the function `execParser :: ParserInfo a -> IO a`.
+`optparse-applicative`는 인자를 파싱하는데 `IO`를 사용하지 않는 인터페이스를 제공합니다.
+하지만 가장 편리한 방법은 인자를 가져오고, 파싱을 시도하고, 실패하면 오류와 도움말 메시지를 출력하는 것을 `optparse-applicative`에 맡기는 것입니다.
+이는 `execParser :: ParserInfo a -> IO a` 함수로 수행할 수 있습니다.
 
-We can place all this options parsing stuff in a new module
-and then import it from `app/Main.hs`. Let's do that.
-Here's what we have up until now:
+새로운 모듈에 이러한 옵션을 파싱하는 코드를 작성하고, `app/Main.hs`에서 가져올 수 있습니다.
+다음은 지금까지 작업한 코드입니다:
 
 <details><summary>app/OptParse.hs</summary>
 
 ```haskell
--- | Command-line options parsing
+-- | 명령줄 옵션 파싱
 
 module OptParse
   ( Options(..)
@@ -575,21 +559,21 @@ import Data.Maybe (fromMaybe)
 import Options.Applicative
 
 ------------------------------------------------
--- * Our command-line options model
+-- * 명령줄 옵션 모델
 
--- | Model
+-- | 모델
 data Options
   = ConvertSingle SingleInput SingleOutput
   | ConvertDir FilePath FilePath
   deriving Show
 
--- | A single input source
+-- | 단일 입력 소스
 data SingleInput
   = Stdin
   | InputFile FilePath
   deriving Show
 
--- | A single output sink
+-- | 단일 출력 sink
 data SingleOutput
   = Stdout
   | OutputFile FilePath
@@ -598,7 +582,7 @@ data SingleOutput
 ------------------------------------------------
 -- * Parser
 
--- | Parse command-line options
+-- | 명령줄 옵션 파싱
 parse :: IO Options
 parse = execParser opts
 
@@ -610,7 +594,7 @@ opts =
       <> progDesc "Convert markup files or directories to html"
     )
 
--- | Parser for all options
+-- | 모든 옵션에 대한 파서
 pOptions :: Parser Options
 pOptions =
   subparser
@@ -629,24 +613,24 @@ pOptions =
     )
 
 ------------------------------------------------
--- * Single source to sink conversion parser
+-- * 단일 소스를 위한 파서
 
--- | Parser for single source to sink option
+-- | 단일 소스를 위한 옵션 파서
 pConvertSingle :: Parser Options
 pConvertSingle =
   ConvertSingle <$> pSingleInput <*> pSingleOutput
 
--- | Parser for single input source
+-- | 단일 입력 소스를 위한 파서
 pSingleInput :: Parser SingleInput
 pSingleInput =
   fromMaybe Stdin <$> optional pInputFile
 
--- | Parser for single output sink
+-- | 단일 출력 sink를 위한 파서
 pSingleOutput :: Parser SingleOutput
 pSingleOutput =
   fromMaybe Stdout <$> optional pOutputFile
 
--- | Input file parser
+-- | 입력 파일 파서
 pInputFile :: Parser SingleInput
 pInputFile = fmap InputFile parser
   where
@@ -658,7 +642,7 @@ pInputFile = fmap InputFile parser
           <> help "Input file"
         )
 
--- | Output file parser
+-- | 출력 파일 파서
 pOutputFile :: Parser SingleOutput
 pOutputFile = OutputFile <$> parser
   where
@@ -671,13 +655,13 @@ pOutputFile = OutputFile <$> parser
         )
 
 ------------------------------------------------
--- * Directory conversion parser
+-- * 디렉토리 변환 파서
 
 pConvertDir :: Parser Options
 pConvertDir =
   ConvertDir <$> pInputDir <*> pOutputDir
 
--- | Parser for input directory
+-- | 입력 디렉토리 파서
 pInputDir :: Parser FilePath
 pInputDir =
   strOption
@@ -687,7 +671,7 @@ pInputDir =
       <> help "Input directory"
     )
 
--- | Parser for output directory
+-- | 출력 디렉토리 파서
 pOutputDir :: Parser FilePath
 pOutputDir =
   strOption
@@ -700,13 +684,12 @@ pOutputDir =
 
 </details>
 
-### Pattern matching on Options
+### Options에 대한 패턴 매칭
 
-After running the command-line arguments parser, we can pattern match
-on our model and call the right functions. Currently, our program
-does not expose this kind of API. So let's go to our `src/HsBlog.hs`
-module and change the API. We can delete `main` from that file and
-add two new functions instead:
+명령줄 파서를 실행하고 나면, 모델에 대한 패턴 매칭을 통해 올바른 함수를 호출할 수 있습니다.
+현재 프로그램은 이러한 종류의 API를 노출하지 않습니다. 
+따라서 `src/HsBlog.hs` 모듈로 이동하고 API를 변경합니다.
+`main`을 삭제하고 대신 두 개의 새 함수를 추가할 수 있습니다:
 
 ```haskell
 convertSingle :: Html.Title -> Handle -> Handle -> IO ()
@@ -715,10 +698,9 @@ convertDirectory :: FilePath -> FilePath -> IO ()
 ```
 
 [`Handle`](https://hackage.haskell.org/package/base-4.16.4.0/docs/System-IO.html#t:Handle)
-is an I/O abstraction over file system objects, including `stdin` and `stdout`.
-Before, we used `writeFile` and `getContents` - these functions either
-get a `FilePath` to open and work on, or they assume the `Handle` is the standard I/O.
-We can use the explicit versions that take a `Handle` from `System.IO` instead:
+은 파일 시스템 객체에 대한 I/O 추상화입니다. `stdin`과 `stdout`를 포함합니다.
+이전에는 `writeFile`과 `getContents`를 사용했습니다. - 이 함수들은 `Handle`이 표준 I/O라고 가정하거나, `FilePath`를 열고 작업할 수 있습니다.
+이제는 `System.IO`에서 `Handle`을 가져오는 명시적인 버전을 사용할 수 있습니다:
 
 ```haskell
 convertSingle :: Html.Title -> Handle -> Handle -> IO ()
@@ -727,17 +709,16 @@ convertSingle title input output = do
   hPutStrLn output (process title content)
 ```
 
-We will leave `convertDirectory` unimplemented for now and implement it in the next chapter.
+지금은 `convertDirectory`의 구현은 남겨두고, 다음 장에서 구현하겠습니다.
 
-In `app/Main.hs`, we will need to pattern match on the `Options` and
-prepare to call the right functions from `HsBlog`.
+`app/Main.hs`에서 `Options`에 대한 패턴 매칭이 필요하며 `HsBlog`의 함수들을 호출해야 합니다.
 
-Let's look at our full `app/Main.hs` and `src/HsBlog.hs`:
+`app/Main.hs`와 `src/HsBlog.hs`의 전체 코드를 살펴보겠습니다:
 
 <details><summary>app/Main.hs</summary>
 
 ```haskell
--- | Entry point for the hs-blog-gen program
+-- | hs-blog-gen 프로그램의 진입점
 
 module Main where
 
@@ -830,13 +811,12 @@ process title = Html.render . convert title . Markup.parse
 
 </details>
 
-We need to make a few small changes to the `.cabal` file.
+`.cabal` 파일에 몇 가지 작은 수정이 필요합니다.
 
-First, we need to add the dependency `directory` to the `executable`,
-because we use the library `System.Directory` in `Main`.
+먼저, `executable` 섹션에 `directory` 의존성을 추가해야 합니다.
+왜냐하면 `Main`에서 `System.Directory` 라이브러리를 사용하기 때문입니다.
 
-Second, we need to list `OptParse` in the list of modules in
-the `executable`.
+다음으로, `OptParse` 모듈을 `executable` 섹션의 `other-modules`에 추가해야 합니다.
 
 ```diff
  executable hs-blog-gen
@@ -854,12 +834,11 @@ the `executable`.
      -O
 ```
 
-## Summary
+## 요약
 
-We've learned about a new fancy library called `optparse-applicative`
-and used it to create a fancier command-line interface in a declarative way.
-See the result of running `hs-blog-gen --help` (or the equivalent
-`cabal`/`stack` commands we discussed in the last chapter):
+지금까지 `optparse-applicative` 라이브러리에 대해 배웠습니다.
+이 라이브러리는 선언적인 방법으로 강력한 명령줄 인터페이스를 만드는 데 사용할 수 있습니다.
+`hs-blog-gen --help` (또는 이전 장에서 논의한 `cabal`/`stack` 명령어를 사용해서)를 실행해, 결과를 확인해 보세요:
 
 ```
 hs-blog-gen - a static blog generator
@@ -875,20 +854,19 @@ Available commands:
   convert-dir              Convert a directory of markup files to html
 ```
 
-Along the way we've learned two powerful new abstractions, `Functor`
-and `Applicative`, as well as revisited an abstraction
-called `Monoid`. With this library we've seen another example
-of the usefulness of these abstractions for constructing APIs and EDSLs.
+그동안 우리는 `Functor`와 `Applicative`이라는 두 가지 강력한 새로운 추상화를 배웠습니다.
+또한 `Monoid`라는 추상화를 다시 살펴보았습니다.
+이 라이브러리를 통해 이러한 추상화가 API와 DSL을 구축하는 데 얼마나 유용한지 알아보았습니다.
 
-We will continue to meet these abstractions in the rest of the book.
-
----
-
-**Bonus exercise**: Add another flag named `--replace` to indicate that
-if the output file or directory already exists, it's okay to replace them.
+우리는 이 책의 나머지 부분에서 이러한 추상화를 계속 만나게 될 것입니다.
 
 ---
 
-> You can view the git commit of
-> [the changes we've made](https://github.com/soupi/learn-haskell-blog-generator/commit/d0d76aad632fe3abd8701e44db5ba687e0c7ac96)
-> and the [code up until now](https://github.com/soupi/learn-haskell-blog-generator/tree/d0d76aad632fe3abd8701e44db5ba687e0c7ac96).
+
+**추가 연습문제**: 출력 파일이나 디렉토리가 이미 존재하는 경우에도 덮어써도 괜찮다는 것을 의미하는 `--replace` 플래그를 추가하세요.
+
+---
+
+> Git 커밋을 통해
+> [이번에 수정한 내역](https://github.com/soupi/learn-haskell-blog-generator/commit/d0d76aad632fe3abd8701e44db5ba687e0c7ac96)
+> 과 [현재까지 코드](https://github.com/soupi/learn-haskell-blog-generator/tree/d0d76aad632fe3abd8701e44db5ba687e0c7ac96) 를 확인할 수 있습니다.
