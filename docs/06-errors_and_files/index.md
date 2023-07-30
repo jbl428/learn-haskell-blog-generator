@@ -1,23 +1,22 @@
-# Handling errors and multiple files
+# 에러 처리와 여러 파일 다루기
 
-We have left an unimplemented function last chapter,
-and there are a few more things left for us to do to actually call our program a static blog generator.
-We still need to process multiple files in a directory and create an index landing page with links to other pages.
+이전 장에서 구현하지 않은 함수가 하나 남아 있습니다.
+그리고 우리의 프로그램을 정적 블로그 생성기라고 부르기 위해서는 아직 해야 할 일이 몇 가지 더 있습니다.
+디렉터리 안 여러 파일을 처리하고 다른 페이지로의 링크가 있는 인덱스 랜딩 페이지를 만들어야 합니다.
 
-## Links in HTML
+## HTML 링크
 
-Our HTML EDSL currently does not support links or other content modifiers such as bold and italics.
-We should add these so we can use them when creating an index.
+우리의 HTML EDSL은 아직 링크나 굵은 글씨, 이탤릭체 등의 기능을 지원하지 않습니다.
+이 기능들을 추가해서 인덱스를 만들 때 사용할 수 있도록 해야 합니다.
 
-Up until now we've passed `String` to `Structure` creating functions such as `p_`
-and `h_`. Instead, we could create and pass them a new type, `Content`, which
-can be regular text, links, images, and so on.
+지금까지는 `String`을 `Structure`에 전달해서 `p_`나 `h_`와 같은 함수를 만들었습니다.
+대신에 텍스트, 링크, 이미지 등을 의미하는 새로운 타입인 `Content`를 만들어서 이 타입을 전달하면 됩니다.
 
 ---
 
-**Exercise**: implement what we've just discussed. Follow the compiler errors and refactor what needs refactoring.
+**연습문제**: 방금 언급한 기능들을 추가해 보세요. 컴파일러 에러를 해결하고 필요하다면 리팩토링을 진행하세요.
 
-<details><summary>Solution</summary>
+<details><summary>정답</summary>
 
 <details><summary>src/Html/Internal.hs</summary>
 
@@ -219,27 +218,26 @@ convertStructure structure =
 
 ---
 
-> You can view the git commit of
-> [the changes we've made](https://github.com/soupi/learn-haskell-blog-generator/commit/110a19029f0be42eb2ac656f5d38356dbf9c5746)
-> and the [code up until now](https://github.com/soupi/learn-haskell-blog-generator/tree/110a19029f0be42eb2ac656f5d38356dbf9c5746).
+> Git 커밋을 통해
+> [이번에 수정한 내역](https://github.com/soupi/learn-haskell-blog-generator/commit/110a19029f0be42eb2ac656f5d38356dbf9c5746)
+> 과 [현재까지 코드](https://github.com/soupi/learn-haskell-blog-generator/tree/110a19029f0be42eb2ac656f5d38356dbf9c5746) 를 확인할 수 있습니다.
 
-## Creating an index page
+## 인덱스 페이지 만들기
 
-With our extended HTML EDSL, we can now create an index page with links to the other pages.
+이제 확장된 HTML EDSL을 사용해, 다른 페이지로의 링크가 있는 인덱스 페이지를 만들어 봅시다.
 
-To create an index page, we need a list of files with their _target destinations_,
-as well as their `Markup` (so we can extract information to include in our index page,
-such as the first heading and paragraph). Our output should be an `Html` page.
+인덱스 페이지를 만들기 위해 *타겟 경로*와 `마크업`(첫 제목과 문단을 가져와 인덱스 페이지에 사용하기 위한)을 가진 파일 목록이 필요합니다.
+출력은 `Html` 페이지여야 합니다.
 
 ---
 
-We need to implement the following function:
+다음과 같은 함수를 구현해보세요:
 
 ```haskell
 buildIndex :: [(FilePath, Markup.Document)] -> Html.Html
 ```
 
-<details><summary>Solution</summary>
+<details><summary>정답</summary>
 
 ```haskell
 buildIndex :: [(FilePath, Markup.Document)] -> Html.Html
@@ -270,22 +268,18 @@ buildIndex files =
 
 ---
 
-## Processing directories
+## 디렉터리 처리하기
 
-Our general strategy for processing whole directories is going to be:
+디렉터리를 처리하는 일반적인 전략은 다음과 같습니다:
 
-- Create the output directory
-- Grab all file names in a directory
-- Filter them according to their extension, we want to process `txt` file and
-  copy other files without modification
-- We want to parse each text file, build an index of the result,
-  convert the files to HTML, and write everything to the target directory
+- 출력 디렉터리를 만듭니다
+- 디렉터리의 모든 파일 이름을 가져옵니다
+- 확장자에 따라 필터링합니다, `txt` 파일을 처리하고 다른 파일은 수정 없이 복사합니다
+- 각 텍스트 파일을 파싱하고, 인덱스를 만들고, 파일을 HTML로 변환하고, 모든 것을 출력 디렉터리에 씁니다
 
-While our parsing function can't really fail, trying to read or write a file
-to the file-system can fail in several ways. It would be nice if our
-static blog generator was robust enough that it wouldn't fail completely if one
-single file gave it some trouble. This is a good opportunity to learn about
-error handling in Haskell, both in uneffectful code and for I/O code.
+파싱 함수는 실패할 가능성이 거의 없으나 파일 시스템에서 파일을 읽거나 쓰는 것은 다양한 원인으로 인해 실패할 수 있습니다.
+정적 블로그 생성기는 하나의 파일이 문제가 있어도 전체 과정이 실패하지는 않도록 동작하려고 합니다.
+이는 하스켈에서 에러 처리에 대해 배우기 좋은 기회입니다.
+부수 효과가 없는 코드와 I/O 코드에 대한 에러 처리 모두에 대해 배워보겠습니다.
 
-In the next few chapters we'll survey the landscape of error handling in Haskell
-before figuring out the right approach for our use case.
+다음 몇 장에 걸쳐 하스켈레어 에러 처리에 대한 전반적인 내용을 살펴보고, 우리의 경우에 적합한 접근 방식을 찾아보겠습니다.
