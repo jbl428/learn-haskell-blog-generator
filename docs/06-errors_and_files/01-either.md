@@ -1,9 +1,8 @@
-# Handling errors with Either
+# Either를 활용한 에러 처리
 
-There are quite a few ways to indicate and handle errors in Haskell.
-We are going to look at one solution: using the type
-[Either](https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Either.html).
-Either is defined like this:
+하스켈에서 에러를 표현하고 처리하는 방법은 여러가지가 있습니다.
+우리는 그 중 하나인 [Either](https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Either.html)를 살펴보려고 합니다.
+Either는 다음과 같이 정의되어 있습니다:
 
 ```haskell
 data Either a b
@@ -11,27 +10,22 @@ data Either a b
   | Right b
 ```
 
-Simply put, a value of type `Either a b` can contain either a value of type `a`,
-or a value of type `b`.
-We can tell them apart from the constructor used.
+간단하게 설명하면, `Either a b` 타입의 값은 `a` 타입의 값이거나 `b` 타입의 값이라고 할 수 있습니다.
+다음 생성자를 통해 어떤 타입의 값인지 구분할 수 있습니다:
 
 ```haskell
 Left True :: Either Bool b
 Right 'a' :: Either a Char
 ```
 
-With this type, we can use the
-`Left` constructor to indicate failure with some error value attached,
-and the `Right` constructor with one type to represent success with the
-expected result.
+이러한 타입을 사용하면, `Left` 생성자를 통해 에러 값과 함께 실패를 표현할 수 있고, `Right` 생성자를 통해 예상되는 결과과 함께 성공을 표현할 수 있습니다.
 
-Since `Either` is polymorphic, we can use any two types to represent
-failure and success. It is often useful to describe the failure modes
-using an ADT.
+`Either`는 다형적이기 때문에, 실패와 성공을 표현하는 데 두 타입 어느 것을 사용해도 상관없습니다.
+때론 실패 모드를 ADT로 표현하는 것이 유용할 때가 있습니다.
 
-For example, let's say that we want to parse a `Char` as a decimal digit
-to an `Int`. This operation could fail if the Character is not a digit.
-We can represent this error as a data type:
+예를 들어, `Char`를 숫자로 파싱하여 `Int`로 변환하려고 합시다.
+문자가 숫자가 아닐 경우 이 연산은 실패할 수 있습니다.
+이러한 실패를 표현하기 위해 다음과 같은 데이터 타입을 정의할 수 있습니다:
 
 ```haskell
 data ParseDigitError
@@ -39,14 +33,13 @@ data ParseDigitError
   deriving Show
 ```
 
-And our parsing function can have the type:
+그리고 파싱 함수는 다음과 같은 타입을 가질 수 있습니다:
 
 ```haskell
 parseDigit :: Char -> Either ParseDigitError Int
 ```
 
-Now when we implement our parsing function we can return `Left` on an error
-describing the problem, and `Right` with the parsed value on successful parsing:
+이제 파싱함수를 구현하여, 문제를 설명하는 에러를 `Left`에 담고, 파싱에 성공한 경우에는 `Right`에 담아 반환하면 됩니다:
 
 ```haskell
 parseDigit :: Char -> Either ParseDigitError Int
@@ -65,13 +58,9 @@ parseDigit c =
     _ -> Left (NotADigit c)
 ```
 
-`Either a` is also an instance of `Functor` and `Applicative`,
-so we have some combinators to work with if we want to combine these
-kind of computations.
+`Either`는 또한 `Functor`와 `Applicative` 인스턴스이기 때문에, 이러한 종류의 계산을 결합하려면 몇 가지 조합기를 사용할 수 있습니다.
 
-For example, if we had three characters and we wanted to try and parse
-each of them and then find the maximum between them, we could use the
-applicative interface:
+예를 들어, 세 개의 문자를 파싱하고 그 중 최대 값을 찾으려면 applicative 인터페이스를 사용할 수 있습니다:
 
 ```haskell
 max3chars :: Char -> Char -> Char -> Either ParseDigitError Int
@@ -82,11 +71,9 @@ max3chars x y z =
     <*> parseDigit z
 ```
 
-The `Functor` and `Applicative` interfaces of `Either a` allow us to
-apply functions to the payload values and **delay** the error handling to a
-later phase. Semantically, the first Either in order that returns a `Left`
-will be the return value. We can see how this works in the implementation
-of the applicative instance:
+`Either a`의 `Functor`와 `Applicative` 인터페이스는 함수를 페이로드 값에 적용하고 에러 처리를 **지연**할 수 있도록 해줍니다.
+의미적으로, `Left`를 반환하는 첫 번째 Either가 반환 값이 됩니다.
+Applicative 인스턴스의 구현에서 이것이 어떻게 작동하는지 살펴보겠습니다:
 
 ```haskell
 instance Applicative (Either e) where
@@ -95,25 +82,21 @@ instance Applicative (Either e) where
     Right f <*> r = fmap f r
 ```
 
-At some point, someone will actually want to **inspect** the result
-and see if we get an error (with the `Left` constructor) or the expected value
-(with the `Right` constructor) and they can do that by pattern matching the result.
+이후에 누군가는 실제로 결과를 **검사**하고 에러(Left 생성자)가 발생했는지, 예상한 값(Right 생성자)이 발생했는지 확인하고 싶을 것입니다.
+이를 위해 패턴 매칭을 통해 결과를 검사할 수 있습니다.
 
 ## Applicative + Traversable
 
-The `Applicative` interface of `Either` is very powerful, and can be combined
-with another abstraction called
-[`Traversable`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Traversable.html#g:1) -
-for data structures that can be traversed from left to right, like a linked list or a binary tree.
-With these, we can combine an unspecified amount of values such as `Either ParseDigitError Int`,
-as long as they are all in a data structure that implements `Traversable`.
+`Either`의 `Applicative` 인터페이스는 매우 강력하며, 다른 추상화인 [`Traversable`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Traversable.html#g:1)와 결합할 수 있습니다.
+- 연결 리스트나 이진 트리와 같이 왼쪽에서 오른쪽으로 순회할 수 있는 데이터 구조를 말합니다.
+이를 통해 `Traversable`를 구현하는 데이터 구조이기만 하면 임의의 개수의 `Either ParseDigitError Int`와 같은 값들을 결합할 수 있습니다.
 
-Let's see an example:
+예제를 살펴보겠습니다:
 
 ```haskell
 ghci> :t "1234567"
 "1234567" :: String
--- remember, a String is an alias for a list of Char
+-- String은 Char의 리스트에 대한 별칭인 것을 기억하세요.
 ghci> :info String
 type String :: *
 type String = [Char]
@@ -126,7 +109,7 @@ ghci> map parseDigit "1234567"
 
 ghci> :t sequenceA
 sequenceA :: (Traversable t, Applicative f) => t (f a) -> f (t a)
--- Substitute `t` with `[]`, and `f` with `Either Error` for a specialized version
+-- `t`를 `[]`로, `f`를 `Either Error`로 대체해서 생각해볼 수 있습니다.
 
 ghci> sequenceA (map parseDigit mystring)
 Right [1,2,3,4,5,6,7]
@@ -137,7 +120,7 @@ ghci> sequenceA (map parseDigit "1a2")
 Left (NotADigit 'a')
 ```
 
-The pattern of doing `map` and then `sequenceA` is another function called `traverse`:
+`map`과 `sequenceA`를 결합하는 대신 `traverse`를 사용할 수도 있습니다.
 
 ```haskell
 ghci> :t traverse
@@ -149,24 +132,22 @@ ghci> traverse parseDigit "1a2"
 Left (NotADigit 'a')
 ```
 
-We can use `traverse` on any two types where one implements the `Applicative`
-interface, like `Either a` or `IO`, and the other implements the `Traversable` interface,
-like `[]` (linked lists) and
+`Either a` 또는 `IO`처럼 `Applicative` 인터페이스를 구현한 타입과 `[]` 또는
 [`Map k`](https://hackage.haskell.org/package/containers-0.6.5.1/docs/Data-Map-Strict.html#t:Map)
-(also known as a dictionary in other languages - a mapping from keys to values).
-For example using `IO` and `Map`. Note that we can construct a `Map` data structure
-from a list of tuples using the
-[`fromList`](https://hackage.haskell.org/package/containers-0.6.5.1/docs/Data-Map-Strict.html#v:fromList)
-function - the first value in the tuple is the key, and the second is the type.
+(다른 언어에서는 딕셔너리라고도 함 - 키와 값의 매핑) 와 같이 `Traversable` 인터페이스를 구현한 어떠한 두 타입에 대해서도 `traverse`를 사용할 수 있습니다.
+
+예를 들어 `IO`와 `[]`를 결합할 수 있습니다.
+`Map` 데이터 구조는 [`fromList`](https://hackage.haskell.org/package/containers-0.6.5.1/docs/Data-Map-Strict.html#v:fromList) 함수를 사용하여 튜플의 리스트에서 생성할 수 있습니다.
+- 튜플의 첫 번째 값은 키이고 두 번째 값은 값입니다.
 
 ```haskell
-ghci> import qualified Data.Map as M -- from the containers package
+ghci> import qualified Data.Map as M -- 컨테이너 패키지에서 가져옵니다.
 
 ghci> file1 = ("output/file1.html", "input/file1.txt")
 ghci> file2 = ("output/file2.html", "input/file2.txt")
 ghci> file3 = ("output/file3.html", "input/file3.txt")
 ghci> files = M.fromList [file1, file2, file3]
-ghci> :t files :: M.Map FilePath FilePath -- FilePath is an alias of String
+ghci> :t files :: M.Map FilePath FilePath -- FilePath는 String의 별칭입니다.
 files :: M.Map FilePath FilePath :: M.Map FilePath FilePath
 
 ghci> readFiles = traverse readFile
@@ -179,69 +160,63 @@ ghci> :t readFiles files
 readFiles files :: IO (Map String String)
 ```
 
-Above, we created a function `readFiles` that will take a mapping from _output file path_
-to _input file path_ and returns an IO operation that when run will read the input files
-and replace their contents right there in the map! Surely this will be useful later.
+위 코드에서 `readFiles`라는 함수를 만들었습니다.
+이 함수는 *출력 파일 경로*를 *입력 파일 경로*로 매핑을 수행합니다.
+그리고 입력 파일을 읽어서 그 내용을 맵에 바로 쓰는 IO 연산을 반환합니다!
+나중에 유용하게 사용할 수 있을 것입니다.
 
-## Multiple errors
+## 에러가 여러 개인 경우
 
-Note, since `Either` has the kind `* -> * -> *` (it takes two type
-parameters) `Either` cannot be an instance of `Functor` or `Applicative`:
-instances of these type classes must have the
-kind `* -> *`.
-Remember that when we look at a type class function signature like:
+`Either`의 kind는 `* -> * -> *`(두 개의 타입 파라미터를 받습니다)이기 때문에 `Either`는 `Functor`나 `Applicative`의 인스턴스가 될 수 없습니다.
+이러한 타입 클래스의 인스턴스는 kind가 `* -> *`이어야 합니다.
+다음 타입 클래스 함수 시그니처를 살펴보면:
 
 ```haskell
 fmap :: Functor f => (a -> b) -> f a -> f b
 ```
 
-And we want to implement it for a specific type (in place of the `f`),
-we need to be able to _substitute_ the `f` with the target type. If we'd try
-to do it with `Either` we would get:
+그리고 특정한 타입에 대해 이를 구현하고 싶다면(`f`의 자리에), `f`를 대상 타입으로 *치환*할 수 있어야 합니다.
+`Either`를 사용하려고 하면 다음과 같은 시그니처를 얻을 수 있습니다:
 
 ```haskell
 fmap :: (a -> b) -> Either a -> Either b
 ```
 
-And neither `Either a` or `Either b` are _saturated_, so this won't type check.
-For the same reason if we'll try to substitute `f` with, say, `Int`, we'll get:
+`Either a`와 `Either b`는 둘 다 *구체화된 타입*이 아니기 때문에 이는 타입 오류가 발생합니다.
+같은 이유로 `f`를 `Int`로 치환하려고 하면 다음과 같은 시그니처를 얻을 수 있습니다:
 
 ```haskell
 fmap :: (a -> b) -> Int a -> Int b
 ```
 
-Which also doesn't make sense.
+이 또한 타입 오류가 발생합니다.
 
-While we can't use `Either`, we can use `Either e`, which has the kind
-`* -> *`. Now let's try substituting `f` with `Either e` in this signature:
+`Either`를 사용할 수 없지만, `Either e`의 kind는 `* -> *`이기 때문에 사용할 수 있습니다.
+다음 시그니처에서 `f`를 `Either e`로 치환해봅시다:
 
 ```haskell
 liftA2 :: Applicative => (a -> b -> c) -> f a -> f b -> f c
 ```
 
-And we'll get:
+다음과 같은 결과를 얻을 수 있습니다:
 
 ```haskell
 liftA2 :: (a -> b -> c) -> Either e a -> Either e b -> Either e c
 ```
 
-What this teaches us is that we can only use the applicative interface to
-combine two _`Either`s with the same type for the `Left` constructor_.
+이를 통해 알 수 있는 것은 _`Left` 생성자의 타입이 같은 두 개의 `Either`를 결합할 때만 applicative 인터페이스를 사용할 수 있다는 것_입니다.
 
-So what can we do if we have two functions that can return different errors?
-There are a few approaches, the most prominent ones are:
+그렇다면 두 개의 `Either`를 결합할 때 `Left` 생성자의 타입이 다르다면 어떻게 해야 할까요?
+몇 가지 방법이 있지만 가장 적법한 방법은 다음과 같습니다:
 
-1. Make them return the same error type. Write an ADT that holds all possible
-   error descriptions. This can work in some cases but isn't always ideal.
-   For example a user calling `parseDigit` shouldn't be forced to
-   handle a possible case that the input might be an empty string
-2. Use a specialized error type for each type, and when they are composed together,
-   map the error type of each function to a more general error type. This can
-   be done with the function
-   [`first`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Bifunctor.html#v:first)
-   from the `Bifunctor` type class
+1. 같은 에러 타입을 반환하도록 만듭니다. 모든 에러를 하나의 타입으로 통합하는 ADT를 작성합니다.
+   이는 일부 경우에는 작동하지만 항상 이상적인 것은 아닙니다.
+   예를 들어 `parseDigit`의 입력이 빈 문자열일 수 있는 경우를 사용자가 직접 처리하게 만들어서는 안 됩니다.
+2. 각 타입에 대해 특수한 에러 타입을 사용합니다. 그리고 이들을 결합할 때는 일반적인 에러 타입으로 매핑합니다.
+   이는 [`first`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Bifunctor.html#v:first) 함수를 사용하여 수행할 수 있습니다.
+   `first` 함수는 `Bifunctor` 타입 클래스에 정의되어 있습니다.
 
-## Monadic interface
+## 모나딕 인터페이스
 
 The applicative interface allows us to lift a function to work on multiple
 `Either` values (or other applicative functor instances such as `IO` and `Parser`).
