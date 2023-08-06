@@ -228,8 +228,7 @@ mapMaybe func maybeX =
     Just x -> Just (func x)
 ```
 
-이 `mapMaybe`는 법칙을 만족합니다. 이는 대수학을 통해 증명할 수 있습니다.
-- 만약 치환을 통해 등식의 한쪽에서 다른 쪽으로 도달할 수 있다면, 법칙은 성립합니다.
+이 `mapMaybe`는 법칙을 만족합니다. 이는 대수학을 통해 증명할 수 있습니다. - 만약 치환을 통해 등식의 한쪽에서 다른 쪽으로 도달할 수 있다면, 법칙은 성립합니다.
 
 Functor는 매우 중요한 타입클래스이며, 많은 타입이 이 인터페이스를 구현합니다.
 우리가 알고 있는 것처럼, `IO`, `Maybe`, `[]`, `Parser` 모두 `* -> *` kind를 가지며
@@ -309,7 +308,7 @@ class Functor f => Applicative f where
 `Parser`에 대해 `pure`를 사용하면, 파싱을 하지 않고도 특정 값을 반환하는 `Parser`를 만들 수 있습니다.
 
 `liftA2`와 `<*>`는 둘 다 서로를 활용해 구현할 수 있는 함수입니다.
-사실 `<*>`가 두 함수 중 더 유용합니다. 
+사실 `<*>`가 두 함수 중 더 유용합니다.
 왜냐하면 `fmap` (또는 중위 연산자 `<$>`)과 함께 사용하면 두 개 이상의 많은 인자를 가진 함수에도 적용할 수 있기 때문입니다.
 
 두 파서를 하나로 결합하기위해, `liftA2` 또는 `<$>`와 `<*>`의 조합을 사용할 수 있습니다:
@@ -438,7 +437,6 @@ pSingleOutput =
 `fromMaybe :: a -> Maybe a -> a`를 사용하여 `Maybe` 값을 `a`로 추출할 수 있습니다.
 이는 `Nothing`이 아닌 경우에는 `a`를 반환하고, `Nothing`인 경우에는 기본값을 반환합니다.
 
-
 이제 더 적절한 함수들을 사용해 `pConvertSingle`을 다시 작성할 수 있습니다:
 
 ```haskell
@@ -462,7 +460,7 @@ subparser :: Mod CommandFields a -> Parser a
 command :: String -> ParserInfo a -> Mod CommandFields a
 ```
 
-`subparser`는 *명령 수정자(command modifiers)* (이는 `command` 함수로 만들 수 있습니다)를 입력으로 받아 `Parser`를 생성합니다.
+`subparser`는 _명령 수정자(command modifiers)_ (이는 `command` 함수로 만들 수 있습니다)를 입력으로 받아 `Parser`를 생성합니다.
 `command`는 명령 이름("convert" 또는 "convert-dir")과 `ParserInfo a`를 입력으로 받아 명령 수정자를 생성합니다.
 이전에 보았던 것처럼 이러한 수정자들은 `Monoid` 인스턴스를 가지고 있으며, 여러 명령을 옵션으로 사용할 수 있도록 합칠 수 있습니다.
 
@@ -687,7 +685,7 @@ pOutputDir =
 ### Options에 대한 패턴 매칭
 
 명령줄 파서를 실행하고 나면, 모델에 대한 패턴 매칭을 통해 올바른 함수를 호출할 수 있습니다.
-현재 프로그램은 이러한 종류의 API를 노출하지 않습니다. 
+현재 프로그램은 이러한 종류의 API를 노출하지 않습니다.
 따라서 `src/HsBlog.hs` 모듈로 이동하고 API를 변경합니다.
 `main`을 삭제하고 대신 두 개의 새 함수를 추가할 수 있습니다:
 
@@ -861,7 +859,6 @@ Available commands:
 우리는 이 책의 나머지 부분에서 이러한 추상화를 계속 만나게 될 것입니다.
 
 ---
-
 
 **추가 연습문제**: 출력 파일이나 디렉토리가 이미 존재하는 경우에도 덮어써도 괜찮다는 것을 의미하는 `--replace` 플래그를 추가하세요.
 

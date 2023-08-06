@@ -87,8 +87,7 @@ instance Applicative (Either e) where
 
 ## Applicative + Traversable
 
-`Either`의 `Applicative` 인터페이스는 매우 강력하며, 다른 추상화인 [`Traversable`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Traversable.html#g:1)와 결합할 수 있습니다.
-- 연결 리스트나 이진 트리와 같이 왼쪽에서 오른쪽으로 순회할 수 있는 데이터 구조를 말합니다.
+`Either`의 `Applicative` 인터페이스는 매우 강력하며, 다른 추상화인 [`Traversable`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Data-Traversable.html#g:1)와 결합할 수 있습니다. - 연결 리스트나 이진 트리와 같이 왼쪽에서 오른쪽으로 순회할 수 있는 데이터 구조를 말합니다.
 이를 통해 `Traversable`를 구현하는 데이터 구조이기만 하면 임의의 개수의 `Either ParseDigitError Int`와 같은 값들을 결합할 수 있습니다.
 
 예제를 살펴보겠습니다:
@@ -137,8 +136,7 @@ Left (NotADigit 'a')
 (다른 언어에서는 딕셔너리라고도 함 - 키와 값의 매핑) 와 같이 `Traversable` 인터페이스를 구현한 어떠한 두 타입에 대해서도 `traverse`를 사용할 수 있습니다.
 
 예를 들어 `IO`와 `[]`를 결합할 수 있습니다.
-`Map` 데이터 구조는 [`fromList`](https://hackage.haskell.org/package/containers-0.6.5.1/docs/Data-Map-Strict.html#v:fromList) 함수를 사용하여 튜플의 리스트에서 생성할 수 있습니다.
-- 튜플의 첫 번째 값은 키이고 두 번째 값은 값입니다.
+`Map` 데이터 구조는 [`fromList`](https://hackage.haskell.org/package/containers-0.6.5.1/docs/Data-Map-Strict.html#v:fromList) 함수를 사용하여 튜플의 리스트에서 생성할 수 있습니다. - 튜플의 첫 번째 값은 키이고 두 번째 값은 값입니다.
 
 ```haskell
 ghci> import qualified Data.Map as M -- 컨테이너 패키지에서 가져옵니다.
@@ -204,7 +202,7 @@ liftA2 :: Applicative => (a -> b -> c) -> f a -> f b -> f c
 liftA2 :: (a -> b -> c) -> Either e a -> Either e b -> Either e c
 ```
 
-이를 통해 알 수 있는 것은 _`Left` 생성자의 타입이 같은 두 개의 `Either`를 결합할 때만 applicative 인터페이스를 사용할 수 있다는 것_입니다.
+이를 통해 알 수 있는 것은 *`Left` 생성자의 타입이 같은 두 개의 `Either`를 결합할 때만 applicative 인터페이스를 사용할 수 있다는 것*입니다.
 
 그렇다면 두 개의 `Either`를 결합할 때 `Left` 생성자의 타입이 다르다면 어떻게 해야 할까요?
 몇 가지 방법이 있지만 가장 적법한 방법은 다음과 같습니다:
@@ -390,7 +388,7 @@ monad에 대해서는 이 방식을 더 자주 사용합니다:
 > 우리는 이미 이러한 법칙을 가진 타입 클래스에 대해 논의했습니다.
 > 바로 `Monoid` 타입 클래스입니다.
 > 아마도 이것이 유명한 명언과 관련이 있을지도 모릅니다. - monad is just a monoid in the category of endofunctors.
- 
+
 ### Do 표기법
 
 [do 표기법](../05-glue/02-io.md#do-표기법)을 기억하시나요?

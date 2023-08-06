@@ -66,7 +66,6 @@ main =
 >    Using guards we can have multiple `if` branches and finally use the `else` branch
 >    by using `otherwise`. After each guard (`|`) there's a condition, after the condition there's
 >    a `=` and then the expression (the part after `then` in an `if` expression)
->
 > 2. LambdaCase as seen in `catch`, is just a syntactic sugar to save a few characters,
 >    instead of writing `\e -> case e of`, we can write `\case`. It requires enabling the
 >    `LambdaCase` extension
