@@ -218,14 +218,12 @@ liftA2 :: (a -> b -> c) -> Either e a -> Either e b -> Either e c
 
 ## 모나딕 인터페이스
 
-The applicative interface allows us to lift a function to work on multiple
-`Either` values (or other applicative functor instances such as `IO` and `Parser`).
-But more often than not, we'd like to use a value from one computation
-that might return an error in another computation that might return an error.
+Applicative 인터페이스를 사용하면 여러 개의 `Either` 값(또는 `IO`나 `Parser`와 같은 다른 applicative functor 인스턴스)을 처리할 수 있게 함수를 끌어올릴 수 있습니다.
+하지만 더 자주 사용하는 방법은 에러가 발생할 수 있는 한 계산결과를 에러가 발생할 수 있는 다른 계산에 사용하는 것입니다.
 
-For example, a compiler such has GHC operates in stages, such as lexical analysis,
-parsing, type-checking, and so on. Each stage depends on the output of the stage
-before it, and each stage might fail. We can write the types for these functions:
+예를 들어, 컴파일러는 어휘 분석, 파싱, 타입 체크, 코드 생성 등의 단계로 구성됩니다.
+각 단계는 이전 단계의 출력에 의존하며, 각 단계는 실패할 수 있습니다.
+각 단계에 대한 함수의 타입은 다음과 같습니다:
 
 ```haskell
 tokenize :: String -> Either Error [Token]
@@ -235,32 +233,29 @@ parse :: [Token] -> Either Error AST
 typecheck :: AST -> Either Error TypedAST
 ```
 
-We want to compose these functions so that they work in a chain. The output of `tokenize`
-goes to `parse`, and the output of `parse` goes to `typecheck`.
+이러한 함수를 합성해 체인으로 작동하도록 만들려고 합니다.
+즉 `tokenize`의 출력은 `parse`로, `parse`의 출력은 `typecheck`로 이동합니다.
 
-We know that we can lift a function over an `Either` (and other functors),
-we can also lift a function that returns an `Either`:
+우리는 특정 함수를 `Either`에 대해 동작하게 끌어올리는 방법을 이미 알고 있습니다.
+`Either`를 반환하는 함수 또한 끌어올릴 수 있습니다:
 
 ```haskell
--- reminder the type of fmap
+-- fmap 타입은 다음과 같습니다
 fmap :: Functor f => (a -> b) -> f a -> f b
--- specialized for `Either Error`
+-- `Either Error`로 치환하면
 fmap :: (a -> b) -> Either Error a -> Either Error b
 
--- here, `a` is [Token] and `b` is `Either Error AST`:
+-- 여기서 `a`는 [Token]이고 `b`는 `Either Error AST`입니다:
 
 > fmap parse (tokenize string) :: Either Error (Either Error AST)
 ```
 
-While this code compiles, it isn't great, because we are building
-layers of `Either Error` and we can't use this trick again with
-`typecheck`! `typecheck` expects an `AST`, but if we try to fmap it
-on `fmap parse (tokenize string)`, the `a` will be `Either Error AST`
-instead.
+위 코드는 컴파일에 성공하지만, 훌륭하지는 않습니다.
+왜냐하면 우리는 `Either Error`의 계층을 만들고 있고 `typecheck`에서 이 트릭을 다시 사용할 수 없기 때문입니다!
+`typecheck`는 `AST`를 기대하지만 `fmap parse (tokenize string)`에 대해 fmap을 시도하면 `a`는 `Either Error AST`가 됩니다.
 
-What we would really like is to flatten this structure instead of nesting it.
-If we look at the kind of values `Either Error (Either Error AST)` could have,
-it looks something like this:
+우리가 원하는 것은 이러한 계층을 중첩하는 것이 아니라 펼치는 것입니다.
+`Either Error (Either Error AST)`의 값이 가질 수 있는 종류를 살펴보면 다음과 같습니다:
 
 - `Left <error>`
 - `Right (Left error)`
@@ -268,9 +263,9 @@ it looks something like this:
 
 ---
 
-**Exercise**: What if we just used pattern matching for this instead? How would this look like?
+**연습문제**: 위 타입에 대해 패턴매칭을 수행하면 어떠한 코드가 나올까요?
 
-<details><summary>Solution</summary>
+<details><summary>정답</summary>
 
 ```haskell
 case tokenize string of
@@ -284,15 +279,14 @@ case tokenize string of
         typecheck ast
 ```
 
-If we run into an error in a stage, we return that error and stop. If we succeed, we
-use the value on the next stage.
+각 단계에서 에러가 발생하면 에러를 반환하고 중단합니다.
+성공하면 다음 단계에 대한 입력으로 사용합니다.
 
 </details>
 
 ---
 
-Flattening this structure for `Either` is very similar to that last part - the body
-of the `Right tokens` case:
+이러한 `Either`의 중첩을 펼치는 과정은 마지막 단계인 `Right tokens`일 때도 동일하게 수행됩니다.
 
 ```haskell
 flatten :: Either e (Either e a) -> Either e a
@@ -302,64 +296,60 @@ flatten e =
     Right x -> x
 ```
 
-Because we have this function, we can now use it on the output of
-`fmap parse (tokenize string) :: Either Error (Either Error AST)`
-from before:
+위와 같은 함수를 만들었다면, `fmap parse (tokenize string) :: Either Error (Either Error AST)`
+의 결과에 적용할 수 있습니다:
 
 ```
 > flatten (fmap parse (tokenize string)) :: Either Error AST
 ```
 
-And now we can use this function again to compose with `typecheck`:
+이제 `typecheck`와 합성하기 위해 다시 사용할 수 있습니다:
 
 ```haskell
 > flatten (fmap typecheck (flatten (fmap parse (tokenize string)))) :: Either Error TypedAST
 ```
 
-This `flatten` + `fmap` combination looks like a recurring pattern which
-we can combine into a function:
+이러한 `flatten` + `fmap' 조합은 반복되는 패턴이기에, 이를 함수로 결합할 수 있습니다:
 
 ```haskell
 flatMap :: (a -> Either e b) -> Either a -> Either b
 flatMap func val = flatten (fmap func val)
 ```
 
-And now we can write the code this way:
+이제 코드를 다음과 같이 작성할 수 있습니다:
 
 ```haskell
 > flatMap typecheck (flatMap parse (tokenize string)) :: Either Error TypedAST
 
--- Or using backticks syntax to convert the function to infix form:
+-- 또는 함수를 중위 표기법으로 변환하기 위해 backtick을 사용합니다:
 > typecheck `flatMap` parse `flatMap` tokenize string
 
--- Or create a custom infix operator: (=<<) = flatMap
+-- 또는 custom infix operator를 만듭니다: (=<<) = flatMap
 > typeCheck =<< parse =<< tokenize string
 ```
 
-This function, `flatten` (and `flatMap` as well), have different names in Haskell.
-They are called
+`flatten` (그리고 `flatMap`) 함수는 하스켈에서는 다른 이름으로 사용되며,
 [`join`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:join)
-and [`=<<`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:-61--60--60-)
-(pronounced "reverse bind"),
-and they are the essence of another incredibly useful abstraction in Haskell.
+과 [`=<<`](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:-61--60--60-)("reverse bind"로 발음)
+로 불립니다.
+이들은 하스켈에서 또 다른 매우 유용한 추상화의 핵심입니다.
 
-If we have a type that can implement:
+다음과 같은 항목을 구현한 타입이 있다면:
 
-1. The `Functor` interface, specifically the `fmap` function
-2. The `Applicative` interface, most importantly the `pure` function
-3. This `join` function
+1. `Functor` 인터페이스, 특히 `fmap` 함수
+2. `Applicative` 인터페이스, 특히 `pure` 함수
+3. `join` 함수
 
-They can implement an instance of the `Monad` type class.
+`Monad` 타입 클래스의 인스턴스를 구현할 수 있습니다.
 
-With functors, we were able to "lift" a function to work over the type implementing the functor type class:
+Functor를 통해 우리는 함수를 "끌어올려" functor 타입 클래스를 구현하는 타입 위에서 작동하도록 할 수 있었습니다:
 
 ```haskell
 fmap :: (a -> b) -> f a -> f b
 ```
 
-With applicative functors we were able to "lift" a function of multiple arguments
-over multiple values of a type implementing the applicative functor type class,
-and also lift a value into that type:
+Applicative functors를 통해 우리는 applicative functor 타입 클래스를 구현한 타입을 가진 여러 인자들을 가진 함수를 끌어올릴 수 있었습니다.
+또한 해당 타입으로 어떠한 값을 끌어올릴 수도 있었습니다:
 
 ```haskell
 pure :: a -> f a
@@ -367,46 +357,45 @@ pure :: a -> f a
 liftA2 :: (a -> b -> c) -> f a -> f b -> f c
 ```
 
-With monads we can now flatten (or, "join" in Haskell terminology) types that implement
-the `Monad` interface:
+이제 Monad를 통해 우리는 `Monad` 인터페이스를 구현한 타입들을 펼칠 수 (또는 하스켈 용어로 "join"할 수) 있습니다.
 
 ```haskell
 join :: m (m a) -> m a
 
--- this is =<< with the arguments reversed, pronounced "bind"
+-- =<< 의 인자를 반대로 뒤집은 것입니다. "bind"로 발음합니다.
 (>>=) :: m a -> (a -> m b) -> m b
 ```
 
-With `>>=` we can write our compilation pipeline from before in a left-to-right
-manner, which seems to be more popular for monads:
+`>>=`를 사용하면 예제로 소개한 컴파일 파이프라인을 왼쪽에서 오른쪽으로 작성할 수 있습니다.
+monad에 대해서는 이 방식을 더 자주 사용합니다:
 
 ```haskell
 > tokenize string >>= parse >>= typecheck
 ```
 
-We have already met this function before when we talked about `IO`. Yes,
-`IO` also implements the `Monad` interface. The monadic interface for `IO`
-helped us with creating a proper ordering of effects.
+사실 이 함수는 예전에 `IO`에 대해 소개할 때 이미 사용해 보았습니다.
+맞습니다. `IO` 또한 `Monad` 인터페이스를 구현합니다.
+`IO`의 모나드 인터페이스는 효과의 순서를 구성하는 데 도움이 됩니다.
 
-The essence of the `Monad` interface is the `join`/`>>=` functions, and as we've seen
-we can implement `>>=` in terms of `join`, we can also implement `join` in terms
-of `>>=` (try it!).
+`Monad` 인터페이스의 핵심은 `join`/`>>=` 함수이며, 우리가 `>>=`를 `join`으로 구현할 수 있었듯이,
+`join`을 `>>=`로 구현할 수도 있습니다 (한 번 시도해 보세요!).
 
-The monadic interface can mean very different things for different types. For `IO` this
-is ordering of effects, for `Either` it is early cutoff,
-for [`Logic`](https://hackage.haskell.org/package/logict-0.7.1.0) this means backtracking computation, etc.
+`Monad` 인터페이스는 타입에 따라 각각 다른 의미를 가질 수 있습니다.
+`IO`의 경우 효과의 순서를 의미하고, `Either`의 경우 조기 종료를 의미하며,
+[`Logic`](https://hackage.haskell.org/package/logict-0.7.1.0)에 대해서는 backtracking 계산을 의미합니다.
 
-Again, don't worry about analogies and metaphors, focus on the API and the
-[laws](https://wiki.haskell.org/Monad_laws).
+다시 말하지만, 이론과 비유에 신경쓰지 말고, API와 [법칙](https://wiki.haskell.org/Monad_laws)에 집중하세요.
 
-> Hey, did you check the monad laws? left identity, right identity and associativity? We've already
-> discussed a type class with exactly these laws - the `Monoid` type class. Maybe this is related
-> to the famous quote about monads being just monoids in something something...
+> 혹시 Monad 법칙을 확인해 보셨나요? 왼쪽 항등, 오른쪽 항등, 결합성에 대한 내용입니다.
+> 우리는 이미 이러한 법칙을 가진 타입 클래스에 대해 논의했습니다.
+> 바로 `Monoid` 타입 클래스입니다.
+> 아마도 이것이 유명한 명언과 관련이 있을지도 모릅니다. - monad is just a monoid in the category of endofunctors.
+ 
+### Do 표기법
 
-### Do notation?
-
-Remember the [do notation](../05-glue/02-io.md#do-notation)? Turns out it works for any type that is
-an instance of `Monad`. How cool is that? Instead of writing:
+[do 표기법](../05-glue/02-io.md#do-표기법)을 기억하시나요?
+이는 `Monad`의 인스턴스인 모든 타입에 대해 동작합니다.
+다음과 같은 코드를
 
 ```haskell
 pipeline :: String -> Either Error TypedAST
@@ -416,7 +405,7 @@ pipeline string =
       typecheck ast
 ```
 
-We can write:
+아래와 같이 작성할 수 있습니다:
 
 ```haskell
 pipeline :: String -> Either Error TypedAST
@@ -426,17 +415,17 @@ pipeline string = do
   typecheck ast
 ```
 
-And it will work! Still, in this particular case `tokenize string >>= parse >>= typecheck`
-is so concise it can only be beaten by using
+또한 `tokenize string >>= parse >>= typecheck`와 같이 특별한 경우에는
 [>=>](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:-62--61--62-)
-or
-[<=<](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:-60--61--60-):
+또는
+[<=<](https://hackage.haskell.org/package/base-4.16.4.0/docs/Control-Monad.html#v:-60--61--60-)
+를 사용하여 더 간결하게 작성할 수 있습니다:
 
 ```haskell
 (>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
 (<=<) :: Monad m => (b -> m c) -> (a -> m b) -> a -> m c
 
--- compare with function composition:
+-- 함수 합성과 비교해 보세요:
 (.) ::              (b ->   c) -> (a ->   b) -> a ->   c
 ```
 
@@ -444,31 +433,29 @@ or
 pipeline  = tokenize >=> parse >=> typecheck
 ```
 
-or
+또는
 
 ```haskell
 pipeline = typecheck <=< parse <=< tokenize
 ```
 
-Haskell's ability to create very concise code using abstractions is
-great once one is familiar with the abstractions. Knowing the monad abstraction,
-we are now already familiar with the core composition API of many libraries - for example:
+추상화를 통해 간결한 코드를 작성할 수 있는 하스켈의 능력은
+추상화에 익숙해지면 더욱 더 좋아집니다.
+Monad 추상화에 대해 알게 되면, 이미 많은 라이브러리들이 사용하는 핵심 조합 API를 빠르게 익힐 수 있습니다.
+예를 들면:
 
-- [Concurrent](https://hackage.haskell.org/package/stm)
-  and [asynchronous programming](https://hackage.haskell.org/package/async)
-- [Web programming](https://gilmi.me/blog/post/2020/12/05/scotty-bulletin-board)
-- [Testing](http://hspec.github.io/)
-- [Emulating stateful computation](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-State-Lazy.html#g:2)
-- [sharing environment between computations](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-Reader.html#g:2)
-- and many more.
+- [동시성](https://hackage.haskell.org/package/stm)과 [비동기 프로그래밍](https://hackage.haskell.org/package/async)
+- [웹 프로그래밍](https://gilmi.me/blog/post/2020/12/05/scotty-bulletin-board)
+- [테스팅](http://hspec.github.io/)
+- [상태 계산 모형](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-State-Lazy.html#g:2)
+- [계산간의 환경을 공유](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-Reader.html#g:2)
+- 그 외
 
-## Summary
+## 요약
 
-Using `Either` for error handling is useful for two reasons:
+에러 처리를 위해 `Either`를 사용하면 다음과 같은 이점이 있습니다:
 
-1. We encode possible errors using types, and we **force users to acknowledge and handle** them, thus
-   making our code more resilient to crashes and bad behaviours
-2. The `Functor`, `Applicative`, and `Monad` interfaces provide us with mechanisms for
-   **composing** functions that might fail (almost) effortlessly - reducing boilerplate while
-   maintaining strong guarantees about our code, and delaying the need to handle errors until
-   it is appropriate
+1. 타입을 통해 에러를 표현할 수 있습니다. 그리고 사용자가 이러한 **에러를 처리하도록 강제**할 수 있습니다.
+   이를 통해 코드는 더욱 견고해지고, 잘못된 동작을 방지할 수 있습니다.
+2. `Functor`, `Applicative`, `Monad` 인터페이스를 통해 실패할 수 있는 함수를 **조합**할 수 있습니다.
+   이를 통해 보일러 플레이트를 줄이고, 코드에 대한 강력한 보장을 유지하며, 에러를 처리하는 시점을 미룰 수 있습니다.
