@@ -62,26 +62,28 @@ main =
     )
 ```
 
-> 참고: 여기서 두 가지 새로운 것을 사용했습니다: guard와 `LambdaCase` 언어 확장입니다.
->
-> 1. `sayDiv2`에서 본 guard는 `if-then-else` 표현식의 더 나은 문법입니다.
->     guard를 사용하면 여러 `if` 분기를 가질 수 있고, 마지막으로 `otherwise`를 사용하여 `else` 분기를 사용할 수 있습니다.
->     각 guard(`|`) 뒤에는 조건이 있고, 조건 뒤에는 `=`가 있고, 그 다음에는 표현식이 있습니다. (`if` 표현식의 `then` 뒤에 있는 부분)
-> 2. `catch`에서 본 `LambdaCase`는 몇 개의 문자를 줄이기 위한 문법적 설탕일 뿐입니다.
->     `\e -> case e of` 대신에 `\case`를 사용할 수 있습니다.
->     이를 위해서는 `LambdaCase` 확장을 활성화해야 합니다.
->
->    #### 언어 확장
->
->    하스켈은 표준화된 언어입니다. 하지만 GHC는 언어에 *확장*을 제공합니다. - 하스켈 98 또는 2010 표준에서 다루지 않는 추가 기능을 말합니다. 
->    LambdaCase와 같은 문법 확장, 타입 체커에 대한 확장 등이 있습니다.
->
->    이러한 확장은 `{-# language <확장 이름> #-}` (`language` 부분은 대소문자 구분 없음)을 소스 파일의 맨 위에 추가하거나,
->    `.cabal 파일`의 [default-extensions](https://cabal.readthedocs.io/en/stable/cabal-package.html#pkg-field-default-extensions)
->    섹션에 지정하여 프로젝트 전체에 전역으로 설정할 수 있습니다.
->
->    언어 확장 목록은 [GHC 매뉴얼](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts.html)에서 찾을 수 있습니다.
->    찾아보는 것은 자유지만, 모든 확장을 기억하실 필요는 없습니다.
+:::note
+여기서 두 가지 새로운 것을 사용했습니다: guard와 `LambdaCase` 언어 확장입니다.
+
+1. `sayDiv2`에서 본 guard는 `if-then-else` 표현식의 더 나은 문법입니다.
+    guard를 사용하면 여러 `if` 분기를 가질 수 있고, 마지막으로 `otherwise`를 사용하여 `else` 분기를 사용할 수 있습니다.
+    각 guard(`|`) 뒤에는 조건이 있고, 조건 뒤에는 `=`가 있고, 그 다음에는 표현식이 있습니다. (`if` 표현식의 `then` 뒤에 있는 부분)
+2. `catch`에서 본 `LambdaCase`는 몇 개의 문자를 줄이기 위한 문법적 설탕일 뿐입니다.
+    `\e -> case e of` 대신에 `\case`를 사용할 수 있습니다.
+    이를 위해서는 `LambdaCase` 확장을 활성화해야 합니다.
+
+#### 언어 확장
+
+하스켈은 표준화된 언어입니다. 하지만 GHC는 언어에 *확장*을 제공합니다. - 하스켈 98 또는 2010 표준에서 다루지 않는 추가 기능을 말합니다. 
+LambdaCase와 같은 문법 확장, 타입 체커에 대한 확장 등이 있습니다.
+
+이러한 확장은 `{-# language <확장 이름> #-}` (`language` 부분은 대소문자 구분 없음)을 소스 파일의 맨 위에 추가하거나,
+`.cabal 파일`의 [default-extensions](https://cabal.readthedocs.io/en/stable/cabal-package.html#pkg-field-default-extensions)
+섹션에 지정하여 프로젝트 전체에 전역으로 설정할 수 있습니다.
+
+언어 확장 목록은 [GHC 매뉴얼](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts.html)에서 찾을 수 있습니다.
+찾아보는 것은 자유지만, 모든 확장을 기억하실 필요는 없습니다.
+:::
 
 물론 이 예제는 `Either`를 사용하고 '기능적 코어, 명령형 쉘'처럼 나누는 것이 훨씬 더 잘 작동합니다.
 어쨌든, 예제로서는 잘 작동합니다.

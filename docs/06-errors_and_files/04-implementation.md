@@ -1,30 +1,29 @@
-# Lets code already!
+# 코드를 작성해봅시다!
 
-This was a long info dump. Let's practice what we've learned. We want to:
+지금까지 많은 설명을 했습니다. 이제는 배운것을 활용해봅시다. 다음 작업을 할 것입니다.
 
-- Create the output directory
-- Grab all file names in a directory
-- Filter them according to their extension
-- Process .txt files
-- Copy other files without modification
-- Parse each text file, build an index of the result,
-  convert the files to HTML, and write everything to the target directory
+- 출력 디렉토리를 생성합니다.
+- 디렉토리의 모든 파일 이름을 가져옵니다.
+- 확장자에 따라 필터링합니다.
+- .txt 파일을 처리합니다.
+- 다른 파일은 수정하지 않고 복사합니다.
+- 각 텍스트 파일을 구문 분석하고 결과의 색인을 작성하고, 파일을 HTML로 변환하고, 모든 것을 대상 디렉토리에 생성합니다.
 
-> Note: I did not write this code immediately in the final form it was presented.
-> It was an iterative process of writing code, refactoring, splitting functions, changing
-> type signatures, and more. When solving a coding problem, start small and simple,
-> do the thing that works, and refactor it when it makes sense and makes the code clearer
-> and more modular. In Haskell we pride ourselves in our ability to refactor code and improve
-> it over time, and that principle holds when writing new software as well!
+:::note
+최종 형태로 제시된 코드는 한 번에 작성한게 아닙니다.
+코드 작성, 리팩터링, 함수 분할, 타입 시그니처 변경 등의 반복 과정이었습니다.
+코딩 문제를 해결할 때는 작고 간단한 것부터 시작하고, 작동하게 만들고, 코드가 더 명확하고 모듈화되도록 리팩터링하는 것이 좋습니다.
+하스켈에서는 우리가 코드를 리팩터링하고 시간이 지남에 따라 개선할 수 있는 능력에 자부심을 가지고 있으며, 새로운 소프트웨어를 작성할 때도 그 원칙이 유지됩니다!
+:::
 
-## New module
+## 새로운 모듈
 
-Let's create a new module, `HsBlog.Directory`, which will be responsible for handling
-directories and multiple files. From this module we will export the `convertDirectory`
-and `buildIndex` functions we've defined before:
+먼저 `HsBlog.Directory`라는 새로운 모듈을 만들겠습니다.
+이 모듈은 디렉터리와 여러 파일을 처리할 것입니다.
+이 모듈에서는 이전에 정의한 `convertDirectory`와 `buildIndex` 함수를 내보낼 것입니다.
 
 ```haskell
--- | Process multiple files and convert directories
+-- | 여러 파일을 처리하고 디렉토리를 변환합니다
 
 module HsBlog.Directory
   ( convertDirectory
@@ -33,14 +32,13 @@ module HsBlog.Directory
   where
 ```
 
-In this module we are going to use the
+이 모듈에서는 디렉터리, 파일 및 파일 경로를 조작하는 데 사용할
 [directory](https://hackage.haskell.org/package/directory-1.3.7.0/docs/System-Directory.html)
-and [filepath](https://hackage.haskell.org/package/filepath-1.4.2.1/docs/System-FilePath.html)
-libraries to manipulate directories, files and filepaths.
-We'll use the new abstractions we've learned, `Traversable` and `Monad`, and the concepts
-and types we've learned about: `Either`, `IO` and exceptions.
+와 [filepath](https://hackage.haskell.org/package/filepath-1.4.2.1/docs/System-FilePath.html)
+라이브러리를 사용합니다.
+우리가 배운 새로운 추상화인 `Traversable`와 `Monad`, 그리고 이전에 배운 개념과 타입인 `Either`, `IO` 및 예외를 사용할 것입니다.
 
-For all of that, we need quite a few imports:
+이를 위해, 꽤 많은 모듈이 필요합니다:
 
 ```haskell
 import qualified HsBlog.Markup as Markup
@@ -70,20 +68,17 @@ import System.Directory
   )
 ```
 
-If you are unsure what a specific function we're using does, look it up at
-[Hoogle](https://hoogle.haskell.org/),
-read the type signature and the documentation, and play around with it in `ghci`.
+이번에 사용할 각 함수들이 어떤 역할을 하는지 확실하지 않다면 [Hoogle](https://hoogle.haskell.org/)을 참고하세요.
+타입 시그니처와 문서를 읽고 `ghci`에서 실험해보세요.
 
-## Converting a directory
+## 디렉터리 변환하기
 
-We can start by describing the high-level function `convertDirectory` which
-encapsulates many smaller functions, each responsible for doing a specific thing.
-`convertDirectory` is quite imperative looking, and looks like a different way to
-describe the steps of completing our task:
+먼저 다른 작은 함수들을 캡술화한 고차 함수인 `convertDirectory`의 설명으로 시작하겠습니다.
+`convertDirectory`는 꽤 명령형적인 모습을 하고 있으며, 우리가 해야할 작업을 다른 방식으로 설명하는 것처럼 보입니다.
 
 ```haskell
--- | Copy files from one directory to another, converting '.txt' files to
---   '.html' files in the process. Recording unsuccessful reads and writes to stderr.
+-- | 특정 디렉터리의 파일을 다른 디렉터리로 복사하고, '.txt' 파일을 '.html' 파일로 변환합니다.
+-- 읽기나 쓰기에 실패한 경우 stderr에 기록합니다.
 --
 -- May throw an exception on output directory creation.
 convertDirectory :: FilePath -> FilePath -> IO ()
@@ -97,34 +92,33 @@ convertDirectory inputDir outputDir = do
   putStrLn "Done."
 ```
 
-Here we trust that each `IO` function handles errors responsibly,
-and terminates the project when necessary.
+여기서 우리는 각 `IO` 함수가 에러를 적절하게 처리하고, 필요할 때 프로젝트를 종료한다고 가정했습니다.
 
-Let's examine the steps in order.
+이제 단계별로 살펴보겠습니다.
 
 ### `getDirFilesAndContent`
 
 ```haskell
--- | The relevant directory content for our application
+-- | 애플리케이션에 필요한 디렉터리 내용
 data DirContents
   = DirContents
     { dcFilesToProcess :: [(FilePath, String)]
-      -- ^ File paths and their content
+      -- ^ 파일 경로와 그 내용
     , dcFilesToCopy :: [FilePath]
       -- ^ Other file paths, to be copied directly
+      -- ^ 다른 파일 경로, 직접 복사될 것
     }
 
--- | Returns the directory content
+-- | 디렉터리 내용을 반환합니다
 getDirFilesAndContent :: FilePath -> IO DirContents
 
 ```
 
-`getDirFilesAndContent` is responsible for providing the relevant files for processing --
-both the ones we need to convert to markup (and their textual content) and other files we
-might want to copy as-is (such as images and style-sheets):
+`getDirFilesAndContent`는 처리를 위한 연관도니 파일들을 제공하는 역할을 합니다. --
+마크업으로 변환해야 할 파일(그리고 그들의 텍스트 내용)과 이미지나 스타일시트와 같이 그대로 복사할 다른 파일들입니다.
 
 ```haskell
--- | Returns the directory content
+-- | 디렉터리 내용을 반환합니다
 getDirFilesAndContent :: FilePath -> IO DirContents
 getDirFilesAndContent inputDir = do
   files <- map (inputDir </>) <$> listDirectory inputDir
@@ -139,34 +133,33 @@ getDirFilesAndContent inputDir = do
     }
 ```
 
-This function does 4 important things:
+이 함수는 네 가지 중요한 일을 합니다:
 
-1. Lists all the files in the directory
-2. Splits the files into 2 groups according to their file extension
-3. Reads the contents of the .txt files and report when files fail to be read
-4. Returns the results. We've defined a data type to make the result content more obvious
+1. 디렉터리 내의 모든 파일을 나열합니다
+2. 파일들을 확장자에 따라 두 그룹으로 나눕니다
+3. `.txt` 파일의 내용을 읽고, 파일을 읽는 데 실패한 경우 보고합니다
+4. 결과를 반환합니다. 결과를 더 명확하게 하기 위해 데이터 타입을 정의했습니다.
 
-Part (3) is a little bit more involved than the rest, let's explore it.
+(3)번은 나머지보다 조금 더 복잡합니다. 이를 살펴보겠습니다.
 
 #### `applyIoOnList`
 
 ---
 
-`applyIoOnList` has the following type signature:
+`applyIoOnList`는 다음과 같은 타입 시그니처를 가집니다:
 
 ```haskell
 applyIoOnList :: (a -> IO b) -> [a] -> IO [(a, Either String b)]
 ```
 
-It tries to apply an `IO` function on a list of values, and document successes and failures.
+이 함수는 `IO` 함수를 특정 값들의 리스트에 적용하고, 성공과 실패를 기록합니다.
 
-Try to implement it! If you need a hint for which functions to use, see the import list
-we wrote earlier.
+한 번 구현해보세요! 어떤 함수를 사용해야 할지 힌트가 필요하다면, 이전에 작성한 가져오기 목록을 참고하세요.
 
-<details><summary>Answer</summary>
+<details><summary>정답</summary>
 
 ```haskell
--- | Try to apply an IO function on a list of values, document successes and failures
+-- | IO 함수를 값들의 리스트에 적용하고, 성공과 실패를 기록합니다
 applyIoOnList :: (a -> IO b) -> [a] -> IO [(a, Either String b)]
 applyIoOnList action inputs = do
   for inputs $ \input -> do
@@ -183,29 +176,22 @@ applyIoOnList action inputs = do
 
 ---
 
-`applyIoOnList` is a higher order function that applies a particular `IO` function
-(in our case `readFile`) on a list of things (in our case `FilePath`s).
-For each thing, it returns the thing itself along with the result of
-applying the `IO` function as an `Either`, where the `Left` side is a `String`
-representation of an error if one occurred.
+`applyIoOnList`는 특정 `IO` 함수를(이번 경우 `readFile`) 특정 값들의 리스트(이번 경우 `FilePath`)에 적용하는 고차 함수입니다.
+각 요소에 대해, 요소 그 자체와 `IO` 함수를 적용한 결과를 `Either`로 변환한 값을 함께 반환합니다.
+여기서 `Left` 타입은 `String`으로, 에러를 나타냅니다.
 
-Notice how much the type of this function tells us about what it might do.
-Because the types are polymorphic, there is nothing else to do with
-the `a`s other than apply them to the function, and nowhere to generate `b`
-from other than the result of the function.
+이 함수의 타입 만으로도 함수가 어떤 일을 할지에 대해 많은 것을 알 수 있습니다.
+타입이 다형적이기 때문에, `a`에 대해 할 수 있는 일은 함수에 적용하는 것 뿐이고, `b`를 생성할 수 있는 곳은 함수의 결과뿐입니다.
 
-> Note: when I first wrote this function, it was specialized to work only on `readFile`,
-> take specifically `[FilePath]` and return `IO [(FilePath, Either String String)]`.
-> But after running into other use cases where I could use it (`writeFiles` and `copyFiles`)
-> I refactored out the `action`, the input type and the return type.
+:::note
+이 함수를 처음 작성할 때는 `readFile`에만 특화되어 있었고, `[FilePath]`를 받아 `IO [(FilePath, Either String String)]`를 반환했습니다.
+하지만 추후에 다른 사용 사례를 만나게 되었고(`writeFiles`와 `copyFiles`), `action`, 입력 타입, 반환 타입을 분리했습니다.
+:::
 
-This function uses exceptions to catch any error that might be thrown, and encodes
-both the failure and success cases in the type system using `Either`, delaying
-the handling of exceptions to the function caller while making sure it won't
-be forgotten!
+이 함수는 에러를 처리하기 위해 예외를 사용하고, `Either`를 사용해 성공과 실패를 모두 타입 시스템에 표현합니다.
+이를 통해 예외 처리를 함수 호출자에게 미룸과 동시에 호출자가 예외 처리를 잊지 않도록 하였습니다!
 
-Next, let's look at the function that handles the errors by reporting and then filtering out
-all the cases that failed.
+다음에는, 에러를 보고하고 실패하는 모든 경우를 필터링하는 함수를 살펴보겠습니다.
 
 #### `filterAndReportFailures`
 
