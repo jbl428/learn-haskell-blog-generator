@@ -80,7 +80,7 @@ import System.Directory
 -- | 특정 디렉터리의 파일을 다른 디렉터리로 복사하고, '.txt' 파일을 '.html' 파일로 변환합니다.
 -- 읽기나 쓰기에 실패한 경우 stderr에 기록합니다.
 --
--- May throw an exception on output directory creation.
+-- 출력 디렉터리 생성중에 예외가 발생할 수 있습니다.
 convertDirectory :: FilePath -> FilePath -> IO ()
 convertDirectory inputDir outputDir = do
   DirContents filesToProcess filesToCopy <- getDirFilesAndContent inputDir
@@ -197,20 +197,20 @@ applyIoOnList action inputs = do
 
 ---
 
-`filterAndReportFailures` has the following type signature:
+`filterAndReportFailures`는 다음과 같은 타입 시그니처를 가집니다:
 
 ```haskell
 filterAndReportFailures :: [(a, Either String b)] -> IO [(a, b)]
 ```
 
-It filters out unsuccessful operations on files and reports errors to the stderr.
+파일에 대한 작업의 실패를 필터링하고, stderr에 에러를 보고합니다.
 
-Try to implement it!
+한 번 구현해보세요!
 
-<details><summary>Answer</summary>
+<details><summary>정답</summary>
 
 ```haskell
--- | Filter out unsuccessful operations on files and report errors to stderr.
+-- | 파일에 대한 작업의 실패를 필터링하고, stderr에 에러를 보고합니다.
 filterAndReportFailures :: [(a, Either String b)] -> IO [(a, b)]
 filterAndReportFailures =
   foldMap $ \(file, contentOrErr) ->
@@ -222,46 +222,38 @@ filterAndReportFailures =
         pure [(file, content)]
 ```
 
-This code may seem a bit surprising - how come we can use `foldMap` here? Reminder,
-the type of `foldMap` is:
+이 코드는 조금 놀라울 수 있습니다 - 어떻게 `foldMap`을 사용할 수 있을까요? 
+기억을 떠올려보면, `foldMap`의 타입은 다음과 같습니다:
 
 ```haskell
 foldMap :: (Foldable t, Monoid m) => (a -> m) -> t a -> m
 ```
 
-If we specialize this function for our use case, substituting the general type
-with the types we are using, we learn that `IO [(a, b)]` is a monoid.
-And indeed - `[a]` is a monoid for any `a` with `[]` (the empty list) as `mempty`
-and `++` as `<>`, but also `IO a` is a monoid for any `a` that is itself
-a monoid with `pure mempty` as `mempty` and `liftA2 (<>)` as `<>`!
+이 함수의 일반적인 타입을 이번 예제에서 사용한 타입으로 치환해서 생각해보면 `IO [(a, b)]`는 monoid라는 것을 알 수 있습니다. - `[a]`는 임의의 `a`에 대해 `[]`(빈 리스트)를 `mempty`로, `++`를 `<>`로 사용하는 monoid이며,
+`IO a`는 임의의 `a`가 monoid일 때 `pure mempty`를 `mempty`로, `liftA2 (<>)`를 `<>`로 사용하는 monoid입니다!
 
-Using these instances, we can `map` over the content, handle errors, and return
-an empty list to filter out a failed case, or a singleton list to keep the result.
-And the `fold` in `foldMap` will concatenate the resulting list where we return
-all of the successful cases!
-
-If you've written this in a different way that does the same thing, that's fine too!
-It's just nice to see how sometimes abstractions can be used to write concise code.
+만약 당신이 다른 방식으로 같은 동작을 하는 코드를 작성했다면, 그것도 괜찮습니다!
+때때로 추상화를 사용해 더 간결한 코드를 작성할 수 있다는 점만 기억하시면 됩니다.
 
 </details>
 
 ---
 
-These functions are responsible for fetching the right information. Next,
-let's look at the code for creating a new directory.
+이러한 함수들은 유효한 정보를 가져오는 데 사용됩니다.
+다음으로, 새 디렉토리를 만드는 코드를 살펴보겠습니다.
 
 ### `createOutputDirectoryOrExit`
 
 ```haskell
--- | Creates an output directory or terminates the program
+-- | 출력 디렉터리를 생성하고 실패하면 프로그램을 종료합니다.
 createOutputDirectoryOrExit :: FilePath -> IO ()
 createOutputDirectoryOrExit outputDir =
   whenIO
     (not <$> createOutputDirectory outputDir)
     (hPutStrLn stderr "Cancelled." *> exitFailure)
 
--- | Creates the output directory.
---   Returns whether the directory was created or not.
+-- | 출력 디렉터리를 생성합니다.
+--   디렉터리가 생성되었는지 여부를 반환합니다.
 createOutputDirectory :: FilePath -> IO Bool
 createOutputDirectory dir = do
   dirExists <- doesDirectoryExist dir
@@ -277,14 +269,12 @@ createOutputDirectory dir = do
   pure create
 ```
 
-`createOutputDirectoryOrExit` itself is not terribly exciting, it does
-what it is named -- it tries to create the output directory, and exits the
-program in case it didn't succeed.
+`createOutputDirectoryOrExit`는 이름 그대로의 일을 합니다 - 출력 디렉터리를 생성하고, 실패하면 프로그램을 종료합니다.
 
-`createOutputDirectory` is the function that actually does the heavy lifting.
-It checks if the directory already exists, and checks if the user would like to
-override it. If they do, we remove it and create the new directory; if they don't,
-we do nothing and report their decision.
+`createOutputDirectory`는 사실 꽤 많은 작업을 수행하는 함수입니다.
+디렉터리가 이미 존재하는지 확인하고, 사용자가 덮어쓰기를 원하는지 확인합니다.
+만약 덮어쓰기를 원한다면, 디렉터리를 삭제하고 새 디렉터리를 생성합니다.
+만약 덮어쓰기를 원하지 않는다면, 아무것도 하지 않고 사용자의 결정을 반환합니다.
 
 ### `txtsToRenderedHtml`
 
@@ -295,19 +285,18 @@ let
 
 ---
 
-In this part of the code we convert files to markup and change the
-input file paths to their respective output file paths (`.txt` -> `.html`).
-We then build the index page, and convert everything to HTML.
+이 코드에서는 파일을 마크업으로 변환하고, 입력 파일 경로를 해당 출력 파일 경로로 변경합니다(`.txt` -> `.html`).
+그리고 인덱스 페이지를 빌드하고, 모든 것을 HTML로 변환합니다.
 
-Implement `txtsToRenderedHtml`, which has the following type signature:
+다음 타입 시그니처를 가지는 `txtsToRenderedHtml` 함수를 구현해보세요:
 
 ```haskell
 txtsToRenderedHtml :: [(FilePath, String)] -> [(FilePath, String)]
 ```
 
-<details><summary>Hint</summary>
+<details><summary>힌트</summary>
 
-I implemented this by defining three functions:
+다음 세 가지 함수를 정의해서 구현할 수 있습니다:
 
 ```haskell
 txtsToRenderedHtml :: [(FilePath, String)] -> [(FilePath, String)]
@@ -319,12 +308,10 @@ convertFile :: (FilePath, Markup.Document) -> (FilePath, Html.Html)
 
 </details>
 
-.
-
-<details><summary>Answer</summary>
+<details><summary>정답</summary>
 
 ```haskell
--- | Convert text files to Markup, build an index, and render as html.
+-- | 텍스트 파일을 마크업으로 변환하고, 인덱스를 빌드하고, html로 렌더링합니다.
 txtsToRenderedHtml :: [(FilePath, String)] -> [(FilePath, String)]
 txtsToRenderedHtml txtFiles =
   let
@@ -341,21 +328,19 @@ convertFile :: (FilePath, Markup.Document) -> (FilePath, Html.Html)
 convertFile (file, doc) = (file, convert file doc)
 ```
 
-One possibly surprising thing about this code could be the `map (fmap Html.render)`
-part. We can use `fmap` on the tuple because it is a `Functor` on the second
-argument, just like `Either`!
+이 코드에서 흥미로울 점은 `map (fmap Html.render)` 부분입니다.
+튜플에 `fmap`을 사용할 수 있는 이유는, `Either`처럼 두 번째 인자에 대해 `Functor`이기 때문입니다.
 
 </details>
 
 ---
 
-### `copyFiles` and `writeFiles`
+### `copyFiles` 과 `writeFiles`
 
-The only thing left to do is to write the directory
-content, after the processing is completed, to the newly created directory:
+이제 남은 작업은 처리가 완료된 후 디렉터리 내용을 새로 생성된 디렉터리에 작성하는 것입니다:
 
 ```haskell
--- | Copy files to a directory, recording errors to stderr.
+-- | 디렉터리에 파일을 복사하고, 오류를 stderr에 기록합니다.
 copyFiles :: FilePath -> [FilePath] -> IO ()
 copyFiles outputDir files = do
   let
@@ -363,12 +348,11 @@ copyFiles outputDir files = do
   void $ applyIoOnList copyFromTo files >>= filterAndReportFailures
 ```
 
-Here we use `applyIoOnList` again to do something a bit more complicated,
-instead of reading from a file, it copies from the input path to a newly generated
-output path. Then we pass the result (which has the type `[(FilePath, Either String ())]`)
-to `filterAndReportFailures` to print the errors and filter out the unsuccessful copies.
-Because we are not really interested in the output of `filterAndReportFailures`,
-we discard it with `void`, returning `()` as a result instead:
+여기서 다시 한 번 `applyIoOnList`를 사용해서 더 복잡한 작업을 수행합니다.
+파일을 읽는 대신, 입력 경로에서 새로 생성된 출력 경로로 복사합니다.
+그리고 결과(`[(FilePath, Either String ())]` 타입)를 `filterAndReportFailures`에 전달해서 오류를 출력하고, 복사에 실패한 것들을 필터링합니다.
+`filterAndReportFailures`의 반환값에는 관심이 없기 때문에, `void`를 사용해서 버립니다.
+그리고 `()`를 반환합니다:
 
 ```haskell
 -- | Write files to a directory, recording errors to stderr.
@@ -380,34 +364,31 @@ writeFiles outputDir files = do
   void $ applyIoOnList writeFileContent files >>= filterAndReportFailures
 ```
 
-Once again, this code looks almost exactly like `copyFiles`, but the types are different.
-Haskell's combination of parametric polymorphism + type class for abstractions is really
-powerful, and has helped us reduce quite a bit of code.
+이 코드는 타입이 다르다는 점을 제외하면 `copyFiles`와 거의 동일합니다.
+하스켈의 매개변수 다형성과 추상화를 위한 타입 클래스의 조합은 정말 강력하고, 많은 코드를 줄일 수 있습니다.
 
 ---
 
-This pattern of using `applyIoOnList` and then `filterAndReportFailures`
-happens more than once. It might be a good candidate for refactoring. Try it!
-What do you think about the resulting code? Is it easier or more difficult to
-understand? Is it more modular or less? What are the pros and cons?
+`applyIoOnList`를 호출하고 이후에 `filterAndReportFailures`를 호출하는 패턴이 다시 한 번 나왔습니다.
+이는 리팩토링의 후보가 될 수 있습니다. 한 번 시도해보세요!
+작성한 코드에 대해 어떻게 생각하시나요? 이전보다 이해하기 쉽나요? 더 모듈화되었나요? 장단점은 무엇인가요?
 
 ---
 
-## Summary
+## 요약
 
-With that, we have completed our `HsBlog.Directory` module that is responsible for converting
-a directory safely. Note that the code could probably be simplified quite a bit if we
-were fine with errors crashing the entire program altogether, but sometimes this is
-the price we pay for robustness. It is up to you to choose what you can live with
-and what not, but I hope this saga has taught you how to approach error handling
-in Haskell in case you need to.
+이제 우리는 디렉터리를 안전하게 변환하는 역할을 하는 `HsBlog.Directory` 모듈을 완성했습니다.
+코드는 아마도 오류가 전체 프로그램을 충돌시키는 것을 허용한다면 훨씬 더 단순화될 수 있었을 것입니다.
+하지만 때때로 이는 견고함을 위해 지불해야 하는 대가입니다.
+어떤 것을 허용할 수 있는지, 그리고 어떤 것을 허용할 수 없는지 선택하는 것은 여러분에게 달렸습니다.
+지금까지의 여정이 하스켈에서 에러 처리를 어떻게 접근해야 하는지에 대해 배울 수 있었기를 바랍니다.
 
-View the full module:
+전체 모듈 코드:
 
 <details><summary>HsBlog.Directory</summary>
 
 ```haskell
--- | Process multiple files and convert directories
+-- | 여러 파일을 처리하고 디렉토리를 변환합니다
 
 module HsBlog.Directory
   ( convertDirectory
@@ -441,10 +422,10 @@ import System.Directory
   , copyFile
   )
 
--- | Copy files from one directory to another, converting '.txt' files to
---   '.html' files in the process. Recording unsuccessful reads and writes to stderr.
+-- | 특정 디렉터리의 파일을 다른 디렉터리로 복사하고, '.txt' 파일을 '.html' 파일로 변환합니다.
+-- 읽기나 쓰기에 실패한 경우 stderr에 기록합니다.
 --
--- May throw an exception on output directory creation.
+-- 출력 디렉터리 생성중에 예외가 발생할 수 있습니다.
 convertDirectory :: FilePath -> FilePath -> IO ()
 convertDirectory inputDir outputDir = do
   DirContents filesToProcess filesToCopy <- getDirFilesAndContent inputDir
@@ -456,9 +437,9 @@ convertDirectory inputDir outputDir = do
   putStrLn "Done."
 
 ------------------------------------
--- * Read directory content
+-- * 디렉터리 내용 읽기
 
--- | Returns the directory content
+-- | 디렉터리 내용을 반환합니다
 getDirFilesAndContent :: FilePath -> IO DirContents
 getDirFilesAndContent inputDir = do
   files <- map (inputDir </>) <$> listDirectory inputDir
@@ -472,7 +453,7 @@ getDirFilesAndContent inputDir = do
     , dcFilesToCopy = otherFiles
     }
 
--- | The relevant directory content for our application
+-- | 애플리케이션에 필요한 디렉터리 내용
 data DirContents
   = DirContents
     { dcFilesToProcess :: [(FilePath, String)]
@@ -482,7 +463,7 @@ data DirContents
     }
 
 ------------------------------------
--- * Build index page
+-- * 인덱스 페이지 생성
 
 buildIndex :: [(FilePath, Markup.Document)] -> Html.Html
 buildIndex files =
@@ -508,9 +489,9 @@ buildIndex files =
       )
 
 ------------------------------------
--- * Conversion
+-- * 변환
 
--- | Convert text files to Markup, build an index, and render as html.
+-- | 텍스트 파일을 마크업으로 변환하고, 인덱스를 빌드하고, html로 렌더링합니다.
 txtsToRenderedHtml :: [(FilePath, String)] -> [(FilePath, String)]
 txtsToRenderedHtml txtFiles =
   let
@@ -527,17 +508,17 @@ convertFile :: (FilePath, Markup.Document) -> (FilePath, Html.Html)
 convertFile (file, doc) = (file, convert file doc)
 
 ------------------------------------
--- * Output to directory
+-- * 디렉터리에 출력
 
--- | Creates an output directory or terminates the program
+-- | 출력 디렉터리를 생성하고 실패하면 프로그램을 종료합니다.
 createOutputDirectoryOrExit :: FilePath -> IO ()
 createOutputDirectoryOrExit outputDir =
   whenIO
     (not <$> createOutputDirectory outputDir)
     (hPutStrLn stderr "Cancelled." *> exitFailure)
 
--- | Creates the output directory.
---   Returns whether the directory was created or not.
+-- | 출력 디렉터리를 생성합니다.
+--   디렉터리가 생성되었는지 여부를 반환합니다.
 createOutputDirectory :: FilePath -> IO Bool
 createOutputDirectory dir = do
   dirExists <- doesDirectoryExist dir
@@ -552,7 +533,7 @@ createOutputDirectory dir = do
   when create (createDirectory dir)
   pure create
 
--- | Copy files to a directory, recording errors to stderr.
+-- | 디렉터리에 파일을 복사하고, 오류를 stderr에 기록합니다.
 copyFiles :: FilePath -> [FilePath] -> IO ()
 copyFiles outputDir files = do
   let
@@ -568,9 +549,9 @@ writeFiles outputDir files = do
   void $ applyIoOnList writeFileContent files >>= filterAndReportFailures
 
 ------------------------------------
--- * IO work and handling errors
+-- * IO 작업과 오류 처리
 
--- | Try to apply an IO function on a list of values, document successes and failures
+-- | IO 함수를 값들의 리스트에 적용하고, 성공과 실패를 기록합니다
 applyIoOnList :: (a -> IO b) -> [a] -> IO [(a, Either String b)]
 applyIoOnList action inputs = do
   for inputs $ \input -> do
@@ -582,7 +563,7 @@ applyIoOnList action inputs = do
         )
     pure (input, maybeResult)
 
--- | Filter out unsuccessful operations on files and report errors to stderr.
+-- | 파일에 대한 작업의 실패를 필터링하고, stderr에 에러를 보고합니다.
 filterAndReportFailures :: [(a, Either String b)] -> IO [(a, b)]
 filterAndReportFailures =
   foldMap $ \(file, contentOrErr) ->
@@ -594,7 +575,7 @@ filterAndReportFailures =
         pure [(file, content)]
 
 ------------------------------------
--- * Utilities
+-- * 유틸리티
 
 confirm :: String -> IO Bool
 confirm question = do
@@ -604,7 +585,7 @@ confirm question = do
     "y" -> pure True
     "n" -> pure False
     _ -> do
-      putStrLn "Invalid response. Use y or n."
+      putStrLn "잘못된 응답입니다. y 또는 n을 사용하세요."
       confirm question
 
 whenIO :: IO Bool -> IO () -> IO ()
