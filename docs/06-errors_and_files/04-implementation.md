@@ -222,7 +222,7 @@ filterAndReportFailures =
         pure [(file, content)]
 ```
 
-이 코드는 조금 놀라울 수 있습니다 - 어떻게 `foldMap`을 사용할 수 있을까요? 
+이 코드는 조금 놀라울 수 있습니다 - 어떻게 `foldMap`을 사용할 수 있을까요?
 기억을 떠올려보면, `foldMap`의 타입은 다음과 같습니다:
 
 ```haskell

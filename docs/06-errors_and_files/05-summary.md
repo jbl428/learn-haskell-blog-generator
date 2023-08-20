@@ -1,28 +1,26 @@
-# Summary
+# 요약
 
-This was quite a section. Let's recount the things we've learned.
+이번 장은 꽤 길었습니다. 배운 것들을 요약해보겠습니다.
 
-We discussed several ways to handle errors in Haskell:
+우리는 하스켈에서 에러를 다루는 몇 가지 방법을 다루었습니다.
 
-1. Encoding errors as a data type and using the `Either` type to encode "a value or an error".
-   Useful approach for uneffectful code
-2. Using `ExceptT` when we want to combine the approach in (1) on top on an existing
-   type with monadic capabilities
-3. Using exceptions for IO code
+1. 데이터 타입으로 에러를 표현하고 `Either` 타입을 사용해 "값 또는 에러"를 표현.
+   부수 효과가 없는 코드에 유용한 접근법입니다.
+2. `ExceptT`를 사용해 monadic 기능을 가진 타입 위에 (1)의 접근법을 조합.
+3. IO 코드에 대해 예외를 사용.
 
-We've also learned a few new abstractions and techniques:
+우리는 몇 가지 새로운 추상화와 기법도 배웠습니다.
 
-1. The `Traversable` type class, for data structures that can be traversed from left to right
-   such as linked lists, binary trees and `Map`s.
-   Pretty useful when combined with another applicative functor type like `Either` or `IO`
-2. The `Monad` type class extends the `Applicative` type class with the `join :: m (m a) -> m a`
-   function. We learned that `Either` implements this type class interface and so does `IO`
-3. The `MonadTrans` type class for _monad transformers_ for types that take other monads as inputs
-   and provide a monadic interface (`>>=`, do notation, etc.) while combining both their capabilities.
-   We saw how to stack an `Either`-like monad transformer, `ExceptT`, on top of `IO`
+1. `Traversable` 타입 클래스는 왼쪽에서 오른쪽으로 순회할 수 있는 자료 구조를 위한 것입니다.
+   링크드 리스트, 이진 트리, `Map`과 같은 것들이 있습니다.
+   `Either`나 `IO`와 같은 다른 applicative functor 타입과 조합하면 유용합니다.
+2. `Monad` 타입 클래스는 `Applicative` 타입 클래스를 `join :: m (m a) -> m a` 함수로 확장합니다.
+   `Either`가 이 타입 클래스 인터페이스를 구현한다는 것을 배웠고 `IO`도 마찬가지입니다.
+3. `MonadTrans` 타입 클래스는 *monad transformer*로 다른 모나드를 입력으로 받고 monadic 인터페이스(`>>=`, do 표기법 등)를 제공하면서 두 기능을 결합합니다.
+   `IO` 위에 `Either`와 비슷한 monad transformer인 `ExceptT`를 쌓는 방법을 배웠습니다.
 
-We are almost done. Only a couple more things left to do with this project. Let's go!
+거의 다 왔습니다. 이 프로젝트를 마무리 하기위해 몇 가지 남은 것들만 처리하면 됩니다.
 
-> You can view the git commit of
-> [the changes we've made](https://github.com/soupi/learn-haskell-blog-generator/commit/a08d148d981fa00cb7025f1b651d7b75084dd1ae)
-> and the [code up until now](https://github.com/soupi/learn-haskell-blog-generator/tree/a08d148d981fa00cb7025f1b651d7b75084dd1ae).
+> Git 커밋을 통해
+> [이번에 수정한 내역](https://github.com/soupi/learn-haskell-blog-generator/commit/a08d148d981fa00cb7025f1b651d7b75084dd1ae)
+> 과 [현재까지 코드](https://github.com/soupi/learn-haskell-blog-generator/tree/a08d148d981fa00cb7025f1b651d7b75084dd1ae) 를 확인할 수 있습니다.
