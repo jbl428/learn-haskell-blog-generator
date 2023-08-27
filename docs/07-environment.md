@@ -1,14 +1,11 @@
-# Passing environment variables
+# 환경 변수 전달하기
 
-We'd like to add some sort of an environment to keep general information on
-the blog for various processings, such as the blog name, stylesheet
-location, and so on.
+이번 장에서는 블로그 이름, 스타일시트 위치와 같은 블로그에 대한 일반적인 정보를 유지할 수 있는 환경을 추가하고자 합니다.
 
-## Environment
+## 환경
 
-We can represent our environment as a record data type and build it from user input.
-The user input can be from command-line arguments, a configuration file,
-or something else:
+환경은 레코드 데이터 타입으로 표현할 수 있으며 사용자 입력을 통해 구성할 수 있습니다.
+여기서 사용자 입력은 명령행 인자, 구성 파일 또는 그 외 다른 것들이 될 수 있습니다.
 
 ```haskell
 module HsBlog.Env where
@@ -24,16 +21,12 @@ defaultEnv :: Env
 defaultEnv = Env "My Blog" "style.css"
 ```
 
-After filling this record with the requested information, we can pass it as
-input to any function that might need it. This is a simple approach that can definitely
-work for small projects. But sometimes when the project gets bigger and many
-nested functions need the same information, threading the environment can get
-tedious.
+이러한 레코드를 요청받은 정보로 채운이후, 필요로 하는 함수의 입력으로 전달할 수 있습니다.
+이는 작은 프로젝트에서는 잘 동작하지만, 프로젝트가 커지고 많은 중첩된 함수들이 같은 정보를 필요로 할 때는 환경을 전달하는 것이 번거로울 수 있습니다.
 
-There is an alternative solution to threading the environment as input to functions,
-and that is using the
+함수의 입력으로 환경을 전달하는 대신, `mtl` (또는 `transformers`) 패키지에서 제공하는
 [`ReaderT`](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-Reader.html#g:2)
-type from the `mtl` (or `transformers`) package.
+타입을 사용할 수 있습니다.
 
 ### ReaderT
 
@@ -41,76 +34,66 @@ type from the `mtl` (or `transformers`) package.
 newtype ReaderT r m a = ReaderT (r -> m a)
 ```
 
-`ReaderT` is another _monad transformer_ like `ExceptT`, which means
-that it also has an instance of `Functor`, `Applicative`, `Monad` and `MonadTrans`.
+`ReaderT`는 `ExceptT`와 비슷한 _monad transformer_이며
+`Functor`, `Applicative`, `Monad` 그리고 `MonadTrans`의 인스턴스 또한 제공합니다.
 
-As we can see in the definition, `ReaderT` is _a newtype_ over a function that takes
-some value of type `r`, and returns a value of type `m a`. The `r` usually
-represents the environment we want to share between functions that we want to compose,
-and the `m a` represents the underlying result that we return.
-The `m` could be any type that implements `Monad` that we are familiar with.
-Usually it goes well with `IO` or `Identity`, depending on if we want to share
-an environment between effectful or uneffectful computations.
+정의에서 볼 수 있듯이, `ReaderT`는 `r` 타입의 값을 받아 `m a` 타입의 값을 반환하는 함수를 감싼 _newtype_ 입니다.
+`r`은 보통 우리가 합성하고자 하는 함수들 사이에서 공유하고자 하는 환경을 나타냅니다.
+그리고 `m a`는 우리가 반환하고자 하는 결과를 나타냅니다.
+`m`은 우리가 익숙한 `Monad`를 구현하는 어떤 타입이든 될 수 있습니다.
+보통 `IO` 또는 `Identity`와 잘 어울리는데, 환경을 효과가 있는 또는 효과가 없는 계산 사이에서 공유하고자 할 때에 따라 다릅니다.
 
-`ReaderT` _carries_ a value of type `r` and passes it around to
-other functions when we use the `Applicative` and `Monad` interfaces so that
-we don't have to pass the value around manually. And when we want to grab
-the `r` and use it, all we have to do is `ask`.
+`ReaderT`는 `r` 타입의 값을 _가지고 있고_ `Applicative`과 `Monad` 인터페이스를 사용할 때 다른 함수들에게 `r` 타입의 값을 전달합니다.
+따라서 직접 `r` 타입의 값을 전달하지 않아도 됩니다.
+필요한 경우 단순히 `ask`를 사용하면 됩니다.
 
-For our case, this means that instead of passing around `Env`, we can instead
-convert our functions to use `ReaderT` - those that are uneffectful and don't use
-`IO`, can return `ReaderT Env Identity a` instead of `a` (or the simplified version, `Reader Env a`),
-and those that are effectful can return `ReaderT Env IO a` instead of `IO a`.
+블로그의 경우 `Env`를 전달하는 대신 우리의 함수들을 `ReaderT`를 사용하게 변경할 수 있습니다.
+효과가 없고 `IO`를 사용하지 않으면 `a` 대신 `Reader Env a`를 반환하고 (또는 더 간단한 버전인 `Reader Env a`),
+효과가 있는 경우 `IO a` 대신 `ReaderT Env IO a`를 반환합니다.
 
-Note, as we've said before, `Functor`, `Applicative`, and `Monad` all expect the type
-that implements their interfaces to have the kind `* -> *`.
-This means that it is `ReaderT r m` which implements these interfaces,
-and when we compose functions with `<*>` or `>>=` we replace the `f` or `m`
-in their type signature with `ReaderT r m`.
+이전에 언급했듯이, `Functor`, `Applicative` 그리고 `Monad`는 이들의 인터페이스를 구현한 타입이 `* -> *` kind를 가져야합니다.
+이는 `ReaderT r m`이 이들의 인터페이스를 구현하고, 함수들을 `<*>` 또는 `>>=`로 합성할 때 `f` 또는 `m`을 타입 시그니처에서 `ReaderT r m`으로 대체한다는 것을 의미합니다.
 
-This means that, as with `Either e` when we had composed functions with the same error type,
-so it is with `ReaderT r m` - we have to compose functions with the same `r` type and same
-`m` type, we can't mix different environment types or different underlying `m` types.
+이는 `Either e`의 경우 같은 에러타입을 가진 함수끼리만 합성할 수 있었던 것과 비슷하게,
+`ReaderT r m`의 경우 같은 `r` 타입과 같은 `m` 타입을 가진 함수끼리만 합성할 수 있다는 것을 의미합니다.
 
-We're going to use a specialized version of `ReaderT` that uses a specific `m` = `Identity`
-called [`Reader`](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-Reader.html#g:2).
-The `Control.Monad.Reader` provides an alias: `Reader r a = ReaderT r Identity a`.
+우리는 `m`을 `Identity`로 하는 특수화된 `ReaderT`인
+[`Reader`](https://hackage.haskell.org/package/mtl-2.3.1/docs/Control-Monad-Reader.html#g:2)
+를 사용할 예정인디ㅏ.
+`Control.Monad.Reader`는 다음 alias를 제공합니다: `Reader r a = ReaderT r Identity a`.
 
-> If the idea behind `ReaderT` is still a bit fuzzy to you and you want
-> to get a better understanding of how `ReaderT` works,
-> try doing the following exercise:
+> 만약 `ReaderT`에 대한 개념이 아직 혼란스럽고 `ReaderT`가 어떻게 동작하는지 더 잘 이해하고 싶다면, 다음 연습문제를 풀어보세요:
 >
-> 1. Choose an `Applicative` or `Monad` interface function, I recommend `liftA2`,
->    and specialize its type signature by replacing `f` (or `m`) with a concrete `ReaderT` type such as
->    `ReaderT Int IO`
-> 2. Unpack the `ReaderT` newtype, replacing `ReaderT Int IO t` with `Int -> IO t`
-> 3. Implement this specialized version of the function you've chosen
+> 1. `Applicative` 또는 `Monad` 인터페이스 함수를 선택하세요. 개인적으로 `liftA2`를 추천합니다. 
+>     그리고 `f` (또는 `m`)를 `ReaderT` 타입인 `ReaderT Int IO`와 같은 구체적인 타입으로 대체하여 타입 시그니처를 특수화하세요.
+> 2. `ReaderT` newtype을 풀어 `ReaderT Int IO t`를 `Int -> IO t`로 대체하세요.
+> 3. 선택한 함수를 특수화된 타입에 대해 구현하세요.
 >
-> <details><summary>Solution for liftA2</summary>
+> <details><summary>liftA2에 대한 정답</summary>
 >
 > ```haskell
 > liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
 > ```
 >
-> <details><summary>Solution for (1)</summary>
+> <details><summary>(1)번 정답</summary>
 >
 > ```haskell
-> -- Specialize: replace `f` with `ReaderT Env IO`
+> -- 특수화: `f`를 `ReaderT Env IO`로 대체
 > liftA2 :: (a -> b -> c) -> ReaderT Env IO a -> ReaderT Env IO b -> ReaderT Env IO c
 > ```
 >
 > </details>
 >
-> <details><summary>Solution for (2)</summary>
+> <details><summary>(2)번 정답</summary>
 >
 > ```haskell
-> -- Unpack the newtype, replacing `ReaderT Env IO a` with `Env -> IO a`
+> -- newtype 해제, `ReaderT Env IO a`를 `Env -> IO a`로 대체
 > liftA2 :: (a -> b -> c) -> (Env -> IO a) -> (Env -> IO b) -> (Env -> IO c)
 > ```
 >
 > </details>
 >
-> <details><summary>Solution for (3)</summary>
+> <details><summary>(3)번 정답</summary>
 >
 > ```haskell
 > specialLiftA2 :: (a -> b -> c) -> (Env -> IO a) -> (Env -> IO b) -> (Env -> IO c)
@@ -118,11 +101,9 @@ The `Control.Monad.Reader` provides an alias: `Reader r a = ReaderT r Identity a
 >   liftA2 combine (funcA env) (funcB env)
 > ```
 >
-> Notice how the job of our special `liftA2` for `ReaderT` is to supply the
-> two functions with `env`, and then use the `liftA2`
-> implementation of the underlying `m` type (in our case `IO`) to do the rest of the work.
-> Does it look like we're adding a capability on top of a different `m`?
-> That's the idea behind monad transformers.
+> 이러한 `ReaderT`에 대한 `liftA2`의 역할은 두 함수에 `env`를 제공하고, 나머지 일은 기반 타입 `m` (우리의 경우 `IO`)의 `liftA2` 구현에 위임하는 것을 알 수 있습니다.
+> 이러한 형태는 다양한 `m`에 대해 기능을 추가하는 것처럼 보이지 않나요?
+> 이것이 바로 monad transformer의 아이디어입니다.
 >
 > </details>
 > </details>
