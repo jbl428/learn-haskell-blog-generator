@@ -34,7 +34,7 @@ defaultEnv = Env "My Blog" "style.css"
 newtype ReaderT r m a = ReaderT (r -> m a)
 ```
 
-`ReaderT`는 `ExceptT`와 비슷한 _monad transformer_이며
+`ReaderT`는 `ExceptT`와 비슷한 *monad transformer*이며
 `Functor`, `Applicative`, `Monad` 그리고 `MonadTrans`의 인스턴스 또한 제공합니다.
 
 정의에서 볼 수 있듯이, `ReaderT`는 `r` 타입의 값을 받아 `m a` 타입의 값을 반환하는 함수를 감싼 _newtype_ 입니다.
@@ -64,8 +64,8 @@ newtype ReaderT r m a = ReaderT (r -> m a)
 
 > 만약 `ReaderT`에 대한 개념이 아직 혼란스럽고 `ReaderT`가 어떻게 동작하는지 더 잘 이해하고 싶다면, 다음 연습문제를 풀어보세요:
 >
-> 1. `Applicative` 또는 `Monad` 인터페이스 함수를 선택하세요. 개인적으로 `liftA2`를 추천합니다. 
->     그리고 `f` (또는 `m`)를 `ReaderT` 타입인 `ReaderT Int IO`와 같은 구체적인 타입으로 대체하여 타입 시그니처를 특수화하세요.
+> 1. `Applicative` 또는 `Monad` 인터페이스 함수를 선택하세요. 개인적으로 `liftA2`를 추천합니다.
+>    그리고 `f` (또는 `m`)를 `ReaderT` 타입인 `ReaderT Int IO`와 같은 구체적인 타입으로 대체하여 타입 시그니처를 특수화하세요.
 > 2. `ReaderT` newtype을 풀어 `ReaderT Int IO t`를 `Int -> IO t`로 대체하세요.
 > 3. 선택한 함수를 특수화된 타입에 대해 구현하세요.
 >
@@ -108,25 +108,25 @@ newtype ReaderT r m a = ReaderT (r -> m a)
 > </details>
 > </details>
 
-### How to use Reader
+### Reader 사용법
 
-#### Defining a function
+#### 함수 정의하기
 
-Instead of defining a function like this:
+다음과 같은 함수를 정의하는 대신:
 
 ```haskell
 txtsToRenderedHtml :: Env -> [(FilePath, String)] -> [(FilePath, String)]
 ```
 
-We define it like this:
+다음과 같이 정의합니다:
 
 ```haskell
 txtsToRenderedHtml :: [(FilePath, String)] -> Reader Env [(FilePath, String)]
 ```
 
-Now that our code uses `Reader`, we have to accommodate that in the way we write our functions.
+이제 이 함수는 `Reader`를 사용하므로, 함수 구현부도 수정이 필요합니다.
 
-Before:
+변경 전:
 
 ```haskell
 txtsToRenderedHtml :: Env -> [(FilePath, String)] -> [(FilePath, String)]
@@ -139,9 +139,9 @@ txtsToRenderedHtml env txtFiles =
    map (fmap Html.render) (index : htmlPages)
 ```
 
-Note how we needed to thread the `env` to the other functions that use it.
+`env`를 다른 함수에게 어떻게 전달하는지 주의깊게 살펴보세요.
 
-After:
+변경 후:
 
 ```haskell
 txtsToRenderedHtml :: [(FilePath, String)] -> Reader Env [(FilePath, String)]
@@ -153,25 +153,23 @@ txtsToRenderedHtml txtFiles = do
   pure $ map (fmap Html.render) (index : htmlPages)
 ```
 
-Note how we use _do notation_ now, and _instead of threading_ `env` around we _compose_
-the relevant functions, `buildIndex` and `convertFile`, we use the type classes
-interfaces to compose the functions. Note how we needed to `fmap` over `buildIndex`
-to add the output file we needed with the tuple, and how we needed to use `traverse` instead
-of `map` to compose the various `Reader` values `convertFile` will produce.
+이제 *do 표기법*을 사용하고 있으며, `env`를 전달하지 않고도 `buildIndex`와 `convertFile`을 *합성*할 수 있습니다.
+함수를 합성하기 위해 타입 클래스 인터페이스를 사용하고 있습니다.
+`buildIndex`에 `fmap`을 사용해 출력 파일을 추가하고, `map` 대신 `traverse`를 사용해 `convertFile`이 생성할 수 있는 여러 `Reader` 값을 합성합니다.
 
-### Extracting `Env`
+#### `Env` 추출하기
 
-When we want to use our `Env`, we need to _extract_ it from the `Reader`.
-We can do it with:
+`Env`를 사용하려면 `Reader`에서 *추출*해야 합니다.
+다음 함수를 사용합니다:
 
 ```haskell
 ask :: ReaderT r m r
 ```
 
-Which yanks the `r` from the `Reader` - we can extract with `>>=` or `<-` in do notation.
-See the comparison:
+`ask`는 `Reader`에서 `r`을 꺼내오며 `>>=` 또는 `do` 표기법 안에서 `<-`을 사용해 추출할 수 있습니다.
+다음 코드를 비교해보세요:
 
-Before:
+변경 전:
 
 ```haskell
 convertFile :: Env -> (FilePath, Markup.Document) -> (FilePath, Html.Html)
@@ -179,7 +177,7 @@ convertFile env (file, doc) =
   (file, convert env (takeBaseName file) doc)
 ```
 
-After:
+변경 후:
 
 ```haskell
 convertFile :: (FilePath, Markup.Document) -> Reader Env (FilePath, Html.Html)
@@ -188,17 +186,18 @@ convertFile (file, doc) = do
   pure (file, convert env (takeBaseName file) doc)
 ```
 
-> Note: we didn't change `convert` to use `Reader` because it is a user facing API for our
-> library. By providing a simpler interface we allow more users to use our library -
-> even those that aren't yet familiar with monad transformers.
->
-> Providing a simple function argument passing interface is preferred in this case.
+:::note
+`Reader`를 사용하기 위해 `convert`를 수정하지 않았습니다.
+이는 `convert`가 라이브러리의 사용자에게 노출되는 API이기 때문입니다.
+더 간단한 인터페이스를 제공함으로써, monad transformer에 대해 아직 익숙하지 않은 사용자도 라이브러리를 사용할 수 있습니다.
 
-### Run a `Reader`
+함수 인자 전달 인터페이스는 간단하게 유지하는 것이 좋습니다.
+:::
 
-Similar to handling the errors with `Either`, at some point we need to supply the environment to
-a computation that uses `Reader`, and extract the result from the computation.
-We can do that with the functions `runReader` and `runReaderT`:
+### `Reader` 실행하기
+
+이전에 `Either`를 사용해 에러를 처리하는 것과 비슷하게, `Reader`를 사용하는 계산에 환경을 전달하고, 계산에서 결과를 추출해야 합니다.
+이를 위해 `runReader`와 `runReaderT` 함수를 사용합니다:
 
 ```haskell
 runReader :: Reader r a -> (r -> a)
@@ -206,8 +205,8 @@ runReader :: Reader r a -> (r -> a)
 runReaderT :: ReaderT r m a -> (r -> m a)
 ```
 
-These functions convert a `Reader` or `ReaderT` to a function that takes `r`.
-Then we can pass the initial environment to that function:
+이러한 함수는 `Reader` 또는 `ReaderT`를 `r`을 받는 함수로 변환합니다.
+그러면 이 함수에 초기 환경을 전달할 수 있습니다:
 
 ```haskell
 convertDirectory :: Env -> FilePath -> FilePath -> IO ()
@@ -221,18 +220,15 @@ convertDirectory env inputDir outputDir = do
   putStrLn "Done."
 ```
 
-See the `let outputHtmls`part.
+`let outputHtmls` 부분을 살펴보세요.
 
-### Extra: Transforming `Env` for a particular call
+### 추가: 특정 호출을 위해 `Env` 변환하기
 
-Sometimes we may want to modify the `Env` we pass to a particular function call.
-For example, we may have a general `Env` type that contains a lot of information, and
-functions that only need a part of that information.
+때로는 특정 함수 호출에 전달하는 `Env`를 수정해야 할 수도 있습니다.
+예를 들어, 많은 정보를 포함하는 일반적인 `Env` 타입이 있고, 그 중 일부 정보만 필요로 하는 함수 호출이 있을 수 있습니다.
 
-If the functions we are calling are like `convert` and take the environment as an
-argument instead of a `Reader`, we can just extract the environment
-with `ask`, apply a function to the extracted environment,
-and pass the result to the function, like this:
+만약 호출하는 함수가 `conver`와 비슷하고 `Reader`대신 환경을 인자로 받는다면,
+`ask`를 활용해 환경을 추출하고, 변환한 후 그 결과를 함수에 전달할 수 있습니다:
 
 ```haskell
 outer :: Reader BigEnv MyResult
@@ -247,9 +243,8 @@ extractSmallEnv :: BigEnv -> SmallEnv
 extractSmallEnv = ...
 ```
 
-But if `inner` uses a `Reader SmallEnv` instead of argument passing,
-we can use `runReader` to _convert `inner` to a normal function_,
-and use the same idea as above!
+하지만 만약 `inner`가 인자 전달 대신 `Reader SmallEnv`를 사용한다면,
+`runReader`를 사용해 *`inner`를 일반 함수로 변환*할 수 있으며 위와 같은 방식을 적용할 수 있습니다!
 
 ```haskell
 outer :: Reader BigEnv MyResult
@@ -265,19 +260,17 @@ extractSmallEnv :: BigEnv -> SmallEnv
 extractSmallEnv = ...
 ```
 
-This pattern is generalized and captured by a function called
-[withReaderT](https://hackage.haskell.org/package/transformers-0.6.0.2/docs/Control-Monad-Trans-Reader.html#v:withReaderT),
-and works even for `ReaderT`:
+이러한 패턴은 일반적이라서
+[withReaderT](https://hackage.haskell.org/package/transformers-0.6.0.2/docs/Control-Monad-Trans-Reader.html#v:withReaderT)
+라는 함수가 존재하며 이를 사용해 더 간단하게 표현할 수 있습니다:
 
 ```haskell
 withReaderT :: (env2 -> env1) -> ReaderT env1 m a -> ReaderT env2 m a
 ```
 
-`withReaderT` takes a function that modifies the environment,
-and converts a `ReaderT env1 m a` computation to a `ReaderT env2 m a` computation
-using this function.
+이 함수는 환경을 변환하는 함수를 받아 `ReaderT env1 m a` 계산을 `ReaderT env2 m a` 계산으로 변환합니다.
 
-Let's see it concretely with our example:
+이번 예제에 적용해보겠습니다:
 
 ```haskell
 outer :: Reader BigEnv MyResult
@@ -286,47 +279,45 @@ outer = withReaderT extractSmallEnv inner
 
 ---
 
-Question: what is the type of `withReaderT` when specialized in our case?
+문제: 이번 예제로 구체화하면 `withReaderT`의 타입은 어떻게 될까요?
 
-<details><summary>Answer</summary>
+<details><summary>정답</summary>
 
 ```haskell
 withReaderT
-  :: (BigEnv -> SmallEnv)     -- This is the type of `extractSmallEnv`
-  -> Reader SmallEnv MyResult -- This is the type of `inner`
-  -> Reader BigEnv   MyResult -- This is the type of `outer`
+  :: (BigEnv -> SmallEnv)     -- `extractSmallEnv` 타입과 동일합니다.
+  -> Reader SmallEnv MyResult -- `inner` 타입과 동일합니다.
+  -> Reader BigEnv   MyResult -- `outer` 타입과 동일합니다.
 ```
 
 </details>
 
 ---
 
-Note the order of the environments! We use a function from a `BigEnv` to a `SmallEnv`,
-to convert a `Reader` of `SmallEnv` to a `Reader` of `BigEnv`!
+각 환경의 순서에 주의하세요!
+`SmallEnv`의 `Reader`를 `BigEnv`의 `Reader`로 변환하기 위해서는, `BigEnv`를 `SmallEnv`로 변환하는 함수가 필요합니다!
 
-This is because we are mapping over the _input_ of a function rather than the _output_,
-and is related to topics like variance and covariance, but isn't terribly important
-for us at the moment.
+이러한 순서를 가지는 이유는 함수의 *출력*대신 *입력*에 대해 매핑을 수행하기 때문입니다.
+이는 공변(variance)과 반공변(covariance)에 대한 주제와 관련이 있지만, 지금 당장은 중요하지 않습니다.
 
-### Using `Env` in our logic code
+### 로직에서 `Env` 사용하기
 
-One thing we haven't talked about yet is using our environment in the `convert`
-function to generate the pages we want. And actually, we don't even have the ability to add
-stylesheets to our HTML EDSL at the moment! We need to go back and extend it. Let's do all
-that now:
+아직 다루지 못한 주제가 하나 있습니다.
+바로 `convert` 함수를 통해 원하는 페이지를 생성하는 방법입니다.
+사실 우리는 아직 스타일시트를 HTML EDSL에 추가하는 기능조차 존재하지 않습니다.
+이제 이 기능을 추가해보겠습니다:
 
 ---
 
-Since stylesheets go in the `head` element, perhaps it's a good idea to create an additional
-`newtype` like `Structure` for `head` information? Things like title, stylesheet,
-and even meta elements can be composed together just like we did for `Structure`
-to build the `head`!
+스타일시트는 `head` 요소에 들어가기 때문에, `head` 정보를 위한 `Structure`와 같은 추가적인 `newtype`을 만드는 것이 좋을 것 같습니다.
+제목, 스타일시트, 그리고 메타 요소와 같은 것들은 `Structure`를 만들면서 했던것과 같은 방식으로 조합할 수 있습니다!
 
-1. Do it now: extend our HTML library to include headings and add 3 functions:
-   `title_` for titles, `stylesheet_` for stylesheets, and `meta_` for meta elements
-   like [twitter cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards).
+1. 지금 당장 해보기: `head`를 위한 3 개의 함수를 구현해 HTML 라이브러리를 확장해보세요.
+   제목을 위한 `title_`, 스타일시트를 위한 `stylesheet_`, 그리고
+   [twitter cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
+   와 같은 메타 요소를 위한 `meta_`입니다.
 
-   <details><summary>Solution</summary>
+   <details><summary>정답</summary>
 
      <details><summary>src/HsBlog/Html.hs</summary>
 
@@ -404,10 +395,10 @@ to build the `head`!
 
    </details>
 
-2. Fix `convert` and `buildIndex` to use the new API. Note: `buildIndex` should return
-   `Reader`!
+2. `conver`와 `buildIndex`가 새로운 API를 사용하게 수정하세요.
+   `buildIndex`는 `Reader`를 반환해야 합니다!
 
-   <details><summary>Solution</summary>
+   <details><summary>정답</summary>
 
      <details><summary>src/HsBlog/Convert.hs</summary>
 
@@ -466,10 +457,10 @@ to build the `head`!
 
    </details>
 
-3. Create a command-line parser for `Env`, attach it to the `convert-dir` command,
-   and pass the result it to the `convertDirectory` function.
+3. `Env`를 위한 명령줄 파서를 만들어, `convert-dir`명령어에 연결하세요.
+   그리고 결과를 `convertDirectory` 함수에 전달하세요.
 
-<details><summary>Solution</summary>
+<details><summary>정답</summary>
 
 <details><summary>src/HsBlog.hs</summary>
 
@@ -557,25 +548,22 @@ main = do
 
 ---
 
-### Summary
+### 요약
 
-Which version do you like better? Manually passing arguments, or using `Reader`?
+직접 인자를 전달하는 방법과 `Reader`를 사용하는 방법 중 어떤것을 선호하시나요?
 
-To me, it is not clear that the second version with `Reader` is better than the first
-with explicit argument passing in our particular case.
+저는 상황에 따라 `Reader`를 사용하는 두 번째 방식이 직접 인자 전달하는 첫 번째 방식보다 더 좋다고 말할 수는 없다고 생각합니다.
 
-Using `Reader` and `ReaderT` makes our code a little less friendly toward beginners
-that are not yet familiar with these concepts and techniques, and we don't see
-(in this case) much benefit.
+`Reader`와 `ReaderT`를 사용하면 이러한 개념과 기술에 익숙하지 않은 사람에게는 불친절한 코드가 될 수 있습니다.
+이러한 상황에서는 큰 이점을 얻지 못할 것입니다.
 
-As programs grow larger, techniques like using `Reader` become more attractive to use.
-For our relatively small example, using `Reader` might not be appropriate.
-I've included it in this book because it is an important technique to have in our
-arsenal and I wanted to demonstrate it.
+프로그램이 커질수록 `Reader`를 사용하는 방법이 더 유용해집니다.
+우리의 비교적 작은 예제에서는 `Reader`를 사용하는 것이 적합하지 않을 수도 있습니다.
+하지만 `Reader`는 익혀야 할 중요한 기술이라고 생각하기에 이 책에 포함했습니다.
 
-It is important to weigh the benefits and costs of using advanced techniques,
-and it's often better to try and get away with simpler techniques if we can.
+고급 기술을 사용했을 때의 이점과 비용을 고려하는 것은 중요합니다.
+그리고 때로는 할 수 있다면, 더 간단한 방법을 사용하는 것이 좋습니다.
 
-> You can view the git commit of
-> [the changes we've made](https://github.com/soupi/learn-haskell-blog-generator/commit/f9fe7179fcf0e6c818f6caa860b52e991432dab2)
-> and the [code up until now](https://github.com/soupi/learn-haskell-blog-generator/tree/f9fe7179fcf0e6c818f6caa860b52e991432dab2).
+> Git 커밋을 통해
+> [이번에 수정한 내역](https://github.com/soupi/learn-haskell-blog-generator/commit/f9fe7179fcf0e6c818f6caa860b52e991432dab2)
+> 과 [현재까지 코드](https://github.com/soupi/learn-haskell-blog-generator/tree/f9fe7179fcf0e6c818f6caa860b52e991432dab2) 를 확인할 수 있습니다.
