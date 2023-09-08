@@ -1,21 +1,17 @@
-# Generating documentation
+# 문서 생성하기
 
-There are [many ways](https://documentation.divio.com/)
-to help others to get started with our projects and libraries.
-For example, we can write tutorials, provide runnable examples,
-describe the internals of the system, and create an API reference.
+사용자에게 우리의 프로젝트와 라이브러리를 쉽게 도입할 수 있도록 도와주는 [다양한 방법](https://documentation.divio.com/)이 있습니다.
+예를 들어, 튜토리얼을 작성하거나 실행 가능한 예제를 제공하거나 시스템의 내부를 설명하거나 API 문서를 만들 수 있습니다.
 
-In this chapter we will focus on generating API reference pages (the kind that can be seen on Hackage)
-from annotated Haskell source code using [Haddock](https://www.haskell.org/haddock).
+이번 장에서는 [Haddock](http://www.haskell.org/haddock/)을 사용하여 주석이 달린 Haskell 소스 코드를 통해 (Hackage에서 볼 수 있는) API 문서를 생성하는 방법을 살펴보겠습니다.
 
-## Running Haddock
+## Haddock 실행하기
 
-We can generate API reference pages (a.k.a. haddocks in the Haskell world) for our project
-using our favorite package manager:
+선호하는 패키지 관리자를 사용하여 (Haskell 세계에서는 haddock로 알려진) 프로젝트의 API 문서 를 생성할 수 있습니다.
 
 ### Cabal
 
-We can run `cabal haddock` to generate haddocks:
+`cabal haddock`을 실행하여 haddock을 생성할 수 있습니다.
 
 ```sh
 ➜ cabal haddock
@@ -41,7 +37,7 @@ Documentation created:
 /tmp/learn-haskell-blog-generator/dist-newstyle/build/x86_64-linux/ghc-9.0.1/hs-blog-0.1.0.0/doc/html/hs-blog/index.html
 ```
 
-Cabal and Haddock will build our project and generate HTML pages for us at:
+Cabal과 Haddock은 프로젝트를 빌드하고 HTML 페이지를 생성합니다.
 
 ```html
 ./dist-newstyle/build/<platform
@@ -53,11 +49,11 @@ Cabal and Haddock will build our project and generate HTML pages for us at:
 >
 ```
 
-We can then open the `index.html` file from that directory in a web browser and view our package documentation.
+이후 웹 브라우저에서 해당 디렉토리의 `index.html` 파일을 열어 패키지 문서를 볼 수 있습니다.
 
 ### Stack
 
-We can run `stack haddock` to generate haddocks:
+`stack haddock`을 실행하여 haddock을 생성할 수 있습니다.
 
 ```sh
 ➜ stack haddock
@@ -89,7 +85,7 @@ Preprocessing executable 'hs-blog-gen' for hs-blog-0.1.0.0..
 ...
 ```
 
-Stack and Haddock will build our project and generate HTML pages for us at:
+Stack과 Haddock은 프로젝트를 빌드하고 HTML 페이지를 생성합니다.
 
 ```html
 ./.stack-work/dist/<platform
@@ -97,14 +93,14 @@ Stack and Haddock will build our project and generate HTML pages for us at:
 >
 ```
 
-We can then open the `index.html` file from that directory in a web browser and view our package documentation.
+이후 웹 브라우저에서 해당 디렉토리의 `index.html` 파일을 열어 패키지 문서를 볼 수 있습니다.
 
-### Haddock coverage
+### Haddock 커버리지
 
-Haddock will also output a coverage report when run, and will mention user-exposed constructs which are missing
-documentation. These constructs could be module headers, types, data constructors, type classes, functions, values, etc.
+Haddock은 실행하면 커버리지 보고서를 출력하고 사용자에게 공개되었지만 문서가 없는 항목들을 보여줍니다.
+이러한 항목들은 모듈 헤더, 타입, 데이터 생성자, 타입 클래스, 함수, 값 등이 될 수 있습니다.
 
-For example:
+예를 들어:
 
 ```haskell
 Haddock coverage:
@@ -120,95 +116,85 @@ Haddock coverage:
 ...
 ```
 
-We can see that we did not document the `HsBlog.Convert` at all, and we are missing
-documentation for the module header, the `convert` function and the `convertStructure` function.
+우리는 `HsBlog.Convert`를 전혀 문서화하지 않았고, 모듈 헤더, `convert` 함수, `convertStructure` 함수에 대한 문서가 없다는 사실을 알 수 있습니다.
 
-On the other hand, it seems that we do currently have some documentation written for the `HsBlog.Directory`
-module! We'll see why, but first - try to generate haddocks, see the module hierarchy, browse around
-the different modules, follow the links of the types, imagine what this API reference could look like,
-and let's see how we can improve it.
+반면에 `HsBlog.Directory` 모듈에는 일부 문서가 있다는 것을 알 수 있습니다!
+왜 그런지는 이후에 다루겠습니다.
+그전에 우선 haddock을 생성해보고 모듈 계층 구조를 살펴보고, 다른 모듈을 둘러보고, 타입의 링크를 따라가고, API 문서의 형태를 상상해보고, 어떻게 개선할 수 있는지 살펴보겠습니다.
 
-## Haddock markup
+## Haddock 마크업
 
-Haddock builds the API reference pages by building our project, examining the exported modules
-and their exported definitions, and grabbing source code comments written in special markup format.
+Haddock은 프로젝트를 빌드하고, 내보낸 모듈과 내보낸 정의를 추적하고, 특별한 마크업 형식으로 작성된 소스 코드 주석을 통해 API 문서를 생성합니다.
 
-Let's take a quick look at this markup format. We will go over a few important bits,
-but if you'd like to learn more, a complete guide for Haddock markup can be found in the
-[Haddock documentation](https://haskell-haddock.readthedocs.io/en/latest/markup.html).
+마크업 형식에 대해 살펴보겠습니다.
+몇 가지 중요한 부분을 다루겠지만, Haddock 마크업에 대한 전체 가이드는 [Haddock 문서](https://haskell-haddock.readthedocs.io/en/latest/markup.html)에서 확인할 수 있습니다.
 
-### Documenting definitions
+### 정의 문서화하기
 
-All haddock annotations appear as part of regular Haskell comments.
-They can be used with both single line form (`--`) and multi-line form (`{-` and `-}`).
-The placement of a comment block and the haddock marker determine to which Haskell
-definition the haddock string is attached.
+모든 haddock 주석은 일반적인 Haskell 주석의 일부로 표현됩니다.
+단일 라인 형식 (`--`)과 다중 라인 형식 (`{-` 및 `-}`) 모두 사용할 수 있습니다.
+주석 블록과 haddock 마커의 배치는 haddock 문자열이 어떤 하스켈 정의에 연결되는지를 결정합니다.
 
-We can annotate a Haskell definition by writing a comment block prefixed with `|` _before_
-the definition, or by writing a comment block prefixed with `^` _after_ the definition.
+하스켈 정의에 대한 주석을 작성하려면 _정의 이전_에 `|`로 시작하는 주석 블록을 작성하거나, _정의 이후_에 `^`로 시작하는 주석 블록을 작성하면 됩니다.
 
-For example:
+예를 들어:
 
 ```haskell
--- | Construct an HTML page from a `Head`
---   and a `Structure`.
+-- | `Head`와 `Structure`를 통해
+--    HTML 페이지를 생성합니다.
 html_
-  :: Head -- ^ Represents the @\<head\>@ section in an HTML file
-  -> Structure -- ^ Represents the @\<body\>@ section in an HTML file
+  :: Head -- ^ HTML 파일의 @\<head\>@ 섹션을 나타냅니다.
+  -> Structure -- ^ HTML 파일의 @\<body\>@ 섹션을 나타냅니다.
   -> Html
 html_ = ...
 ...
 ```
 
-Here's another example:
+또 다른 예제를 살펴보겠습니다:
 
 ```haskell
-{- | Represents a single markup structure. Such as:
+{- | 다음과 같은 단일 마크업 구조를 표현합니다.
 
-- A paragraph
-- An unordered list
-- A code block
+- 문단
+- 순서 없는 목록
+- 코드 블록
 -}
 data Structure
   = Heading Natural String
-  -- ^ A section heading with a level
+  -- ^ A 크기를 가지는 섹션 제목
   | Paragraph String
-  -- ^ A paragraph
+  -- ^ 문단
   | UnorderedList [String]
-  -- ^ An unordered list of strings
+  -- ^ 순서 없는 문자열 목록
   | OrderedList [String]
-  -- ^ An ordered list of strings
+  -- ^ 순서 있는 문자열 목록
   | CodeBlock [String]
-  -- ^ A code block
+  -- ^ 코드 블록
 ```
 
-And another:
-
 ```haskell
-{- | Markup to HTML conversion module.
+{- | 마크업을 HTML로 변환하는 모듈입니다.
 
-This module handles converting documents written in our custom
-Markup language into HTML pages.
+이 모듈은 우리의 커스텀 마크업 언어로 작성된 문서를 HTML 페이지로 변환합니다.
 -}
 module HsBlog.Convert where
 ```
 
-As you can see, `|` and `^` can be used to document functions, function arguments,
-types, data constructors, modules, and more. They are probably the most important
-Haddock annotations to remember (and even then, `|` alone will suffice).
+보시다시피, `|`와 `^`를 사용하여 함수, 함수 인자, 타입, 데이터 생성자, 모듈 등을 문서화할 수 있습니다.
+이들은 Haddock 주석을 작성하기 위해 기억해야 할 중요한 항목이라고 생각합니다. (사실 `|`만 기억해도 충분합니다)
 
-> **Tip**: Annotate the modules, types, and the top-level definitions
-> which are exported from your project
-> with some high-level description of what they are used for (at the very least).
->
-> Your users and collaborators will thank you!
+:::tip
+프로젝트에서 내보낸 모듈, 타입 및 최상단 정의에 상세한 설명이나 (최소한) 어떤 용도로 사용되는지 주석으로 작성하세요.
 
-### Section headings
+모듈 사용자 및 참여자들이 감사할 것입니다!
+:::
 
-We can separate our module into sections by adding headings.
-Headings are comments which are prefixed with a number of `*` (just like in our markup language).
+### 섹션 제목
 
-For example:
+제목을 추가하여 모듈을 섹션으로 나눌 수 있습니다.
+제목은 (다른 마크업 언어와 유사하게) `*`로 시작하는 주석으로 표현됩니다.
+
+예를 들어:
 
 ```haskell
 -- * HTML EDSL
@@ -235,7 +221,7 @@ link_ :: FilePath -> Content -> Content
 link_ = ...
 ```
 
-It is also possible to add headings to the export list instead:
+제목을 내보내기 목록에 추가할 수도 있습니다:
 
 ```haskell
 module HsBlog.Html
@@ -243,13 +229,13 @@ module HsBlog.Html
     Html
   , html_
 
-    -- ** Combinators used to construct the @\<head\>@ section
+    -- ** @\<head\>@ 섹션을 구성하기 위한 조합자
   , Head
   , title_
   , stylesheet_
   , meta_
 
-    -- ** Combinators used to construct the @\<body\>@ section
+    -- ** @\<body\>@ 섹션을 구성하기 위한 조합자
   , Structure
   , p_
   , h_
@@ -257,7 +243,7 @@ module HsBlog.Html
   , ol_
   , code_
 
-    -- ** Combinators used to construct content inside structures
+    -- ** 구조 안 본문을 구성하기 위한 조합자
   , Content
   , txt_
   , img_
@@ -265,64 +251,59 @@ module HsBlog.Html
   , b_
   , i_
 
-    -- ** Render HTML to String
+    -- ** HTML을 문자열로 출력
   , render
   )
   where
 ```
 
-Separating parts of the module into sections helps keeping the important things together
-and Haddock will create a table-of-contents at the top of a module page for us as well.
+모듈의 구성 요소들을 섹션으로 분리하면 중요한 부분을 모아두고, haddock이 모듈 페이지 상단에 목차를 생성하도록 할 수 있습니다.
 
-Sometimes it's also easier to figure out whether a module should be split into multiple
-modules or not after splitting it into sections using headings.
+제목을 통해 섹션을 분리한 이후, 때때로 하나의 모듈을 여러 모듈로 분리하는 것이 좋을지 여부를 쉽게 파악할 수 있습니다.
 
 ---
 
-**Exercise**: Try to re-arrange the modules in our project to your liking and add headings to sections.
+**연습문제**: 프로젝트의 모듈을 원하는 대로 재배열하고 섹션에 제목을 추가해 보세요.
 
 ---
 
-### Formatting
+### 서식 지정
 
-As we saw earlier, we can also add formatting in the content of our comments.
-For example, we can:
+앞서 살펴본 것처럼 댓글 본문에 서식을 추가할 수도 있습니다. 예를 들어 다음과 같이 할 수 있습니다:
 
-- Hyperlink identifiers by surrounding them with `` ` ``
+- `` ` ``로 둘러싸서 하이퍼링크 식별자를 추가합니다.
 
-  For example: `` `Heading` ``
+  예를 들어: `` `Heading` ``
 
-- Write `monospaced text` by surrounding it with `@`
+- `@`로 둘러싸서 `고정폭 텍스트`를 추가합니다.
 
-  For example: `@Paragraph "Hello"@`
+  예를 들어: `@Paragraph "Hello"@`
 
-- Add _emphasis_ to text by surrounding it with `/`
+- `/`로 둘러싸서 *강조 텍스트*를 추가합니다.
 
-  For example: `/this is emphasised/`
+  예를 들어: `/this is emphasised/`
+ 
+- `__`로 둘러싸서 **굵은 텍스트**를 추가합니다.
 
-- Add **bold** to text by surrounding it with `__`
+  예를 들어: `__this is bold__`
 
-  For example: `__this is bold__`
+### 더 나아가
 
-### More
+이번 장에서는 haddock 마크업 언어의 기본 사항을 다루었습니다.
+더 알고 싶다면 [Haddock 마크업 가이드](https://haskell-haddock.readthedocs.io/en/latest/markup.html)를 참고하세요.
+코드 블록, 그리드 테이블, 이미지 및 예제와 같은 더 흥미로운 문서 구조를 생성하는 방법에 대한 정보가 있습니다.
 
-In this chapter we've covered the basics of the Haddock markup language.
-If you'd like to know more, the [Haddock markup guide](https://haskell-haddock.readthedocs.io/en/latest/markup.html)
-contains information on how to create even more interesting documentation structures, such as
-code blocks, grid tables, images and examples.
+## 요약
 
-## Summary
+지금까지 하스켈 프로그램을 문서화하는 한 가지 방법을 간단히 살펴보았습니다:
+haddock 마크업으로 사용해 소스 코드 주석을 작성하고 이를 통해 API 문서를 생성합니다.
 
-We've briefly covered one aspect of documenting Haskell programs:
-using Haddock to generate informative API reference pages created from source code
-comments which are annotated with Haddock markup.
-
-While API references are incredibly valuable, remember that there are other forms of
-documentation that can help your users get started quickly, such as examples and tutorials.
+API 문서도 매우 유용하지만, 예제와 튜토리얼과 같은 다른 형태의 문서를 통해서도 사용자가 빠르게 시작할 수 있도록 도울 수 있습니다.
 
 ---
 
-**Exercise**: Add haddock annotation to the top-level definitions in our project and test your understanding
-of the program and the various parts - sometimes the best way to learn something is to try explaining it!
+**연습문제**: 우리의 프로젝의 최상단 정의에 hadddock 주석을 추가해 보세요.
+그리고 프로그램과 다양한 부분을 잘 이해하고 있는지 테스트해 보세요.
+때로는 무언가를 설명하려고 하면 더 잘 이해하게 됩니다!
 
 ---
