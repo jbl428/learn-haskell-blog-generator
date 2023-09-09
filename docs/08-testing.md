@@ -73,7 +73,6 @@ test-suite hs-blog-gen-test
 `hspec-discover`가 작동하려면, 테스트 스위트의 "main" 파일에 다음을 추가해야 합니다.
 우리의 경우 `test/Spec.hs`입니다:
 
-
 ```haskell
 {-# OPTIONS_GHC -F -pgmF hspec-discover #-}
 ```
@@ -250,7 +249,7 @@ simple = do
 
 또한 테스트에서 사용할 수 있는, `shouldBe`와 비슷한 다른 "검증문(expectations)"도 있습니다.
 [Hspec 튜토리얼](https://hspec.github.io/expectations.html)
-또는 
+또는
 [haddock 문서](https://hackage.haskell.org/package/hspec-expectations-0.8.2/docs/Test-Hspec-Expectations.html)
 에서 그 목록을 확인할 수 있습니다.
 
