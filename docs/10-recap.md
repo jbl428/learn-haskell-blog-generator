@@ -1,46 +1,37 @@
-# Recap
+# 요약
 
-In this book we've implemented a very simple static blog generator while learning Haskell as we go.
+이 책을 통해 우리는 간단한 정적 블로그 생성기를 구현하면서 하스켈을 배웠습니다.
 
-- We've learned about basic Haskell building blocks, such as definitions, functions,
-  types, modules, recursion, pattern matching, type classes, IO and exceptions.
-- We've learned about [EDSLs](./03-html/03-edsls.md) and used the _combinator pattern_ to implement
-  a composable html generation library.
-- We've learned how to leverage types, modules and smart constructors
-  to [make invalid states unrepresentable](./03-html/04-safer-construction.md).
-- We've learned how to represent complex data using [ADTs](./04-markup/01-data-type.md).
-- We've learned how to use [pattern matching](./04-markup/04-parsing-02.md#pattern-matching) to transform ADTs,
-  and how to use [recursion](./04-markup/02-parsing-01.md#recursion-and-accumulating-information) to solve problems.
-- We've used the _functional core, imperative shell_ approach to build a program that handles IO and applies
-  our domain logic to user inputs.
-- We've learned about abstractions such as [monoids](./05-glue/01-markup-to-html.md#monoids),
-  [functors](./05-glue/04-optparse.md#functor) and [monads](./06-errors_and_files/01-either.md#monadic-interface),
-  and how they can help us reuse code and convey information about shared interfaces.
-- We've learned how to create fancy [command-line interfaces](./05-glue/04-optparse.md), [write tests](./08-testing.md),
-  and [generate documentation](./09-documentation.md).
+- 정의, 함수, 타입, 모듈, 재귀, 패턴 매칭, 타입 클래스, IO, 예외와 같은 기본적인 하스켈 구성 요소에 대해 배웠습니다.
+- [EDSLs](./03-html/03-edsls.md)에 대해 배우고, *조합자 패턴*을 사용하여 조합 가능한 HTML 생성 라이브러리를 구현했습니다.
+- 타입, 모듈 및 스마트 생성자를 활용하여 [유효하지 않은 상태를 표현할 수 없게](./03-html/04-safer-construction.md)하는 방법을 배웠습니다.
+- [ADT](./04-markup/01-data-type.md)를 사용하여 복잡한 데이터를 표현하는 방법을 배웠습니다.
+- [패턴 매칭](./04-markup/04-parsing-02.md#pattern-matching)을 사용하여 ADT를 변환하는 방법을 배웠으며,
+  [재귀](./04-markup/02-parsing-01.md#recursion-and-accumulating-information)를 사용하여 문제를 해결하는 방법을 배웠습니다.
+- *기능적 코어, 명령형 쉘* 접근 방식을 사용하여 IO를 처리하고 사용자 입력에 대한 도메인 로직을 적용하는 프로그램을 만들었습니다.
+- [monoid](./05-glue/01-markup-to-html.md#monoids), [functor](./05-glue/04-optparse.md#functor) 및 [monad](./06-errors_and_files/01-either.md#monadic-interface)와 같은 추상화에 대해 배웠으며,
+  이러한 추상화가 코드 재사용과 공유 인터페이스에 대한 정보 전달에 어떻게 도움이 되는지 배웠습니다.
+- [명령줄 인터페이스](./05-glue/04-optparse.md), [테스트 작성](./08-testing.md) 및 [문서 생성](./09-documentation.md) 방법을 배웠습니다.
 
-While Haskell is a very big and complex language, and there's always more to be learned,
-I think we've reached an important milestone where
-you can start building your own Haskell projects and be productive with Haskell!
+하스켈은 매우 크고 복잡한 언어이며 항상 배울 것이 더 많지만, 이제 자신만의 하스켈 프로젝트를 구축하고 하스켈로 생산성을 높일 수 있는 중요한 이정표에 도달했다고 생각합니다!
 
-This is a good time to celebrate and pat yourself on the back for getting this far! Great job, you!
+여기까지 온 것을 축하하고 스스로 격려해보세요! 수고하셨습니다!
 
-If you'd like to learn even more about Haskell and continue your Haskell journey
-beyond this book, check out the appendix sections [Where to go next](./11-next.md) and the [FAQ](./12-faq.md).
+만약 하스켈에 대해 더 배우고 이 책을 넘어서 하스켈 여행을 계속하고 싶다면, 부록 [다음 단계로](./11-next.md)와 [FAQ](./12-faq.md)를 확인하세요.
 
-## Thank you!
+## 감사합니다!
 
-Thank you for reading this book. I hope you enjoyed it and found Haskell interesting.
+이 책을 읽어주셔서 감사합니다. 당신이 이 책을 재미있게 읽으셨고 하스켈에 흥미를 느끼셨으면 좋겠습니다.
 
-I would very much like to hear your feedback. If you'd like, you could leave your
-feedback at this book's
+이 책에 대한 피드백을 듣고 싶습니다.
+만약 피드백을 주고 싶으시다면, 이 책의
 [GitHub issue board](https://github.com/soupi/learn-haskell-blog-generator/issues),
-or you could reach me directly on [mastodon](https://fosstodon.org/@suppi) or via email.
-You can find my contact information [on my website](https://gilmi.me).
+또는 [mastodon](https://fosstodon.org/@suppi) 또는 이메일을 통해 직접 연락하실 수 있습니다.
+연락처는 [저의 웹사이트](https://gilmi.me)에서 찾을 수 있습니다.
 
-If you liked this book, do let me know - your kind words mean a lot.
+이 책이 마음에 드셨다면 알려주세요. 당신의 친절한 말은 큰 힘이 됩니다.
 
-> Finally, if you _really_ liked this book and would like to support future passion projects
-> like it, you can [support me directly via Ko-fi](https://ko-fi.com/gilmi).
+> 마지막으로 당신이 *정말로* 이 책을 좋아하셨고 미래의 열정적인 프로젝트를 지원하고 싶다면,
+> [Ko-fi](https://ko-fi.com/gilmi)를 통해 직접 후원할 수 있습니다.
 
-Thank you and good luck with your next Haskell project!
+감사드리며 다음 하스켈 프로젝트에 행운을 빕니다!
