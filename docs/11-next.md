@@ -1,67 +1,51 @@
-# Where to go next
+# 더 나아가기
 
-Haskell is an incredibly rich and deep programming language.
-New cutting-edge techniques, concepts and features are still being discovered
-and sometimes integrated into GHC. This sometimes makes it seemingly impossible
-to catch up to.
+하스켈은 매우 풍부하고 깊은 프로그래밍 언어입니다.
+새로운 최신 기술, 개념 및 기능이 여전히 발견되고 심지어 GHC에 통합되기도 합니다.
+이로 인해 가끔은 따라잡기가 어려울 수 있습니다.
 
-This phenomena is sometimes dubbed
-[The Haskell pyramid](https://patrickmn.com/software/the-haskell-pyramid/).
-My hope is that by reading this book and following the exercises,
-you readers have reached the bar of productivity, and you can now go and start
-working on your own projects with Haskell. I highly encourage you to do so.
-In my opinion, writing useful Haskell projects is the best method to solidify
-what you currently know, and identify what you still need to learn.
+이러한 현상은 때로는
+[하스켈 피라미드](https://patrickmn.com/software/the-haskell-pyramid/)라고도 불립니다.
+이 책을 읽고 연습문제를 풀면서 충분히 빠른 생산성을 얻고, 하스켈로 프로젝트를 시작할 수 있기를 바랍니다.
+정말로 그렇게 되었으면 좋겠습니다.
+유용한 하스켈 프로젝트를 작성하는 것은 현재 알고 있는 지식을 다지고, 앞으로 배워야 할 것을 파악하는 가장 좋은 방법이라고 생각합니다.
 
-## Extending this project
+## 프로젝트 확장하기
 
-If you'd like to extend this project, here are a few ideas for you:
+이 프로젝트를 확장하고 싶다면 다음과 같은 아이디어를 고려해 보세요:
 
-1. **Serve over HTTP** - You can use a web library such as
-   [wai](https://www.youtube.com/watch?v=mz5_HmLGRXc) or
-   [twain](https://gilmi.me/blog/post/2022/04/24/learn-twain-bulletin-app)
-   to serve this blog over HTTP instead of generating it statically
-2. **Rewrite it with libraries** - you could rewrite it and use a real-world
-   [HTML package](https://hackage.haskell.org/package/lucid)
-   and [markdown parser](https://hackage.haskell.org/package/cmark-gfm)
-3. **Add features**
-   1. You could add a metadata block at the top of each article
-      which would include the title, publish date and tags of a blog post,
-      and use them when generating HTML, index page and even tags pages
-   2. You could add HTML pages templating using
-      [mustache](https://hackage.haskell.org/package/mustache) or similar,
-      and use that to generate a nice and customizable structure to the page
-   3. You could add support for links and images in our markup language parser
-   4. You could add support for configuration files which would include things like
-      the blog title, description, or other meta information for things like
-      [twitter cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
+1. **HTTP로 제공하기** - [wai](https://www.youtube.com/watch?v=mz5_HmLGRXc)나
+   [twain](https://gilmi.me/blog/post/2022/04/24/learn-twain-bulletin-app)과 같은 웹 라이브러리를 사용하여
+   이 블로그를 정적으로 생성하는 대신 HTTP로 제공할 수 있습니다.
+2. **라이브러리를 활용해 다시 작성하기** - 이 블로그를 다시 작성하고 실제 [HTML 패키지](https://hackage.haskell.org/package/lucid)와
+   [마크다운 파서](https://hackage.haskell.org/package/cmark-gfm)를 사용할 수 있습니다.
+3. **기능 추가하기**
+   1. 각 게시글 상단에 블로그 제목, 게시 날짜 및 태그를 포함하는 메타데이터 블록을 추가하고,
+      HTML, 인덱스 페이지 및 심지어 태그 페이지를 생성할 때 사용할 수 있습니다.
+   2. [mustache](https://hackage.haskell.org/package/mustache) 또는 유사한 것을 사용하여
+      HTML 페이지 템플릿을 추가하고, 페이지를 좀 더 멋지고 사용자 정의할 수 있도록 만들 수 있습니다.
+   3. 마크업 언어 파서에 링크 및 이미지 지원을 추가할 수 있습니다.
+   4. 블로그 제목, 설명 또는 [twitter cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)와 같은
+      다른 메타 정보를 포함하는 구성 파일을 지원할 수 있습니다.
 
-Or anything else you can think of, consider this project your playground and
-do whatever you like with it!
+또는 다른 아이디어가 있다면, 이 프로젝트는 당신의 놀이터라 생각하고 원하는 대로 수정해보세요!
 
-## Other resources
+## 다른 자료들
 
-At some point you are likely to run into new concepts, techniques,
-or even just a feeling of "I feel like this could be done better".
-I'd like to point you in the right direction so you can find additional information
-and learn new Haskell things when you need to or want to.
+때로는 새로운 개념, 기술 또는 "이것을 더 잘할 수 있을 것 같은 느낌"을 경험하는 순간이 올 것입니다.
+필요할 때마다 추가 정보를 찾고 새로운 Haskell 것들을 배울 수 있도록 적절한 방향을 제시하고자 합니다.
 
-I've compiled a list of resources for learning Haskell called
-[Haskell study plan](https://github.com/soupi/haskell-study-plan),
-which includes links to very useful articles, community hubs and news aggregators,
-project suggestions, and even cool open-source Haskell projects.
-You will also find alternative explanations to thing we've covered
-and even links to other Haskell tutorials, guides and books in case you need
-a different view on things.
+저는 [Haskell study plan](https://github.com/soupi/haskell-study-plan)이라는 곳에 하스켈 학습을 위한 자료를 모았습니다.
+매우 유용한 기사, 커뮤니티 허브 및 뉴스 집계기, 프로젝트 제안, 그리고 멋진 오픈 소스 하스켈 프로젝트 링크를 포함하고 있습니다.
+우리가 다른 것을 다른 관점으로 보고 싶을 때를 대비해 다른 하스켈 튜토리얼, 가이드 및 책 링크도 찾아볼 수 있습니다.
 
-Also, the [GHC User Guide](https://downloads.haskell.org/ghc/latest/docs/users_guide/index.html)
-is a fantastic resource with loads of articles and information about the language and GHC tooling around it.
-It is often the best place to learn about the Haskell language.
+또한, [GHC 사용자 가이드](https://downloads.haskell.org/ghc/latest/docs/users_guide/index.html)는
+언어와 GHC 도구에 대한 많은 기사와 정보를 담고 있는 훌륭한 자료입니다.
+하스켈 언어를 배우는 가장 좋은 수단이 될 수도 있습니다.
 
-However, don't feel pressured to learn everything Haskell
-has to offer right away. Mastering Haskell is a journey that can take a lot of time.
-Most of us are definitely not there yet, but we can still be very productive with Haskell,
-build real-world projects, and even discover new techniques and concepts ourselves.
+하지만 하스켈이 제공하는 모든 것을 한 번에 배울 필요는 없습니다.
+하스켈을 마스터하는 것은 많은 시간이 걸릴 수 있는 여행입니다.
+우리 대부분은 아직 그 곳에 도달하지 못했지만, 여전히 하스켈로 매우 생산적이고, 실제 프로젝트를 구축하고, 심지어 새로운 기술과 개념을 발견할 수 있습니다.
 
-Remember that in a lazy language we evaluate things only when we need them.
-Maybe we can do that too with Haskell concepts!
+지연 언어에서는 필요한 순간에 평가를 수행한다는 것을 기억하세요.
+하스켈 개념을 배우는 것도 같은 방식을 적용할 수 있습니다!
