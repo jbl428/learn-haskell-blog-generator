@@ -1,6 +1,6 @@
 # 자주 묻는 질문
 
-> 질문이 있으신가요? [이 책의 이슈 트래커](https://github.com/soupi/learn-haskell-blog-generator/issues)를 방문해주세요!
+> 질문이 있으신가요? [토론 게시판](https://github.com/soupi/learn-haskell-blog-generator/discussions) 이나 [이슈 트래커](https://github.com/soupi/learn-haskell-blog-generator/issues)를 방문해주세요!
 
 ## 일반적인 질문
 
@@ -29,7 +29,7 @@ VSCode 또는 [VSCodium](https://vscodium.com/)을 사용하고
 하스켈 커뮤니티는 매우 활발하며, 새로운 라이브러리, 도구 및 기술을 개발하고 있습니다.
 [하스켈 planetarium](https://haskell.pl-a.net)은 여러 커뮤니티의 피드를 한 페이지에 모아두었으며,
 [하스켈 주간 뉴스레터](https://haskellweekly.news/)도 있습니다.
-또한 [Twitter](https://twitter.com/search?q=%23Haskell&src=typeahead_click)에서도 많은 하스켈 관련 내용을 찾을 수 있습니다!
+또한 [Fediverse](https://fosstodon.org/tags/haskell)에서도 많은 하스켈 관련 내용을 찾을 수 있습니다!
 
 ## 디버깅
 

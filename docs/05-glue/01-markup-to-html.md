@@ -68,6 +68,45 @@ convertStructure structure =
       Html.code_ (unlines list)
 ```
 
+:::info `$`는 무엇인가요?
+The dollar sign (`$`) is an operator that we can use to group expressions, like we do with parenthesis.
+we can replace the `$` with invisible parenthesis around the expressions to the left of it,
+and around the expression to the right of it. So that:
+
+```hs
+Html.ul_ $ map Html.p_ list
+```
+is understood as:
+```hs
+(Html.ul_) (map Html.p_ list)
+```
+
+It is a function application operator, it applies the argument on the right of the dollar
+to the function on the left of the dollar.
+
+`$` is right-associative and has very low precedence, which means that:
+it groups to the right, and other operators bind more tightly.
+For example the following expression:
+
+```hs
+filter (2<) $ map abs $ [-1, -2, -3] <> [4, 5, 6]
+```
+is understood as:
+```hs
+(filter (2<) ((map abs) ([1, -2, 3] <> [-4, 5, 6]))
+```
+
+Which is also equivalent to the following code with less parenthesis:
+```hs
+filter (2<) (map abs ([1, -2, 3] <> [-4, 5, 6]))
+```
+See how information flows from right to left and that `<>` binds more tightly?
+
+This operator is fairly common in Haskell code and it helps us reduce some clutter,
+but feel free to avoid it in favor of parenthesis if you'd like, it's not
+like we're even saving keystrokes with `$`!
+:::
+
 위 코드를 `-Wall` 플래그와 함께 컴파일하면 패턴 매칭이 완전하지 않다(non-exhaustive)는 경고가 나옵니다.
 이는 현재 `h1`이 아닌 제목을 처리할 방법이 없기 때문입니다.
 이 문제를 해결하는 몇 가지 방법이 있습니다:

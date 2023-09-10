@@ -25,7 +25,7 @@
 
 이 책에 대한 피드백을 듣고 싶습니다.
 만약 피드백을 주고 싶으시다면, 이 책의
-[GitHub issue board](https://github.com/soupi/learn-haskell-blog-generator/issues),
+[토론 게시판](https://github.com/soupi/learn-haskell-blog-generator/discussions),
 또는 [mastodon](https://fosstodon.org/@suppi) 또는 이메일을 통해 직접 연락하실 수 있습니다.
 연락처는 [저의 웹사이트](https://gilmi.me)에서 찾을 수 있습니다.
 

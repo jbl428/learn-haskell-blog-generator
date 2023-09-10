@@ -1,6 +1,6 @@
 # 프로젝트의 명세를 정의하기
 
-지금까지 우리는 `base`와 GHC와 함께 제공되는 [라이브러리](https://downloads.haskell.org/ghc/9.2.5/docs/html/users_guide/9.2.5-notes.html#included-libraries)만 사용했습니다.
+지금까지 우리는 `base`와 GHC와 함께 제공되는 [라이브러리](https://downloads.haskell.org/ghc/9.2.5/docs/html/users_guide/9.2.7-notes.html#included-libraries)만 사용했습니다.
 그래서 프로그램을 실행하기 위해 `runghc`보다 더 복잡한 것을 할 필요가 없었습니다.
 하지만 이번에는 GHC에 포함되지 않은 외부 라이브러리를 사용할 것입니다.
 

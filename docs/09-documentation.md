@@ -3,7 +3,7 @@
 사용자에게 우리의 프로젝트와 라이브러리를 쉽게 도입할 수 있도록 도와주는 [다양한 방법](https://documentation.divio.com/)이 있습니다.
 예를 들어, 튜토리얼을 작성하거나 실행 가능한 예제를 제공하거나 시스템의 내부를 설명하거나 API 문서를 만들 수 있습니다.
 
-이번 장에서는 [Haddock](http://www.haskell.org/haddock/)을 사용하여 주석이 달린 Haskell 소스 코드를 통해 (Hackage에서 볼 수 있는) API 문서를 생성하는 방법을 살펴보겠습니다.
+이번 장에서는 [Haddock](https://haskell-haddock.readthedocs.io/en/latest/)을 사용하여 주석이 달린 Haskell 소스 코드를 통해 (Hackage에서 볼 수 있는) API 문서를 생성하는 방법을 살펴보겠습니다.
 
 ## Haddock 실행하기
 
